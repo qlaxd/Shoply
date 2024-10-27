@@ -30,8 +30,9 @@ A Vásárló Lista egy React-alapú webalkalmazás, amely lehetővé teszi a fel
 ## Telepítés és Futtatás
 
 1. Klónozd le a repository-t: ```git clone [repo url]```
-2. Telepítsd a fejlesztői környezetet: ```npm i```
-3. Indítsd el a fejlesztői környezetet: ```npm start```
+2. Lépj bele a könyvtárba ```cd web-app```
+3. Telepítsd a fejlesztői környezetet: ```npm i```
+4. Indítsd el a fejlesztői környezetet: ```npm start```
 
 
 Az alkalmazás ezután elérhető a következő címen: `http://localhost:3000`
