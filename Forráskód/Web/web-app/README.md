@@ -13,6 +13,7 @@ A Vásárló Lista egy React-alapú webalkalmazás, amely lehetővé teszi a fel
 - Reszponzív felhasználói felület
 - Védett útvonalak
 - Kijelentkezés funkció
+- Refreshtoken használata a tokenek frissítéséhez (fejlesztés alatt)í
 
 ## Technológiák
 
@@ -24,8 +25,10 @@ A Vásárló Lista egy React-alapú webalkalmazás, amely lehetővé teszi a fel
 ### Backend (Fejlesztés alatt)
 - Node.js
 - Express.js
-- MongoDB vagy MySQL még nem tudom
+- MongoDB
 - JWT autentikáció
+- Bcrypt jelszó titikosításhoz
+- dotenv tárolni a bizalmas adatokat (eg.: connection string, JWT secret)
 
 ## Telepítés és Futtatás
 
@@ -35,4 +38,4 @@ A Vásárló Lista egy React-alapú webalkalmazás, amely lehetővé teszi a fel
 4. Indítsd el a fejlesztői környezetet: ```npm start```
 
 
-Az alkalmazás ezután elérhető a következő címen: `http://localhost:3000`
+Az frontend ezután elérhető a következő címen: `http://localhost:3000`
