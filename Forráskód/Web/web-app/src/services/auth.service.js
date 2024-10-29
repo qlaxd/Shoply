@@ -10,11 +10,11 @@ const AuthService = {
       return response.data;
     } catch (error) {
       if (error.response) {
-        throw error.response.data;
+        throw new Error(error.response.data.error || 'Bejelentkezési hiba');
       } else if (error.request) {
-        throw { error: 'Hálózati hiba történt' };
+        throw new Error('Hálózati hiba történt');
       } else {
-        throw { error: 'Ismeretlen hiba történt' };
+        throw new Error('Ismeretlen hiba történt');
       }
     }
   },

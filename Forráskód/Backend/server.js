@@ -8,16 +8,23 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(cors());
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // ahonnan a frontend kérések jönnek (ahol a web-app fut)
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // engedélyezett HTTP metódusok
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization'); // engedélyezett fejlécek
+  res.header('Access-Control-Allow-Credentials', 'true'); // engedélyezi a hitelesített kéréseket
+  
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200); // ha a kérés egy preflight kérés, akkor visszaadjuk a 200-as státuszt
+  }
+  next();
+});
 
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }) // MongoDB kapcsolat
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
