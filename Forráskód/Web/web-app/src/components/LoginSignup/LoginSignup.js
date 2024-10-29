@@ -23,14 +23,18 @@ const LoginSignup = () => {
 
   const handleSubmit = async () => {
     try {
+      console.log('formData elküldve: ', formData);
       if (action === 'Sign Up') {
-        await AuthService.register(formData.username, formData.email, formData.password);
+        const response = await AuthService.register(formData.username, formData.email, formData.password);
+        console.log('Sikeres regisztráció!', response);
         alert('Sikeres regisztráció!');
       } else {
-        await AuthService.login(formData.email, formData.password);
+        const response = await AuthService.login(formData.email, formData.password);
+        console.log('Sikeres bejelentkezés!', response);
         alert('Sikeres bejelentkezés!');
       }
     } catch (error) {
+      console.error('Hiba történt!', error);
       alert(error.message || 'Hiba történt!');
     }
   };
