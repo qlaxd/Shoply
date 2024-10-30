@@ -14,10 +14,10 @@ const api = axios.create({
 // a headerben nem adjuk meg külön a tokent, mert az Axios interceptor minden requestben hozzáadja a tokent a headerhez
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token'); // token lekérése a localStorage-ből
     if (token) {
       config.headers.Authorization = `Bearer ${token}`; // token hozzáadása a headerhez
-      console.log('Token hozzáadva a headerhez: ', config.headers.Authorization, token);
+      console.log('Token hozzáadva a headerhez: ', config.headers.Authorization, token); 
     }
     return config;
   },
@@ -27,4 +27,4 @@ api.interceptors.request.use(
   }
 );
 
-export default api;
+export default api; 

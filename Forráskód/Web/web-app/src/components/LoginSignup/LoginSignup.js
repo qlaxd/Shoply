@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
 import './LoginSignup.css';
 import AuthService from '../../services/auth.service.js';
+import { useNavigate } from 'react-router-dom';
 
 import user_icon from '../assets/user.png';
 import email_icon from '../assets/email.png';
 import password_icon from '../assets/padlock.png';
 
 const LoginSignup = () => {
+  const navigate = useNavigate();
   const [action, setAction] = useState('Sign Up');
   const [formData, setFormData] = useState({
     username: '',
@@ -23,19 +25,42 @@ const LoginSignup = () => {
 
   const handleSubmit = async () => {
     try {
+      if (!formData.email || !formData.password) {
+        alert('Kérlek töltsd ki az összes mezőt!');
+        return;
+      }
+      
+      if (action === 'Sign Up' && !formData.username) {
+        alert('Kérlek add meg a felhasználóneved!');
+        return;
+      }
+      
       console.log('formData elküldve: ', formData);
+      
       if (action === 'Sign Up') {
-        const response = await AuthService.register(formData.username, formData.email, formData.password);
+        const response = await AuthService.register(
+          formData.username,
+          formData.email, 
+          formData.password
+        );
         console.log('Sikeres regisztráció!', response);
         alert('Sikeres regisztráció!');
+        navigate('/login');
       } else {
-        const response = await AuthService.login(formData.email, formData.password);
-        console.log('Sikeres bejelentkezés!', response);
-        alert('Sikeres bejelentkezés!');
+        const response = await AuthService.login(
+          formData.email,
+          formData.password
+        );
+        if (response && response.token) {
+          localStorage.setItem('token', response.token);
+          console.log('Sikeres bejelentkezés!', response);
+          navigate('/');
+        }
       }
     } catch (error) {
       console.error('Hiba történt!', error);
-      alert(error.message || 'Hiba történt!');
+      const errorMessage = error.response?.data?.message || error.message || 'Hiba történt!';
+      alert(errorMessage);
     }
   };
 
