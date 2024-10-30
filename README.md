@@ -1,4 +1,4 @@
-# Vásárló Lista Alkalmazás
+# Bevásárlás Alkalmazás
 
 ## A Projektről
 A Vásárló Lista egy modern, többplatformos alkalmazás, amely lehetővé teszi a felhasználók számára bevásárlólisták létrehozását, kezelését és megosztását. Az alkalmazás MERN stack-et használ (MongoDB, Express.js, React.js, Node.js).
