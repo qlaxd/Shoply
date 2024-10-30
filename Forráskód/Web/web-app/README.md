@@ -27,7 +27,7 @@ A Vásárló Lista egy React-alapú webalkalmazás, amely lehetővé teszi a fel
 - Express.js
 - MongoDB
 - JWT autentikáció
-- Bcrypt jelszó titikosításhoz
+- Bcrypt jelszó titkosításhoz
 - dotenv tárolni a bizalmas adatokat (eg.: connection string, JWT secret)
 
 ## Telepítés és Futtatás
