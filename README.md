@@ -57,7 +57,7 @@ Részletes dokumentáció az alábbi helyeken található:
 - [Fejlesztői Dokumentáció](Dokumentáció/Fejlesztői%20napló/tervezés.txt)
 - [Frontend Dokumentáció](Forráskód/Web/web-app/README.md)
 - [Backend Dokumentáció és Fejlesztési Feladatok](Dokumentáció/Fejlesztői%20napló/development.md)
-- [API Dokumentáció](Dokumentáció/API/api.md) (még nincs kész)
+- [API Dokumentáció](Dokumentáció/Fejlesztői%20napló/api.md) (még nincs kész)
 
 
 ## Fejlesztés Alatt
