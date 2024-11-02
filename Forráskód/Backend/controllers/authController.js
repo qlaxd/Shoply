@@ -13,7 +13,7 @@ exports.register = async (req, res) => {
       });
     }
 
-    const existingUsername = await User.findOne({ username }); 
+    const existingUsername = await User.findOne({ username });
     if (existingUsername) {
       return res.status(400).json({ 
         message: 'Ez a felhasználónév már foglalt!' 
