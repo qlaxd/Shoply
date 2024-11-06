@@ -12,7 +12,7 @@ A Vásárló Lista egy modern, többplatformos alkalmazás, amely lehetővé tes
 - 📊 Kategorizálás és rendszerezés
 - 🔍 Keresés és szűrés funkciók
 
-## Technológiai Stack
+## Technológiai Stack (MERN stack)
 
 ### Backend
 - Node.js és Express.js
