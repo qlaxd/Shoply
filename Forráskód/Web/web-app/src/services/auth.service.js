@@ -30,5 +30,6 @@ class AuthService {
     localStorage.removeItem('token'); // token eltávolítása a localStorage-ből kijelentkezéskor
   }
 }
-
-export default new AuthService(); // AuthService példányosítása
+// sajnos először létre kell hozni egy új pédányt és utána exportálni, mert az ESLint warning üzenetet ír ki
+const authService = new AuthService(); 
+export default authService;

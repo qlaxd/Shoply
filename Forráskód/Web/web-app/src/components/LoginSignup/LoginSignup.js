@@ -7,19 +7,30 @@ import user_icon from '../assets/user.png';
 import email_icon from '../assets/email.png';
 import password_icon from '../assets/padlock.png';
 
-const LoginSignup = () => {
+import showPwd from '../assets/showPwd.png';
+import hidePwd from '../assets/hidePwd.png';
+
+
+const LoginSignup = () => { 
   const navigate = useNavigate();
   const [action, setAction] = useState('Sign Up');
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: ''
   });
 
-  const handleChange = (e) => {
+
+/*
+A ...formData spread operátor lemásolja az összes meglévő mezőt és értéket
+Az [e.target.name] egy dinamikus kulcs, ami az input mező name attribútumának értékét használja
+Az e.target.value az új érték, amit a felhasználó beírt
+*/
+  const handleChange = (e) => { // Ez a függvény kezeli az input mezők változásait
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value // e.target.name = "email" e.target.value = "test@example.com"
     });
   };
 
@@ -96,11 +107,17 @@ const LoginSignup = () => {
         <div className='input'>
           <img src={password_icon} alt='password' />
           <input 
-            type='password' 
+            type={showPassword ? 'text' : 'password'} 
             placeholder='Password'
             name='password'
             value={formData.password}
             onChange={handleChange}
+          />
+          <img 
+            src={showPassword ? showPwd : hidePwd} 
+            alt={showPassword ? 'hide password' : 'show password'} 
+            className='show-pwd' 
+            onClick={() => setShowPassword(!showPassword)}
           />
         </div>
       </div>
