@@ -54,7 +54,7 @@ A Vásárló Lista egy modern, többplatformos alkalmazás, amely lehetővé tes
 
 ## Dokumentáció
 Részletes dokumentáció az alábbi helyeken található:
-- [Fejlesztői Dokumentáció](Dokumentáció/Fejlesztői%20napló/tervezés.txt)
+- [Fejlesztői Dokumentáció](Dokumentáció/Fejlesztői%20napló/tervezés.md)
 - [Frontend Dokumentáció](Forráskód/Web/web-app/README.md)
 - [Backend Dokumentáció és Fejlesztési Feladatok](Dokumentáció/Fejlesztői%20napló/development.md)
 - [Frontend API Dokumentáció](Dokumentáció/Fejlesztői%20napló/api/frontend-api.md)
