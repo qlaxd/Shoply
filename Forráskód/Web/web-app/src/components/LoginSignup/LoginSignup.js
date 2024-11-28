@@ -3,10 +3,10 @@ import './LoginSignup.css';
 import AuthService from '../../services/auth.service.js';
 import { useNavigate } from 'react-router-dom';
 
+// ikonok a login formhoz
 import user_icon from '../assets/user.png';
 import email_icon from '../assets/email.png';
 import password_icon from '../assets/padlock.png';
-
 import showPwd from '../assets/showPwd.png';
 import hidePwd from '../assets/hidePwd.png';
 
@@ -20,6 +20,11 @@ const LoginSignup = () => {
     email: '',
     password: ''
   });
+  const [errors, setErrors] = useState({
+    username: '',
+    email: '',
+    password: ''
+  });
 
 
 /*
@@ -27,35 +32,64 @@ A ...formData spread operátor lemásolja az összes meglévő mezőt és érté
 Az [e.target.name] egy dinamikus kulcs, ami az input mező name attribútumának értékét használja
 Az e.target.value az új érték, amit a felhasználó beírt
 */
-  const handleChange = (e) => { // Ez a függvény kezeli az input mezők változásait
+  const handleChange = (e) => { // Ez a függvény kezeli az input mezk változásait
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value // e.target.name = "email" e.target.value = "test@example.com"
+      [e.target.name]: e.target.value // e.target.name = "email", e.target.value = "test@example.com"
     });
   };
 
-  const handleSubmit = async () => {
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {
+      username: '',
+      email: '',
+      password: ''
+    };
+
+    // Email validáció
     try {
-      if (!formData.email || !formData.password) {
-        alert('Kérlek töltsd ki az összes mezőt!');
-        return;
+      AuthService.validateEmail(formData.email);
+    } catch (error) {
+      newErrors.email = error.message;
+      isValid = false;
+    }
+
+    // Jelszó validáció
+    try {
+      AuthService.validatePassword(formData.password);
+    } catch (error) {
+      newErrors.password = error.message;
+      isValid = false;
+    }
+
+    // Username validáció (csak regisztrációnál)
+    if (action === 'Sign Up') {
+      try {
+        AuthService.validateUsername(formData.username);
+      } catch (error) {
+        newErrors.username = error.message;
+        isValid = false;
       }
-      
-      if (action === 'Sign Up' && !formData.username) {
-        alert('Kérlek add meg a felhasználóneved!');
-        return;
-      }
-      
-      console.log('formData elküldve: ', formData);
-      
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
       if (action === 'Sign Up') {
         const response = await AuthService.register(
           formData.username,
-          formData.email, 
+          formData.email,
           formData.password
         );
         console.log('Sikeres regisztráció!', response);
-        alert('Sikeres regisztráció!');
         navigate('/login');
       } else {
         const response = await AuthService.login(
@@ -70,8 +104,14 @@ Az e.target.value az új érték, amit a felhasználó beírt
       }
     } catch (error) {
       console.error('Hiba történt!', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Hiba történt!';
-      alert(errorMessage);
+      const errorMessage = error.response?.data?.message || error.message;
+      if (errorMessage.includes('email')) {
+        setErrors(prev => ({ ...prev, email: errorMessage }));
+      } else if (errorMessage.includes('jelszó')) {
+        setErrors(prev => ({ ...prev, password: errorMessage }));
+      } else if (errorMessage.includes('felhasználónév')) {
+        setErrors(prev => ({ ...prev, username: errorMessage }));
+      }
     }
   };
 
@@ -83,42 +123,50 @@ Az e.target.value az új érték, amit a felhasználó beírt
       </div>
       <div className='inputs'>
         {action === "Log In" ? <div></div> : 
+          <div class="input-container">
+            <div className='input'>
+              <img src={user_icon} alt='user' />
+              <input
+                type='text'
+                placeholder='Username'
+                name='username'
+                value={formData.username}
+                onChange={handleChange}
+              />
+            </div>
+            {errors.username && <div className="error-message">{errors.username}</div>}
+          </div>
+        }
+        <div class="input-container">
           <div className='input'>
-            <img src={user_icon} alt='user' />
-            <input 
-              type='text' 
-              placeholder='Username'
-              name='username'
-              value={formData.username}
+            <img src={email_icon} alt='email' />
+            <input
+              type='email'
+              placeholder='Email'
+              name='email'
+              value={formData.email}
               onChange={handleChange}
             />
           </div>
-        }
-        <div className='input'>
-          <img src={email_icon} alt='email' />
-          <input 
-            type='email' 
-            placeholder='Email'
-            name='email'
-            value={formData.email}
-            onChange={handleChange}
-          />
+          {errors.email && <div className="error-message">{errors.email}</div>}
         </div>
-        <div className='input'>
-          <img src={password_icon} alt='password' />
-          <input 
-            type={showPassword ? 'text' : 'password'} 
-            placeholder='Password'
-            name='password'
-            value={formData.password}
-            onChange={handleChange}
-          />
-          <img 
-            src={showPassword ? showPwd : hidePwd} 
-            alt={showPassword ? 'hide password' : 'show password'} 
-            className='show-pwd' 
-            onClick={() => setShowPassword(!showPassword)}
-          />
+        <div class="input-container">
+          <div className='input'>
+            <img src={password_icon} alt='password' />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder='Password'
+              name='password'
+              value={formData.password}
+              onChange={handleChange}
+            />
+            <img
+              src={showPassword ? showPwd : hidePwd}
+              alt={showPassword ? 'hide password' : 'show password'}
+              className='show-pwd'
+              onClick={() => setShowPassword(!showPassword)}
+            />
+          </div>
         </div>
       </div>
       {action === "Sign Up" ? <div></div> : 
