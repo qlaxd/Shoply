@@ -8,7 +8,7 @@ class AuthService {
     const hasNumber = /\d/.test(password);
     
     if (password.length < minLength) {
-      alert('A jelszónak legalább 10 karakter hosszúnak kell lennie!');
+      throw new Error('A jelszónak legalább 10 karakter hosszúnak kell lennie!');
     }
     if (!hasUpperCase) {
       throw new Error('A jelszónak tartalmaznia kell legalább egy nagybetűt!');

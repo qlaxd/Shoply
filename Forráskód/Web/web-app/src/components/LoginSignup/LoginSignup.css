@@ -100,7 +100,15 @@
   font-size: 19px;
   font-weight: 700;
   cursor: pointer;
+  border: none;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
   transition: background-color 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
 .submit:hover {
@@ -121,4 +129,81 @@
 
 .show-pwd:hover {
   opacity: 1;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  width: 480px;
+  margin: auto;
+}
+
+.error-message {
+  color: #ff4444;
+  font-size: 14px;
+  margin-top: 5px;
+  padding-left: 10px;
+}
+
+.input {
+  margin: 0;
+}
+
+/* Meglévő .container osztály módosítása */
+.container {
+  width: 90%;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+/* Meglévő .input és .input-container osztályok módosítása */
+.input,
+.input-container {
+  width: 100%;
+  max-width: 480px;
+}
+
+/* Meglévő .input input módosítása */
+.input input {
+  width: calc(100% - 70px);
+}
+
+/* Media query hozzáadása mobil nézethez */
+@media screen and (max-width: 768px) {
+  .container {
+    margin-top: 50px;
+    width: 95%;
+    padding: 15px;
+  }
+
+  .text {
+    font-size: 32px;
+  }
+
+  .submit {
+    width: 100%;
+    max-width: 100%;
+    height: 50px;
+    font-size: 16px;
+  }
+
+  .submit-container {
+    width: 90%;
+    max-width: 480px;
+  }
+
+  .inputs {
+    margin-top: 30px;
+    gap: 15px;
+  }
+
+  .input {
+    height: 50px;
+  }
+
+  .forgot-password {
+    padding-left: 20px;
+    font-size: 16px;
+  }
 }

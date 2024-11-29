@@ -1,5 +1,6 @@
 .home-container {
-    padding: 20px;
+    padding: 10px;
+    width: 95%;
     max-width: 1200px;
     margin: 0 auto;
   }
@@ -20,6 +21,8 @@
     border-radius: 8px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
+    gap: 10px;
   }
   
   .logout-button {
@@ -34,4 +37,19 @@
   
   .logout-button:hover {
     background-color: #0076f5;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .content {
+      padding: 10px;
+    }
+    
+    .navbar {
+      padding: 0.5rem;
+    }
+    
+    .logout-button {
+      width: 100%;
+      margin-top: 10px;
+    }
   }

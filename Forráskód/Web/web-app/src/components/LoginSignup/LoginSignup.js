@@ -32,7 +32,7 @@ A ...formData spread operátor lemásolja az összes meglévő mezőt és érté
 Az [e.target.name] egy dinamikus kulcs, ami az input mező name attribútumának értékét használja
 Az e.target.value az új érték, amit a felhasználó beírt
 */
-  const handleChange = (e) => { // Ez a függvény kezeli az input mezk változásait
+  const handleChange = (e) => { // Ez a függvény kezeli az input mezők változásait, at inputoknál van meghívva
     setFormData({
       ...formData,
       [e.target.name]: e.target.value // e.target.name = "email", e.target.value = "test@example.com"
@@ -41,7 +41,7 @@ Az e.target.value az új érték, amit a felhasználó beírt
 
   const validateForm = () => {
     let isValid = true;
-    const newErrors = {
+    const newErrors = { // üres hibaüzenet objektum
       username: '',
       email: '',
       password: ''
@@ -73,45 +73,56 @@ Az e.target.value az új érték, amit a felhasználó beírt
       }
     }
 
-    setErrors(newErrors);
-    return isValid;
+    setErrors(newErrors); // hibaüzenetek beállítása
+    return isValid; // validáció sikeres volt-e
   };
 
   const handleSubmit = async () => {
+    console.log('Validáció ellenőrzése..., action:', action);
     if (!validateForm()) {
+      console.log('Hibás form, validáció sikertelen!');
       return;
     }
 
     try {
       if (action === 'Sign Up') {
+        console.log('Regisztrációs kérés küldése...');
         const response = await AuthService.register(
           formData.username,
           formData.email,
           formData.password
         );
-        console.log('Sikeres regisztráció!', response);
-        navigate('/login');
-      } else {
+        console.log('Regisztrációs válasz:', response);
+        setAction('Log In'); // lehet navigate('/login') is
+      } else { // amikor az action === 'Log In'
+        console.log('Bejelentkezési kérés küldése...');
         const response = await AuthService.login(
           formData.email,
           formData.password
         );
+        console.log('Bejelentkezési válasz:', response);
+
         if (response && response.token) {
-          localStorage.setItem('token', response.token);
-          console.log('Sikeres bejelentkezés!', response);
-          navigate('/');
+          try {
+            localStorage.setItem('token', response.token); // token mentése a localStorage-be
+            console.log('Token a response-ben:', response.token);
+            console.log('Token a localStorage-ben:', localStorage.getItem('token'));
+            navigate('/', { replace: true }); // replace: true, hogy a bejelentkezés után a back gombbal ne tudjunk visszalépni a login oldalra, nem tárol historyt
+            console.log('Sikeres bejelentkezés!');
+          } catch (storageError) {
+            console.error('Token mentési hiba:', storageError);
+          }
         }
       }
     } catch (error) {
-      console.error('Hiba történt!', error);
+      console.error('Login hiba:', error);
       const errorMessage = error.response?.data?.message || error.message;
-      if (errorMessage.includes('email')) {
-        setErrors(prev => ({ ...prev, email: errorMessage }));
-      } else if (errorMessage.includes('jelszó')) {
-        setErrors(prev => ({ ...prev, password: errorMessage }));
-      } else if (errorMessage.includes('felhasználónév')) {
-        setErrors(prev => ({ ...prev, username: errorMessage }));
-      }
+    setErrors(prev => ({
+      ...prev,
+      email: errorMessage.includes('email') ? errorMessage : '',
+      password: errorMessage.includes('jelszó') ? errorMessage : '',
+      username: errorMessage.includes('felhasználónév') ? errorMessage : ''
+    }));
     }
   };
 
@@ -123,7 +134,7 @@ Az e.target.value az új érték, amit a felhasználó beírt
       </div>
       <div className='inputs'>
         {action === "Log In" ? <div></div> : 
-          <div class="input-container">
+          <div className="input-container">
             <div className='input'>
               <img src={user_icon} alt='user' />
               <input
@@ -137,7 +148,7 @@ Az e.target.value az új érték, amit a felhasználó beírt
             {errors.username && <div className="error-message">{errors.username}</div>}
           </div>
         }
-        <div class="input-container">
+        <div className="input-container">
           <div className='input'>
             <img src={email_icon} alt='email' />
             <input
@@ -150,7 +161,7 @@ Az e.target.value az új érték, amit a felhasználó beírt
           </div>
           {errors.email && <div className="error-message">{errors.email}</div>}
         </div>
-        <div class="input-container">
+        <div className="input-container">
           <div className='input'>
             <img src={password_icon} alt='password' />
             <input
@@ -167,13 +178,16 @@ Az e.target.value az új érték, amit a felhasználó beírt
               onClick={() => setShowPassword(!showPassword)}
             />
           </div>
+          {errors.password && <div className="error-message">{errors.password}</div>}
         </div>
       </div>
       {action === "Sign Up" ? <div></div> : 
         <div className='forgot-password'>Forgot Password? <span>Click Here</span></div>
       }
       <div className='submit-container'>
-        <div 
+        <button 
+          type="button"
+          tabIndex={0}
           className={action === "Sign Up" ? "submit grey" : "submit"} 
           onClick={() => {
             if (action !== "Sign Up") {
@@ -184,8 +198,10 @@ Az e.target.value az új érték, amit a felhasználó beírt
           }}
         >
           Sign Up
-        </div>
-        <div 
+        </button>
+        <button 
+          type="button"
+          tabIndex={0}
           className={action === "Log In" ? "submit grey" : "submit"} 
           onClick={() => {
             if (action !== "Log In") {
@@ -196,7 +212,7 @@ Az e.target.value az új érték, amit a felhasználó beírt
           }}
         >
           Log In
-        </div>
+        </button>
       </div>
     </div>
   );
