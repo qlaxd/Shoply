@@ -35,7 +35,7 @@ A Vásárló Lista egy modern, többplatformos alkalmazás, amely lehetővé tes
 ## Telepítés és Futtatás
 
 ### Előfeltételek
-- Node.js (v14 vagy újabb)
+- Node.js (v14 vagy újabb) node -v 20.18.0-val működik (nodejs-lts-iron) ---> support kell a v23-ra
 - MongoDB (v4.4 vagy újabb)
 - npm vagy yarn
 
