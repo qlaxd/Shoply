@@ -42,14 +42,18 @@ class AuthService {
       this.validateEmail(email);
       this.validatePassword(password);
       console.log('Validálás sikeres!');
+      console.log('Bejelentkezési kérés küldése a backendnek:', `${process.env.REACT_APP_API_URL}/auth/login`, `email: ${email}, password: ${password}`);
       const response = await api.post('/auth/login', { email, password }); // bejelentkezési kérés küldése a backendnek
-      console.log('Bejelentkezési kérés sikeres!');
+      console.log('Bejelentkezési response:', response);
+      console.log('Bejelentkezési response.data:', response.data);
+      console.log('Bejelentkezési response.data.token:', response.data.token);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token); // access token mentése a localStorage-be
         console.log('Token a localStorage-ben:', localStorage.getItem('token'));
       }
       return response.data;
     } catch (error) {
+      console.error('Bejelentkezési hiba:', error);
       throw new Error(error.response?.data?.message || 'Bejelentkezési hiba');
     }
   }
