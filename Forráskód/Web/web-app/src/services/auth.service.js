@@ -41,10 +41,12 @@ class AuthService {
     try {
       this.validateEmail(email);
       this.validatePassword(password);
-
+      console.log('Validálás sikeres!');
       const response = await api.post('/auth/login', { email, password }); // bejelentkezési kérés küldése a backendnek
+      console.log('Bejelentkezési kérés sikeres!');
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token); // token mentése a localStorage-be
+        localStorage.setItem('token', response.data.token); // access token mentése a localStorage-be
+        console.log('Token a localStorage-ben:', localStorage.getItem('token'));
       }
       return response.data;
     } catch (error) {

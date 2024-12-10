@@ -77,6 +77,9 @@ Az e.target.value az új érték, amit a felhasználó beírt
     return isValid; // validáció sikeres volt-e
   };
 
+/* A Log In/Sign Up gomb megnyomásakor a handleSubmit függvény meghívja az
+AuthService megfelelő metódusát (login/register) és átadja neki a formData
+értékeit amit a handleChange függvény kezel */
   const handleSubmit = async () => {
     console.log('Validáció ellenőrzése..., action:', action);
     if (!validateForm()) {

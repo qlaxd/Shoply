@@ -11,7 +11,7 @@ const app = express();
 app.use(cors({
   origin: [
     'http://192.168.64.5:3000',
-    'http://localhost:3000' // ahonnan a frontend kérések jönnek (ahol a web-app fut)
+    'http://localhost:3000', // ahonnan a frontend kérések jönnek (ahol a web-app fut)
   ],
   credentials: true, // engedélyezi a hitelesített kéréseket
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // engedélyezett HTTP metódusok
