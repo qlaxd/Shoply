@@ -13,7 +13,15 @@ A Vásárló Lista egy React-alapú webalkalmazás, amely lehetővé teszi a fel
 - Reszponzív felhasználói felület
 - Védett útvonalak
 - Kijelentkezés funkció
-- Refreshtoken használata a tokenek frissítéséhez (fejlesztés alatt)í
+- Refreshtoken használata a tokenek frissítéséhez (fejlesztés alatt)
+
+## Környezeti Változók Beállítása
+1. Másolja le a `.env.example` fájlt `.env` néven:
+   ```bash
+   cp .env.example .env
+   ```
+2. Módosítsa a `.env` fájl tartalmát a saját környezetének megfelelően:
+   - ```REACT_APP_API_URL=http://localhost:5000/api```
 
 ## Technológiák
 
