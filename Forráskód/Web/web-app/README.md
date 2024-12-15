@@ -16,7 +16,7 @@ A Vásárló Lista egy React-alapú webalkalmazás, amely lehetővé teszi a fel
 - Refreshtoken használata a tokenek frissítéséhez (fejlesztés alatt)
 
 ## Környezeti Változók Beállítása
-1. Másolja le a `.env.example` fájlt `.env` néven:
+1. Másold le vagy nevezd át a `.env.example` fájlt `.env` néven:
    ```bash
    cp .env.example .env
    ```
