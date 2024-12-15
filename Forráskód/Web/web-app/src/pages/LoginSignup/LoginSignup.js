@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
 import './LoginSignup.css';
-import AuthService from '../../services/auth.service.js';
+import AuthService from '../../services/auth.service';
 import { useNavigate } from 'react-router-dom';
 
 // ikonok a login formhoz
-import user_icon from '../assets/user.png';
-import email_icon from '../assets/email.png';
-import password_icon from '../assets/padlock.png';
-import showPwd from '../assets/showPwd.png';
-import hidePwd from '../assets/hidePwd.png';
+import user_icon from '../../assets/user.png';
+import email_icon from '../../assets/email.png';
+import password_icon from '../../assets/padlock.png';
+import showPwd from '../../assets/showPwd.png';
+import hidePwd from '../../assets/hidePwd.png';
 
 
 const LoginSignup = () => { 

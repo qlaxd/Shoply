@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginSignup from './components/LoginSignup/LoginSignup';
-import Home from './components/Home/Home';
+import LoginSignup from './pages/LoginSignup/LoginSignup';
+import Home from './pages/Home/Home';
 
 const PrivateRoute = ({ children }) => { // csak bejelentkezett felhasználóknak engedélyezett
   const token = localStorage.getItem('token');
