@@ -30,9 +30,10 @@ app.use((req, res, next) => {
  */
 
 app.use(cors({
-  origin: [
-    'http://192.168.64.3:3000',
-    'http://localhost:3000', // ahonnan a frontend kérések jönnek (ahol a web-app fut)
+  origin: [ // ahonnan a frontend kérések jönnek (ahol a web-app fut)
+    'http://localhost:3000',
+    'http://192.168.64.6:3000',
+    'http://192.168.64.8:3000'
   ],
   credentials: true, // engedélyezi a hitelesített kéréseket
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // engedélyezett HTTP metódusok

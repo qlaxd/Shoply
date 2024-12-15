@@ -1,7 +1,10 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api' || 'http://192.168.64.3:5000/api'; // backend URL
+console.log(process.env.REACT_APP_API_URL)
+const API_URL = process.env.REACT_APP_API_URL || 'http://192.168.64.6:5000/api'; // backend URL
 
+console.log('API_URL:', API_URL);
+console.log('process.env:', process.env);
 // Axios példány
 const api = axios.create({ 
   baseURL: API_URL,
@@ -9,7 +12,9 @@ const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
-  withCredentials: true
+  withCredentials: true,
+  proxy: false,
+  timeout: 5000
 });
 
 // Request interceptor a token hozzáadásához
@@ -34,7 +39,13 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+// Debug logolás
+api.interceptors.request.use(request => {
+  console.log('Teljes kimenő kérés: ', request);
+  return request;
+});
 
+// Debug logok itt is
 api.interceptors.response.use(
   (response) => {
     console.log('Válasz:', response);
