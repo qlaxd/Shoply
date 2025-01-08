@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 console.log(process.env.REACT_APP_API_URL)
-const API_URL = process.env.REACT_APP_API_URL || 'http://192.168.64.6:5000/api'; // backend URL
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api'; // backend URL
 
 console.log('API_URL:', API_URL);
 console.log('process.env:', process.env);
@@ -57,4 +57,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api; 
+export default api;

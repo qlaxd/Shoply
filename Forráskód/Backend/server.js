@@ -32,12 +32,11 @@ app.use((req, res, next) => {
 app.use(cors({
   origin: [ // ahonnan a frontend kérések jönnek (ahol a web-app fut)
     'http://localhost:3000',
-    'http://192.168.64.6:3000',
-    'http://192.168.64.8:3000'
+    'http://127.0.0.1:3000'
   ],
   credentials: true, // engedélyezi a hitelesített kéréseket
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // engedélyezett HTTP metódusok
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'] // engedélyezett fejlécek
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // engedélyezett HTTP metódusok
+  allowedHeaders: ['Content-Type', 'Authorization'] // engedélyezett fejlécek
 }));
 
 app.use(express.json()); // JSON formátumú kérések feldolgozása
@@ -51,4 +50,4 @@ app.use('/api/auth', authRoutes); // minden authRoutes-ban definiált végpont e
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || 'localhost';
 app.listen(PORT, HOST, () => console.log(`Server running on http://${HOST}:${PORT}`)); 
-
+console.log(process.env.HOST, process.env.PORT);
