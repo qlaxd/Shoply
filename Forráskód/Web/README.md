@@ -40,7 +40,7 @@ A Vásárló Lista egy React-alapú webalkalmazás, amely lehetővé teszi a fel
 
 ## Telepítés és Futtatás
 
-1. Klónozd le a repository-t: ```git clone -b a-branch-amin-dolgozni-akarsz [repo url]```
+1. Klónozd le a repository-t: ```git clone -b a-branch-amin-dolgozni-akarsz [repo url].git```
 2. Lépj bele a könyvtárba ```cd /Vasarlolista/Forráskód/Web/```
 3. Telepítsd a fejlesztői környezetet: ```npm i```
 4. Indítsd el a fejlesztői környezetet: ```npm start```

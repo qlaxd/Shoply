@@ -18,27 +18,55 @@ A Vásárló Lista egy modern, többplatformos alkalmazás, amely lehetővé tes
 - Node.js és Express.js
 - MongoDB adatbázis
 - JWT autentikáció
-- WebSocket valós idejű kommunikációhoz
+- WebSocket valós idejű kommunikációhoz (majd)
 
 ### Frontend
 - React.js
 - React Router a navigációhoz
-- Axios HTTP kérésekhez
+- Axios API a HTTP kérésekhez
 - Modern CSS megoldások
 
 ### Mobil
 - React Native (fejlesztés alatt)
 
 ### Asztali
-- Electron.js (tervezés alatt)
+- WPF
 
 ## Telepítés és Futtatás
 
 ### Előfeltételek
-- Node.js (v14 vagy újabb) node -v 20.18.1-el működik (nodejs-lts-iron) ---> support kell a v23-ra
-- MongoDB v8.0.3
+- Node.js v20.18.1
+- MongoDB v8.0.4
 - npm v10.9.2
 - Mongosh 2.3.3 (mongodb shell)
+
+### Környezeti változók konfigurálása
+#### Backend (.env)
+1. Lépj be a Backend mappába:
+2. Másold ki a .env fájlt a gyökérkönyvtárba és nevezd át `.env` -re --->```cp .env.example .env```
+3. Állítsd be a környezeti változókat
+`MONGO_URI=mongodb://127.0.0.1:27017 (mongodb connectionString)
+JWT_SECRET=your_jwt_secret_key
+PORT=5000
+HOST=localhost`
+
+#### Frontend (.env)
+1. Lépj be a Web mappába:
+2. Másold le a .env.example fájlt .env néven:
+3. Állítsd be a következő változót a .env fájlban: `REACT_APP_API_URL=http://localhost:5000/api` vagy ahol a a backend fut (Backend/server.js)
+
+### MongoDB indítása
+``` bash
+mongod
+```
+- a `mongod.cfg`-ben van a `connectionString` a következő formában:
+```
+# network interfaces
+net:
+  port: 27017
+  bindIp: 127.0.0.1
+```
+ezt ne felejtsd a `.env` fájlba betenni a megfelelő formátumban: `mongodb://127.0.0.1:27017`
 
 ### Backend Indítása
 - ```cd Forráskód/Backend```
