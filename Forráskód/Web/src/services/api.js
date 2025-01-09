@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 console.log(process.env.REACT_APP_API_URL)
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api'; // backend URL
+const API_URL = process.env.REACT_APP_API_URL || `http://${window.location.hostname}:5000/api`; // backend URL
 
 console.log('API_URL:', API_URL);
 console.log('process.env:', process.env);
@@ -14,7 +14,7 @@ const api = axios.create({
   },
   withCredentials: true,
   proxy: false,
-  timeout: 5000
+  timeout: 10000
 });
 
 // Request interceptor a token hozzáadásához
