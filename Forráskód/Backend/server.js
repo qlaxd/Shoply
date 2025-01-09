@@ -9,10 +9,6 @@ dotenv.config(); // .env fájl betöltése, hogy elérhető legyen a process.env
 const app = express();
 
 const isDev = process.env.NODE_ENV === 'development';
-const ALLOWED_ORIGINS = [
-  'http://localhost:3000',
-  `http://${process.env.FRONTEND_IP}:3000`
-];
 
 if (isDev) {
   app.use((req, res, next) => {
@@ -26,20 +22,8 @@ if (isDev) {
   });
 }
 
-/* CORS beállítások:
- * 
- * Csak a frontend alkalmazás domain-jéről fogad el kéréseket
- * Meghatározza az engedélyezett HTTP metódusokat
- * Kezeli a preflight kéréseket
- */
-
-app.use(cors({
-  origin: ALLOWED_ORIGINS,
-  credentials: true, // engedélyezi a hitelesített kéréseket
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // engedélyezett HTTP metódusok
-  allowedHeaders: ['Content-Type', 'Authorization'] // engedélyezett fejlécek
-}));
-
+const corsConfig = require('./config/corsConfig');
+app.use(cors(corsConfig)); // CORS beállítások alkalmazása
 app.use(express.json()); // JSON formátumú kérések feldolgozása
 
 mongoose.connect(process.env.MONGO_URI) // MongoDB kapcsolat létrehozása
