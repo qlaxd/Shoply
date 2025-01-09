@@ -83,6 +83,7 @@ ezt ne felejtsd a `.env` fájlba betenni a megfelelő formátumban: `mongodb://1
 
 ## Dokumentáció
 Részletes dokumentáció az alábbi helyeken található:
+- [Fájlstruktúra Magyarázat](Dokumentáció/Fejlesztői%20napló/fileStructure.md)
 - [Fejlesztői Dokumentáció](Dokumentáció/Fejlesztői%20napló/tervezés.md)
 - [Frontend Dokumentáció](Forráskód/Web/web-app/README.md)
 - [Backend Dokumentáció és Fejlesztési Feladatok](Dokumentáció/Fejlesztői%20napló/development.md)
