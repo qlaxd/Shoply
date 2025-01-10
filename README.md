@@ -90,7 +90,6 @@ Részletes dokumentáció az alábbi helyeken található:
 - [Frontend API Dokumentáció](Dokumentáció/Fejlesztői%20napló/api/frontend-api.md)
 - [Felhasználó központú Tervezési Dokumentáció](Dokumentáció/Fejlesztői%20napló/felhasznalo-kozpontu-tervezes.md)
 
-
 ## Fejlesztés Alatt
 - 📱 Mobil alkalmazás React Native-ben
 - 🖥️ Asztali alkalmazás Electron.js-ben
