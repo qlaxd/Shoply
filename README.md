@@ -30,7 +30,7 @@ A Vásárló Lista egy modern, többplatformos alkalmazás, amely lehetővé tes
 - React Native (fejlesztés alatt)
 
 ### Asztali
-- WPF
+- WPF - MVVM Architektúra
 
 ## Telepítés és Futtatás
 
@@ -94,7 +94,7 @@ Részletes dokumentáció az alábbi helyeken található:
 
 ## Fejlesztés Alatt
 - 📱 Mobil alkalmazás React Native-ben
-- 🖥️ Asztali alkalmazás Electron.js-ben
+- 🖥️ Asztali alkalmazás WPF-ben MVVM architechtúrával
 - 🛜 Web alkalmazás további része
 - 🔄 Offline mód támogatás
 - 📊 Statisztikák és elemzések
