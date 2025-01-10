@@ -1,11 +1,11 @@
 ﻿using ShoppingListAdmin.Desktop.ViewModels;
 using ShoppingListAdmin.Desktop.ViewModels.ControlPanel;
 using ShoppingListAdmin.Desktop.ViewModels.Login;
-using ShoppingListAdmin.Desktop.ViewModels.SchoolCitizens;
+using ShoppingListAdmin.Desktop.ViewModels.Users;
 using ShoppingListAdmin.Desktop.Views;
 using ShoppingListAdmin.Desktop.Views.ControlPanel;
 using ShoppingListAdmin.Desktop.Views.Login;
-using ShoppingListAdmin.Desktop.Views.SchoolCitizens;
+using ShoppingListAdmin.Desktop.Views.Users;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace KretaDesktop.Extensions
@@ -34,19 +34,18 @@ namespace KretaDesktop.Extensions
             {
                 DataContext = s.GetRequiredService<ControlPanelViewModel>()
             });
-            // School Citizens
-            services.AddSingleton<SchoolCitizensViewModel>();
-            services.AddSingleton<SchoolCitizensView>(s => new SchoolCitizensView()
+            // Users
+            services.AddSingleton<UsersViewModel>();
+            services.AddSingleton<UsersView>(s => new UsersView()
             {
-                DataContext = s.GetRequiredService<SchoolCitizensViewModel>()
+                DataContext = s.GetRequiredService<UsersViewModel>()
             });
 
-            // Students
-            // School Citizens
-            services.AddSingleton<StudentViewModel>();
-            services.AddSingleton<StudentView>(s => new StudentView()
+            // Products
+            services.AddSingleton<ProductViewModel>();
+            services.AddSingleton<ProductView>(s => new ProductView()
             {
-                DataContext = s.GetRequiredService<StudentViewModel>()
+                DataContext = s.GetRequiredService<ProductViewModel>()
             });
 
         }

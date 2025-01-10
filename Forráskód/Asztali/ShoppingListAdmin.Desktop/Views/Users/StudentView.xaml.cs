@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ShoppingListAdmin.Desktop.Views.SchoolSubjects
+namespace ShoppingListAdmin.Desktop.Views.Users
 {
     /// <summary>
-    /// Interaction logic for SchoolSubjectsView.xaml
+    /// Interaction logic for ProductView.xaml
     /// </summary>
-    public partial class SchoolSubjectsView : UserControl
+    public partial class ProductView : UserControl
     {
-        public SchoolSubjectsView()
+        public ProductView()
         {
             InitializeComponent();
         }

@@ -2,16 +2,16 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controlPanelViewModels="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.ControlPanel"
                     xmlns:controlPanelView="clr-namespace:ShoppingListAdmin.Desktop.Views.ControlPanel"
-                    xmlns:schoolCitizensViewModels="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.SchoolCitizens"
-                    xmlns:schoolCitizensView="clr-namespace:ShoppingListAdmin.Desktop.Views.SchoolCitizens"
+                    xmlns:usersViewModels="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.Users"
+                    xmlns:usersView="clr-namespace:ShoppingListAdmin.Desktop.Views.Users"
                     >
     <DataTemplate DataType="{x:Type controlPanelViewModels:ControlPanelViewModel}">
         <controlPanelView:ControlPanelView/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type schoolCitizensViewModels:SchoolCitizensViewModel}">
-        <schoolCitizensView:SchoolCitizensView/>
+    <DataTemplate DataType="{x:Type usersViewModels:UsersViewModel}">
+        <usersView:UsersView/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type schoolCitizensViewModels:StudentViewModel}">
-        <schoolCitizensView:StudentView/>
+    <DataTemplate DataType="{x:Type usersViewModels:ProductViewModel}">
+        <usersView:ProductView/>
     </DataTemplate>
 </ResourceDictionary>

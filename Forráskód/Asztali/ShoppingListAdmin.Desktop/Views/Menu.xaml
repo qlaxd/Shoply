@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views"
+             xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views.ControlPanel"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="250">
@@ -16,56 +16,61 @@
                     <GradientStop Color="{StaticResource backgroundPrimaryColor1}" Offset="0.7"/>
                 </LinearGradientBrush>
             </Border.Background>
-            <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Vertical" Margin="0 10 0 20">
-                    <Border Width="80" 
-                            Height="80" 
-                            Padding="1" 
-                            Margin="0 10 0 10" 
-                            >
-                        <Ellipse Height="80" Width="80"
-                            Stroke="{StaticResource colorDarkGreen}"                            
-                            StrokeThickness="2"                                 
-                            Margin="-1,-1,-1,-1">
+            
+            <StackPanel>
+                <!-- Logo és profil rész -->
+                <StackPanel Orientation="Vertical" Margin="0,10,0,20">
+                    <Border Width="80" Height="80" Padding="1" Margin="0,10,0,10">
+                        <Ellipse Height="80" Width="80" 
+                                Stroke="{StaticResource colorDarkGreen}"
+                                StrokeThickness="2">
                             <Ellipse.Fill>
-                                <ImageBrush ImageSource="/Images/profil.jpg"/>
+                                <ImageBrush ImageSource="/Images/user-icon.png"/>
                             </Ellipse.Fill>
                         </Ellipse>
                     </Border>
-                    <!--Menu Buttons-->
-                    <RadioButton 
-                        Style="{StaticResource menuButton}"
-                        Tag="{StaticResource colorGreen}"                                 
-                        IsChecked="True"
-                        Command="{Binding ShowDashbordCommand}"
-                        >
-                        <StackPanel Orientation="Horizontal">
-                            <fa:IconImage Icon="SolarPanel" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Vezérőpul" Style="{StaticResource menuButtonText}"/>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton
-                        Style="{StaticResource menuButton}"
-                        Tag="{StaticResource colorMidleGreen}"
-                        Command="{Binding ShowSchoolCitizensCommand}"                    
-                     >
-                        <StackPanel Orientation="Horizontal">
-                            <fa:IconImage Icon="UserGroup" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Iskolapolgárok" Style="{StaticResource menuButtonText}"/>
-                        </StackPanel>
-                    </RadioButton>
+                </StackPanel>
+
+                <!-- Menügombok -->
+                <StackPanel Margin="0,30,0,0">
                     <RadioButton Style="{StaticResource menuButton}"
-                             Tag="{StaticResource colorMidleGreen}">
+                                Tag="{StaticResource colorMidleGreen}"
+                                Command="{Binding ShowUsersCommand}">
                         <StackPanel Orientation="Horizontal">
-                            <fa:IconImage Icon="ChalkboardUser" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Osztályok" Style="{StaticResource menuButtonText}"/>
+                            <fa:IconImage Icon="Users" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Felhasználók" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
                     </RadioButton>
+
                     <RadioButton Style="{StaticResource menuButton}"
-                             Tag="{StaticResource colorMidleGreen}">
+                                Tag="{StaticResource colorMidleGreen}">
                         <StackPanel Orientation="Horizontal">
-                            <fa:IconImage Icon="GraduationCap" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Tantárgyak" Style="{StaticResource menuButtonText}"/>
+                            <fa:IconImage Icon="ListCheck" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Listák" Style="{StaticResource menuButtonText}"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton Style="{StaticResource menuButton}"
+                                Tag="{StaticResource colorMidleGreen}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:IconImage Icon="Box" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Termékek" Style="{StaticResource menuButtonText}"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton Style="{StaticResource menuButton}"
+                                Tag="{StaticResource colorMidleGreen}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:IconImage Icon="ChartLine" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Statisztikák" Style="{StaticResource menuButtonText}"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton Style="{StaticResource menuButton}"
+                                Tag="{StaticResource colorMidleGreen}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:IconImage Icon="Gear" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Beállítások" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
                     </RadioButton>
                 </StackPanel>

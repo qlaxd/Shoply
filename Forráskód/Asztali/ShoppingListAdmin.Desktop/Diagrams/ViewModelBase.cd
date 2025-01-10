@@ -14,11 +14,11 @@
       <FileName>ViewModels\MainViewModel.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ShoppingListAdmin.Desktop.ViewModels.SchoolCitizens.SchoolCitizensViewModel" Collapsed="true">
+  <Class Name="ShoppingListAdmin.Desktop.ViewModels.Users.UsersViewModel" Collapsed="true">
     <Position X="7.25" Y="0.75" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ViewModels\SchoolCitizens\SchoolCitizensViewModel.cs</FileName>
+      <FileName>ViewModels\Users\UsersViewModel.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ShoppingListAdmin.Desktop.ViewModels.Login.LoginViewModel">

@@ -43,7 +43,7 @@ ShoppingSync - Közös Bevásárlólista Alkalmazás
 
 ## 2. A rendszer használói és feladataik
 
-### Felhasználói szerepkörök:
+### Felhasználói szerepkörök
 
 1. Alap felhasználó
    - Saját listák létrehozása

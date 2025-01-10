@@ -4,11 +4,51 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.ControlPanel"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              d:DataContext="{d:DesignInstance Type=viewModels:ControlPanelViewModel, IsDesignTimeCreatable=True}"
              xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views.ControlPanel"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <Label>Vezérlőpúlt</Label>
-    </Grid>
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/UIColors.xaml"/>
+                <ResourceDictionary Source="/Styles/MenuButtons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border CornerRadius="0,10,10,0">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0.7">
+                <GradientStop Color="{StaticResource backgroundPrimaryColor1}" Offset="0"/>
+                <GradientStop Color="{StaticResource backgroundPrimaryColor2}" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.Background>
+
+        <StackPanel>
+            <!-- Menügombok -->
+            <StackPanel Margin="15,30">
+                <RadioButton Style="{StaticResource menuButton}"
+                            Tag="{StaticResource colorMidleGreen}"
+                            Command="{Binding ShowUsersCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:IconImage Icon="Users" Style="{StaticResource menuButtonIcon}"/>
+                        <TextBlock Text="Felhasználók" Style="{StaticResource menuButtonText}"/>
+                    </StackPanel>
+                </RadioButton>
+
+                <RadioButton Style="{StaticResource menuButton}"
+                            Tag="{StaticResource colorMidleGreen}">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:IconImage Icon="List" Style="{StaticResource menuButtonIcon}"/>
+                        <TextBlock Text="Listák" Style="{StaticResource menuButtonText}"/>
+                    </StackPanel>
+                </RadioButton>
+
+                <!-- További menügombok hasonló módon -->
+            </StackPanel>
+        </StackPanel>
+    </Border>
 </UserControl>
