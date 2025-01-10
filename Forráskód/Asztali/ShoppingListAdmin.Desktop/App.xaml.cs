@@ -1,12 +1,12 @@
-﻿using KretaBasicSchoolSystem.Desktop.Views;
-using KretaBasicSchoolSystem.Desktop.Views.Login;
+﻿using ShoppingListAdmin.Desktop.Views;
+using ShoppingListAdmin.Desktop.Views.Login;
 using KretaDesktop.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Windows;
 
-namespace KretaBasicSchoolSystem.Desktop
+namespace ShoppingListAdmin.Desktop
 {
     /// <summary>
     /// Interaction logic for App.xaml

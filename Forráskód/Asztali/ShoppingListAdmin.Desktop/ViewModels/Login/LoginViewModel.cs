@@ -1,12 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using KretaBasicSchoolSystem.Desktop.Repositories;
+using ShoppingListAdmin.Desktop.Repositories;
 using System.Net;
 using System.Security;
 using System.Security.Principal;
 using System.Threading;
 
-namespace KretaBasicSchoolSystem.Desktop.ViewModels.Login
+namespace ShoppingListAdmin.Desktop.ViewModels.Login
 {
     partial class LoginViewModel : ObservableObject
     {

@@ -1,8 +1,8 @@
-﻿using KretaBasicSchoolSystem.Desktop.Models;
+﻿using ShoppingListAdmin.Desktop.Models;
 using System;
 using System.Net;
 
-namespace KretaBasicSchoolSystem.Desktop.Repositories
+namespace ShoppingListAdmin.Desktop.Repositories
 {
     public class UserRepository
     {

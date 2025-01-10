@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace KretaBasicSchoolSystem.Desktop.Views.SchoolClasses
+namespace ShoppingListAdmin.Desktop.Views.SchoolClasses
 {
     /// <summary>
     /// Interaction logic for SchoolClassesView.xaml

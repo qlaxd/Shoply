@@ -1,7 +1,9 @@
 # Frontend API Dokumentáció - Autentikáció
+
 Ez a dokumentáció tartalmazza a frontend autentikációs API használatának minden fontos részletét, beleértve a példakódokat és biztonsági megfontolásokat is.
 
 ## Áttekintés
+
 A frontend alkalmazás az AuthService osztályon keresztül kommunikál a backend szerverrel. Az autentikációs kérések az `api.js` által létrehozott Axios példányon keresztül történnek.
 
 ## Alap URL
@@ -13,16 +15,19 @@ A backend szerver URL-je: `http://localhost:5000/api/auth`
 ## AuthService Metódusok
 
 ### Bejelentkezés
+
 ```javascript
 async login(email: string, password: string)
 ```
 
 **Kérés:**
+
 - Metódus: `POST`
 - Végpont: `/auth/login`
 - Content-Type: `application/json`
 
 **Request body:**
+
 ```json
 {
   "email": "string",
@@ -31,6 +36,7 @@ async login(email: string, password: string)
 ```
 
 **Sikeres válasz (200):**
+
 ```json
 {
   "token": "string",
@@ -39,6 +45,7 @@ async login(email: string, password: string)
 ```
 
 **Használat példa:**
+
 ```javascript
 try {
   const response = await AuthService.login('user@example.com', 'password123');
@@ -49,16 +56,19 @@ try {
 ```
 
 ### Regisztráció
+
 ```javascript
 async register(username: string, email: string, password: string)
 ```
 
 **Kérés:**
+
 - Metódus: `POST`
 - Végpont: `/auth/register`
 - Content-Type: `application/json`
 
 **Request body:**
+
 ```json
 {
   "username": "string",
@@ -68,6 +78,7 @@ async register(username: string, email: string, password: string)
 ```
 
 **Sikeres válasz (201):**
+
 ```json
 {
   "message": "Sikeres regisztráció!"
@@ -75,6 +86,7 @@ async register(username: string, email: string, password: string)
 ```
 
 **Használat példa:**
+
 ```javascript
 try {
   await AuthService.register('username', 'user@example.com', 'password123');
@@ -85,15 +97,18 @@ try {
 ```
 
 ### Kijelentkezés
+
 ```javascript
 logout()
 ```
 
 **Művelet:**
+
 - Törli a JWT tokent a localStorage-ból
 - Átirányít a bejelentkezési oldalra
 
 **Használat példa:**
+
 ```javascript
 AuthService.logout();
 navigate('/login');
@@ -124,6 +139,7 @@ Az AuthService a következő hibákat kezeli:
 - Szerver hiba (500)
 
 **Hibaüzenet formátum:**
+
 ```json
 {
   "message": "string"
@@ -133,6 +149,7 @@ Az AuthService a következő hibákat kezeli:
 ## Kapcsolódó Komponensek
 
 ### LoginSignup Komponens
+
 A komponens kezeli a bejelentkezési és regisztrációs űrlapot:
 
 ```javascript:Forráskód/Web/web-app/src/components/LoginSignup/LoginSignup.js
@@ -141,6 +158,7 @@ endLine: 65
 ```
 
 ### PrivateRoute Komponens
+
 Védett útvonalak kezelése:
 
 ```javascript:Forráskód/Web/web-app/src/App.js
@@ -154,4 +172,3 @@ endLine: 9
 2. Érdemes megfontolni a HttpOnly cookie használatát
 3. A jelszavak soha nem kerülnek naplózásra
 4. Minden API kérés HTTPS-en keresztül történik
-```

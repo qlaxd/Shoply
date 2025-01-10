@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace KretaBasicSchoolSystem.Desktop.Views
+namespace ShoppingListAdmin.Desktop.Views
 {
     /// <summary>
     /// Interaction logic for UserOptionControl.xaml

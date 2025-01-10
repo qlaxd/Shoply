@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FontAwesome.Sharp;
-using KretaBasicSchoolSystem.Desktop.ViewModels.Base;
-using KretaBasicSchoolSystem.Desktop.ViewModels.ControlPanel;
-using KretaBasicSchoolSystem.Desktop.ViewModels.SchoolCitizens;
+using ShoppingListAdmin.Desktop.ViewModels.Base;
+using ShoppingListAdmin.Desktop.ViewModels.ControlPanel;
+using ShoppingListAdmin.Desktop.ViewModels.SchoolCitizens;
 
-namespace KretaBasicSchoolSystem.Desktop.ViewModels
+namespace ShoppingListAdmin.Desktop.ViewModels
 {
     public partial class MainViewModel : BaseViewModel
     {

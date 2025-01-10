@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
 
 
-namespace KretaBasicSchoolSystem.Desktop.Views
+namespace ShoppingListAdmin.Desktop.Views
 {
     /// <summary>
     /// Interaction logic for MenuButtons.xaml

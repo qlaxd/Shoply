@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KretaBasicSchoolSystem.Desktop.Models
+namespace ShoppingListAdmin.Desktop.Models
 {
     public class User
     {

@@ -1,6 +1,6 @@
-﻿using KretaBasicSchoolSystem.Desktop.ViewModels.Base;
+﻿using ShoppingListAdmin.Desktop.ViewModels.Base;
 
-namespace KretaBasicSchoolSystem.Desktop.ViewModels.ControlPanel
+namespace ShoppingListAdmin.Desktop.ViewModels.ControlPanel
 {
     public class ControlPanelViewModel: BaseViewModel
     {

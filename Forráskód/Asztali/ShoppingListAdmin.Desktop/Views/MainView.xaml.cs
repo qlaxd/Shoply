@@ -5,7 +5,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 
 
-namespace KretaBasicSchoolSystem.Desktop.Views
+namespace ShoppingListAdmin.Desktop.Views
 {
     /// <summary>
     /// Interaction logic for MainView.xaml
