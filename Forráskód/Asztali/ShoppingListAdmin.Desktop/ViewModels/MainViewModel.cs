@@ -4,6 +4,9 @@ using FontAwesome.Sharp;
 using ShoppingListAdmin.Desktop.ViewModels.Base;
 using ShoppingListAdmin.Desktop.ViewModels.ControlPanel;
 using ShoppingListAdmin.Desktop.ViewModels.Users;
+using ShoppingListAdmin.Desktop.ViewModels.Lists;
+using ShoppingListAdmin.Desktop.ViewModels.Statistics;
+using ShoppingListAdmin.Desktop.ViewModels.Settings;
 
 namespace ShoppingListAdmin.Desktop.ViewModels
 {
@@ -11,6 +14,10 @@ namespace ShoppingListAdmin.Desktop.ViewModels
     {
         private ControlPanelViewModel _controlPanelViewModel;
         private UsersViewModel _usersViewModel;
+        private readonly ListsViewModel _listsViewModel;
+        private readonly ProductViewModel _productViewModel;
+        private readonly StatisticsViewModel _statisticsViewModel;
+        private readonly SettingsViewModel _settingsViewModel;
 
         public MainViewModel()
         {
@@ -20,12 +27,18 @@ namespace ShoppingListAdmin.Desktop.ViewModels
 
         public MainViewModel(
             ControlPanelViewModel controlPanelViewModel,
-            UsersViewModel usersViewModel 
-            )
+            UsersViewModel usersViewModel,
+            ListsViewModel listsViewModel,
+            ProductViewModel productViewModel,
+            StatisticsViewModel statisticsViewModel,
+            SettingsViewModel settingsViewModel)
         {
             _controlPanelViewModel = controlPanelViewModel;
             _usersViewModel = usersViewModel;
-
+            _listsViewModel = listsViewModel;
+            _productViewModel = productViewModel;
+            _statisticsViewModel = statisticsViewModel;
+            _settingsViewModel = settingsViewModel;
 
             CurrentChildView = _controlPanelViewModel;
             ShowDashboard();
@@ -56,36 +69,36 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             CurrentChildView = _usersViewModel;
         }
 
-        // [RelayCommand]
-        // public void ShowLists()
-        // {
-        //     Caption = "Listák";
-        //     Icon = IconChar.List;
-        //     CurrentChildView = _listsViewModel;
-        // }
+        [RelayCommand]
+        public void ShowLists()
+        {
+            Caption = "Listák";
+            Icon = IconChar.List;
+            CurrentChildView = _listsViewModel;
+        }
 
-        // [RelayCommand]
-        // public void ShowProducts()
-        // {
-        //     Caption = "Termékek";
-        //     Icon = IconChar.Box;
-        //     CurrentChildView = _productsViewModel;
-        // }
+        [RelayCommand]
+        public void ShowProducts()
+        {
+            Caption = "Termékek";
+            Icon = IconChar.Box;
+            CurrentChildView = _productViewModel;
+        }
 
-        // [RelayCommand]
-        // public void ShowStatistics()
-        // {
-        //     Caption = "Statisztikák";
-        //     Icon = IconChar.ChartBar;
-        //     CurrentChildView = _statisticsViewModel;
-        // }
+        [RelayCommand]
+        public void ShowStatistics()
+        {
+            Caption = "Statisztikák";
+            Icon = IconChar.ChartBar;
+            CurrentChildView = _statisticsViewModel;
+        }
 
-        // [RelayCommand]
-        // public void ShowSettings()
-        // {
-        //     Caption = "Beállítások";
-        //     Icon = IconChar.Cogs;
-        //     CurrentChildView = _settingsViewModel;
-        // }
+        [RelayCommand]
+        public void ShowSettings()
+        {
+            Caption = "Beállítások";
+            Icon = IconChar.Gear;
+            CurrentChildView = _settingsViewModel;
+        }
     }
 }

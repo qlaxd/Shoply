@@ -7,6 +7,12 @@ using ShoppingListAdmin.Desktop.Views.ControlPanel;
 using ShoppingListAdmin.Desktop.Views.Login;
 using ShoppingListAdmin.Desktop.Views.Users;
 using Microsoft.Extensions.DependencyInjection;
+using ShoppingListAdmin.Desktop.ViewModels.Lists;
+using ShoppingListAdmin.Desktop.Views.Lists;
+using ShoppingListAdmin.Desktop.ViewModels.Statistics;
+using ShoppingListAdmin.Desktop.Views.Statistics;
+using ShoppingListAdmin.Desktop.ViewModels.Settings;
+using ShoppingListAdmin.Desktop.Views.Settings;
 
 namespace KretaDesktop.Extensions
 {
@@ -48,6 +54,26 @@ namespace KretaDesktop.Extensions
                 DataContext = s.GetRequiredService<ProductViewModel>()
             });
 
+            // Lists
+            services.AddSingleton<ListsViewModel>();
+            services.AddSingleton<ListsView>(s => new ListsView()
+            {
+                DataContext = s.GetRequiredService<ListsViewModel>()
+            });
+
+            // Statistics
+            services.AddSingleton<StatisticsViewModel>();
+            services.AddSingleton<StatisticsView>(s => new StatisticsView()
+            {
+                DataContext = s.GetRequiredService<StatisticsViewModel>()
+            });
+
+            // Settings
+            services.AddSingleton<SettingsViewModel>();
+            services.AddSingleton<SettingsView>(s => new SettingsView()
+            {
+                DataContext = s.GetRequiredService<SettingsViewModel>()
+            });
         }
     }
 }

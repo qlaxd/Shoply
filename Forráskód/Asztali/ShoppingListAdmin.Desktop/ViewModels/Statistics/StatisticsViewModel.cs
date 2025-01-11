@@ -2,7 +2,11 @@
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Statistics
 {
-    class StatisticsViewModel : BaseViewModel
+    public class StatisticsViewModel : BaseViewModel
     {
+        public StatisticsViewModel()
+        {
+            
+        }
     }
 }

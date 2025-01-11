@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Views\NewFolder\**" />
-    <EmbeddedResource Remove="Views\NewFolder\**" />
-    <None Remove="Views\NewFolder\**" />
-    <Page Remove="Views\NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Images\back-image.jpg" />
     <None Remove="Images\key-icon.png" />
     <None Remove="Images\kreta.png" />
@@ -43,6 +36,10 @@
     <Resource Include="Images\profil.jpg" />
     <Resource Include="Images\profile.png" />
     <Resource Include="Images\user-icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Settings\" />
   </ItemGroup>
 
 </Project>

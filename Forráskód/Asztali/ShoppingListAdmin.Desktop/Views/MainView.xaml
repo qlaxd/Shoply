@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views"
-        xmlns:viewModels="clr-namespace:ShoppingListAdmin.Desktop.ViewModels"
-        d:DataContext="{d:DesignInstance Type=viewModels:MainViewModel, IsDesignTimeCreatable=True}"
+        xmlns:viewModel="clr-namespace:ShoppingListAdmin.Desktop.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel, IsDesignTimeCreatable=True}"
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         mc:Ignorable="d"
         Title="ADMIN" Height="700" Width="1300"
@@ -13,6 +13,10 @@
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True">
+    
+    <Window.DataContext>
+        <viewModel:MainViewModel/>
+    </Window.DataContext>
     <!-- Full page -->
     <Border CornerRadius="10" BorderThickness="2">
         <Border.BorderBrush>

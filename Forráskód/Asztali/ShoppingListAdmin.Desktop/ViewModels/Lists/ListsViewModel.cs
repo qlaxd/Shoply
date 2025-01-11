@@ -2,7 +2,11 @@
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Lists
 {
-    class ListsViewModel : BaseViewModel
+    public class ListsViewModel : BaseViewModel
     {
+        public ListsViewModel()
+        {
+            
+        }
     }
 }
