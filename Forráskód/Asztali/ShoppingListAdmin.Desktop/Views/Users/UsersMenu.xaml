@@ -15,23 +15,17 @@
                 HorizontalAlignment="Left"
                 Width="150"
                 Margin="32 0 0 0"
-                Content="Tanárok"
+                Content="Felhasználók"
+                Command="{Binding ShowUserViewCommand}"
             />
             <Button 
                 Style="{StaticResource subMenuButton}"
                 HorizontalAlignment="Left"
                 Width="150"
                 Margin="12 0 0 0"
-                Content="Diákok"
-                Command="{Binding ShowProductViewCommand}"
+                Content="Adminisztrátorok"
+                Command=""
             />
-            <Button 
-                Style="{StaticResource subMenuButton}"           
-                HorizontalAlignment="Left"
-                Width="150"
-                Margin="12 0 0 0"
-                Content="Szülők"
-             />
         </StackPanel>
     </Border>
 </UserControl>
