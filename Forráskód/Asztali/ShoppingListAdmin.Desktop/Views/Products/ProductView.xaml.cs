@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ShoppingListAdmin.Desktop.Views.Users
+namespace ShoppingListAdmin.Desktop.Views.Products
 {
     /// <summary>
     /// Interaction logic for ProductView.xaml

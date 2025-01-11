@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShoppingListAdmin.Desktop.ViewModels.Base;
+using ShoppingListAdmin.Desktop.ViewModels.Products;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Users
 {

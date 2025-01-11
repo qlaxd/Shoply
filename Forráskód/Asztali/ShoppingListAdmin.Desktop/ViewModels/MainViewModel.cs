@@ -7,6 +7,7 @@ using ShoppingListAdmin.Desktop.ViewModels.Users;
 using ShoppingListAdmin.Desktop.ViewModels.Lists;
 using ShoppingListAdmin.Desktop.ViewModels.Statistics;
 using ShoppingListAdmin.Desktop.ViewModels.Settings;
+using ShoppingListAdmin.Desktop.ViewModels.Products;
 
 namespace ShoppingListAdmin.Desktop.ViewModels
 {
