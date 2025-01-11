@@ -36,6 +36,14 @@
             <StackPanel Margin="15,30">
                 <RadioButton Style="{StaticResource menuButton}"
                             Tag="{StaticResource colorMidleGreen}"
+                            Command="{Binding ShowDashboardCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:IconImage Icon="ChartSimple" Style="{StaticResource menuButtonIcon}"/>
+                        <TextBlock Text="Vezérlőpult" Style="{StaticResource menuButtonText}"/>
+                    </StackPanel>
+                </RadioButton>
+                <RadioButton Style="{StaticResource menuButton}"
+                            Tag="{StaticResource colorMidleGreen}"
                             Command="{Binding ShowUsersCommand}">
                     <StackPanel Orientation="Horizontal">
                         <fa:IconImage Icon="Users" Style="{StaticResource menuButtonIcon}"/>
