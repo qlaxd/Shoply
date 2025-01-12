@@ -43,6 +43,16 @@ namespace ShoppingListAdmin.Desktop.ViewModels
 ```
 
 ### 2. Commandok létrehozása
+##### A `MainViewModel`-ben a következő módosításokat kellett elvégezni, hogy a felhasználók és adminisztrátorok nézetek közötti váltás működjön:
+
+1. **ViewModel-ek példányosítása**:
+    - A `UsersViewModel` és `AdminsViewModel` példányainak létrehozása és tárolása a `MainViewModel`-ben.
+
+2. **CurrentViewModel property hozzáadása**:
+    - Egy `CurrentViewModel` vagy `CurrentChildView` (a kódban CurrentChildView) property hozzáadása, amely az aktuálisan megjelenített nézetet tárolja.
+
+3. **RelayCommand-ok létrehozása**:
+    - `ShowUsersCommand` és `ShowAdminsCommand` parancsok létrehozása, amelyek a megfelelő nézetek megjelenítéséért felelősek.
 
 **MainViewModel.cs**:
 ```cs
@@ -60,6 +70,9 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             _usersViewModel = usersViewModel;
             _adminsViewModel = adminsViewModel;
         }
+
+        [ObservableProperty]
+        private ObservableObject _currentViewModel;
 
         [RelayCommand]
         public void ShowUsers()
@@ -132,4 +145,31 @@ namespace ShoppingListAdmin.Desktop.ViewModels
 </UserControl>
 ```
 
+### 5. **MainView.xaml** módosítása
+```xaml
+<Window x:Class="ShoppingListAdmin.Desktop.Views.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views"
+        xmlns:viewModel="clr-namespace:ShoppingListAdmin.Desktop.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel, IsDesignTimeCreatable=True}"
+        mc:Ignorable="d"
+        Title="ADMIN" Height="700" Width="1300"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None">
+    <Window.DataContext>
+        <viewModel:MainViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <local:UsersMenu Grid.Column="0"/>
+        <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}"/>
+    </Grid>
+</Window>
+```
 Ne feledd nyugodtan használhatod a `Discord`-ra a `Resources` channelre beküldött `ZIP` fájlt ihletnek.
