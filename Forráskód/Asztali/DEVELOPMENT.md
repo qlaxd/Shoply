@@ -1,13 +1,13 @@
 # Olvasd el a README.md-t is
 
 1. **ViewModel létrehozása**:
-   - Hozz létre egy UsersViewModel és egy `AdminsViewModel` osztályt a ViewModels mappában.
+   - Hozz létre egy `UsersViewModel` és egy `AdminsViewModel` osztályt a ViewModels mappában.
 
 2. **Commandok létrehozása**:
-   - Hozz létre RelayCommand-okat a UsersViewModel és `AdminsViewModel` osztályokban a nézetek közötti váltáshoz.
+   - Hozz létre `RelayCommand`-okat a `UsersViewModel` és `AdminsViewModel` osztályokban a nézetek közötti váltáshoz.
 
 3. **Nézetek létrehozása**:
-   - Hozz létre UsersView.xaml és `AdminsView.xaml` fájlokat a Views mappában.
+   - Hozz létre `UsersView.xaml` és `AdminsView.xaml` fájlokat a Views mappában.
 
 4. **Commandok bekötése**:
    - Kösd be a `ShowUsersCommand` és `ShowAdminsCommand` parancsokat a gombokhoz a UsersMenu.xaml fájlban.
@@ -28,19 +28,61 @@ namespace ShoppingListAdmin.Desktop.ViewModels
 }
 ```
 
-**AdminsViewModel.cs**:
+
+**AdminsViewModel.cs** példa:
 ```cs
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace ShoppingListAdmin.Desktop.ViewModels
 {
     public partial class AdminsViewModel : ObservableObject
     {
-        // Adminisztrátorok listája és egyéb logika
+        // Adminisztrátorok listája
+        [ObservableProperty]
+        private ObservableCollection<Admin> _admins;
+
+        // Konstruktor
+        public AdminsViewModel()
+        {
+            _admins = new ObservableCollection<Admin>();
+        }
+
+        // Parancs az adminisztrátorok betöltésére
+        [RelayCommand]
+        public async Task LoadAdminsAsync()
+        {
+            // Itt töltheted be az adminisztrátorok listáját, például egy adatbázisból vagy API-ból
+            var admins = await AdminService.GetAdminsAsync();
+            Admins.Clear();
+            foreach (var admin in admins)
+            {
+                Admins.Add(admin);
+            }
+        }
+    }
+
+    // Admin osztály példa
+    public class Admin
+    {
+        public string Id { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
     }
 }
 ```
+
+
+1. **ObservableProperty**:
+   - Az ObservableProperty attribútumot használjuk az `Admins` tulajdonság létrehozásához. Ez automatikusan létrehozza a `get` és `set` metódusokat, valamint az értesítési logikát, amikor a tulajdonság értéke megváltozik.
+
+2. **Konstruktor**:
+   - A konstruktorban inicializáljuk az `Admins` listát egy üres `ObservableCollection<Admin>` példánnyal.
+
+3. **RelayCommand**:
+   - A `LoadAdminsAsync` parancs egy aszinkron metódus, amely betölti az adminisztrátorok listáját. A parancs végrehajtásakor az `AdminService.GetAdminsAsync` metódust hívjuk meg, amely visszaadja az adminisztrátorok listáját. Ezután töröljük az aktuális listát, és hozzáadjuk az új adminisztrátorokat.
 
 ### 2. Commandok létrehozása
 ##### A `MainViewModel`-ben a következő módosításokat kellett elvégezni, hogy a felhasználók és adminisztrátorok nézetek közötti váltás működjön:
@@ -128,6 +170,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
 ### 4. Commandok bekötése
 
 **UsersMenu.xaml**:
+- A UsersMenu egy UserControl, amely a felhasználói felület egy részét képezi, és gombokat tartalmaz a különböző nézetek közötti váltáshoz. Ebben az esetben a UsersMenu gombokat tartalmaz a felhasználók és adminisztrátorok nézetek megjelenítéséhez.
 ```xaml
 <UserControl x:Class="ShoppingListAdmin.Desktop.Views.Users.UsersMenu"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -146,6 +189,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
 ```
 
 ### 5. **MainView.xaml** módosítása
+- Ez a a fő ablak XAML fájlja, amely tartalmazza a teljes alkalmazás felhasználói felületének elrendezését. Ez az ablak tartalmazza a navigációs menüt és a tartalom megjelenítésére szolgáló területet.
 ```xaml
 <Window x:Class="ShoppingListAdmin.Desktop.Views.MainView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -172,4 +216,14 @@ namespace ShoppingListAdmin.Desktop.ViewModels
     </Grid>
 </Window>
 ```
+- Window: A MainView egy Window, amely az alkalmazás fő ablakát definiálja.
+
+- DataContext: A Window.DataContext a MainViewModel-hez van kötve, amely az ablak adatforrása.
+
+- Grid Layout: A Grid két oszlopot tartalmaz: az első oszlop a navigációs menü számára, a második oszlop pedig a tartalom megjelenítésére szolgál.
+
+- UsersMenu: Az első oszlopban található a UsersMenu UserControl, amely a felhasználók és adminisztrátorok nézetek közötti váltáshoz szükséges gombokat tartalmazza.
+
+- ContentControl: A második oszlopban található a ContentControl, amely a CurrentChildView property-hez van kötve. Ez a property határozza meg, hogy melyik nézet jelenik meg az ablak tartalmi részében.
+
 Ne feledd nyugodtan használhatod a `Discord`-ra a `Resources` channelre beküldött `ZIP` fájlt ihletnek.
