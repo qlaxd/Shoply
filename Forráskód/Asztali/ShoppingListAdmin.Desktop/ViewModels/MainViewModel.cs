@@ -15,6 +15,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
     {
         private ControlPanelViewModel _controlPanelViewModel;
         private UsersViewModel _usersViewModel;
+        private AdminsViewModel _adminsViewModel;
         private readonly ListsViewModel _listsViewModel;
         private readonly ProductViewModel _productViewModel;
         private readonly StatisticsViewModel _statisticsViewModel;
@@ -24,6 +25,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
         {
             _controlPanelViewModel = new ControlPanelViewModel();
             _usersViewModel = new UsersViewModel();
+            _adminsViewModel = new AdminsViewModel();
         }
 
         public MainViewModel(
@@ -32,7 +34,8 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             ListsViewModel listsViewModel,
             ProductViewModel productViewModel,
             StatisticsViewModel statisticsViewModel,
-            SettingsViewModel settingsViewModel)
+            SettingsViewModel settingsViewModel,
+            AdminsViewModel adminViewModel)
         {
             _controlPanelViewModel = controlPanelViewModel;
             _usersViewModel = usersViewModel;
@@ -40,6 +43,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             _productViewModel = productViewModel;
             _statisticsViewModel = statisticsViewModel;
             _settingsViewModel = settingsViewModel;
+            _adminsViewModel = adminViewModel;
 
             CurrentChildView = _controlPanelViewModel;
             ShowDashboard();
@@ -100,6 +104,17 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             Caption = "Beállítások";
             Icon = IconChar.Gear;
             CurrentChildView = _settingsViewModel;
+        }
+
+
+
+        [ObservableProperty]
+        private ObservableObject _currentViewModel;
+
+        [RelayCommand]
+        public void ShowAdmins()
+        {
+           
         }
     }
 }
