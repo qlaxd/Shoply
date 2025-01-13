@@ -17,6 +17,42 @@
         <local:UsersMenu Grid.Row="0"></local:UsersMenu>
         <ContentControl Grid.Row="1" Content="{Binding CurrentUsersChildView }"></ContentControl>
 
-        
+        <!-- Felhasználók menü -->
+        <local:UsersMenu Grid.Row="0"></local:UsersMenu>
+
+        <!-- Szűrő panel -->
+        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="1">
+            <TextBox x:Name="FilterUserName" Width="150" Margin="5" VerticalAlignment="Center"/>
+            <ComboBox x:Name="UserRoleComboBox" Width="150" Margin="5" VerticalAlignment="Center">
+                <ComboBoxItem Content="Admin" />
+                <ComboBoxItem Content="Felhasználó" />
+            </ComboBox>
+            <Button Content="Szűrés" Width="75" Height="30" Margin="5" VerticalAlignment="Center" Click="FilterButton_Click"/>
+        </StackPanel>
+
+        <!-- DataGrid a felhasználók listázására -->
+        <DataGrid x:Name="UsersDataGrid" AutoGenerateColumns="False" Margin="10,50,10,10" 
+                  CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" Grid.Row="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>
+                <DataGridTextColumn Header="Felhasználónév" Binding="{Binding UserName}" Width="*"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
+                <DataGridTextColumn Header="Jelszó hash" Binding="{Binding PasswordHash}" Width="*"/>
+                <DataGridTemplateColumn Header="Műveletek" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Content="Törlés" Width="50" Margin="5" Click="DeleteUser_Click"/>
+                                <Button Content="Módosítás" Width="70" Margin="5" Click="EditUser_Click"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+
+
+
     </Grid>
 </UserControl>
