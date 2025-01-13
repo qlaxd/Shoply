@@ -227,3 +227,208 @@ namespace ShoppingListAdmin.Desktop.ViewModels
 - ContentControl: A második oszlopban található a ContentControl, amely a CurrentChildView property-hez van kötve. Ez a property határozza meg, hogy melyik nézet jelenik meg az ablak tartalmi részében.
 
 Ne feledd nyugodtan használhatod a `Discord`-ra a `Resources` channelre beküldött `ZIP` fájlt ihletnek.
+
+# Adatok lekérése a Backendről Api-val és ezek megjelenítése
+
+### Először is, szükség lesz egy HTTP kliensre, amely kommunikál a MERN backenddel. (HttpClient osztály)
+
+### 1. **Services/HttpClient.cs vagy ApiService.cs**
+```cs
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+
+namespace ShoppingListAdmin.Desktop.Services
+{
+    public class ApiService
+    {
+        private readonly HttpClient _httpClient;
+
+        public ApiService()
+        {
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("http://your-backend-url.com/api/")
+            };
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
+        public async Task<HttpResponseMessage> GetAsync(string endpoint)
+        {
+            return await _httpClient.GetAsync(endpoint);
+        }
+
+        public async Task<HttpResponseMessage> PostAsync<T>(string endpoint, T data)
+        {
+            return await _httpClient.PostAsJsonAsync(endpoint, data);
+        }
+
+        public async Task<HttpResponseMessage> PutAsync<T>(string endpoint, T data)
+        {
+            return await _httpClient.PutAsJsonAsync(endpoint, data);
+        }
+
+        public async Task<HttpResponseMessage> DeleteAsync(string endpoint)
+        {
+            return await _httpClient.DeleteAsync(endpoint);
+        }
+    }
+}
+```
+
+### 2. ViewModel-ek frissítése
+ - A `ViewModel`-ekben használhatod az `ApiService`-t (vagy `httpClient`-t attól függ mi a neve) az adatok lekérésére és kezelésére.
+
+ **ViewModels/UsersViewModel.cs**
+ ```cs
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using ShoppingListAdmin.Desktop.Services;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+
+namespace ShoppingListAdmin.Desktop.ViewModels
+{
+    public partial class UsersViewModel : ObservableObject
+    {
+        private readonly ApiService _apiService;
+
+        [ObservableProperty]
+        private ObservableCollection<User> _users;
+
+        public UsersViewModel()
+        {
+            _apiService = new ApiService();
+            _users = new ObservableCollection<User>();
+            LoadUsersCommand = new RelayCommand(async () => await LoadUsersAsync());
+        }
+
+        public IRelayCommand LoadUsersCommand { get; }
+
+        private async Task LoadUsersAsync()
+        {
+            var response = await _apiService.GetAsync("users");
+            if (response.IsSuccessStatusCode)
+            {
+                var users = await response.Content.ReadAsAsync<IEnumerable<User>>();
+                Users.Clear();
+                foreach (var user in users)
+                {
+                    Users.Add(user);
+                }
+            }
+        }
+    }
+}
+ ```
+
+ ### 3. Model létrehozása
+  Hozz létre egy modellt, amely megfelel a backend által visszaadott adatoknak (a backendet is módosítani kell, mert hiányzik a PasswordHash a válaszból ha jól emlékszek)
+
+**Models/User.cs**
+```cs
+namespace ShoppingListAdmin.Desktop.Models
+{
+    public class User
+    {
+        public string Id { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string PasswordHash { get; set; }
+    }
+}
+```
+
+### 4. View frissítése
+
+Frissítsd a nézetet, hogy megjelenítse a felhasználók listáját.
+
+**Views/UsersView.xaml**:
+```xaml
+<UserControl x:Class="ShoppingListAdmin.Desktop.Views.Users.UsersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.Users"
+             d:DataContext="{d:DesignInstance Type=viewModels:UsersViewModel, IsDesignTimeCreatable=True}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Users}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>
+                <DataGridTextColumn Header="Felhasználónév" Binding="{Binding Username}" Width="*"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
+                <DataGridTextColumn Header="Jelszó hash" Binding="{Binding PasswordHash}" Width="*"/>
+                <DataGridTemplateColumn Header="Műveletek" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Módosítás" Command="{Binding DataContext.EditUserCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                <Button Content="Törlés" Command="{Binding DataContext.DeleteUserCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
+```
+
+### 5. Dependency Injection beállítása
+
+Győződj meg róla, hogy az `ApiService` és a ViewModel-ek megfelelően vannak regisztrálva a Dependency Injection konténerben.
+
+**App.xaml.cs**:
+```cs
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using ShoppingListAdmin.Desktop.Services;
+using ShoppingListAdmin.Desktop.ViewModels;
+
+namespace ShoppingListAdmin.Desktop
+{
+    public partial class App : Application
+    {
+        private readonly IHost _host;
+
+        public App()
+        {
+            _host = Host.CreateDefaultBuilder()
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddSingleton<ApiService>();
+                    services.AddSingleton<UsersViewModel>();
+                    // További ViewModel-ek regisztrálása
+                })
+                .Build();
+        }
+
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            await _host.StartAsync();
+            var mainWindow = _host.Services.GetRequiredService<MainWindow>();
+            mainWindow.Show();
+            base.OnStartup(e);
+        }
+
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            await _host.StopAsync();
+            base.OnExit(e);
+        }
+    }
+}
+```
+
+### Összefoglalás
+
+1. **HTTP kliens beállítása**: Az `ApiService` osztály segítségével kommunikálhatsz a MERN backenddel.
+2. **ViewModel-ek frissítése**: A ViewModel-ekben használhatod az `ApiService`-t az adatok lekérésére és kezelésére.
+3. **Model létrehozása**: Hozz létre egy modellt, amely megfelel a backend által visszaadott adatoknak.
+4. **View frissítése**: Frissítsd a nézetet, hogy megjelenítse a felhasználók listáját.
+5. **Dependency Injection beállítása**: Győződj meg róla, hogy az `ApiService` és a ViewModel-ek megfelelően vannak regisztrálva a Dependency Injection konténerben.
