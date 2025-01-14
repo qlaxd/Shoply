@@ -26,7 +26,7 @@
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>
                 <DataGridTextColumn Header="Felhasználónév" Binding="{Binding UserName}" Width="*"/>
                 <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
-                <DataGridTextColumn Header="Jelszó hash" Binding="{Binding PasswordHash}" Width="*"/>
+                <DataGridTextColumn Header="JELSZÓ" Binding="{Binding PasswordHash}" Width="*"/>
                 <DataGridTemplateColumn Header="Műveletek" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

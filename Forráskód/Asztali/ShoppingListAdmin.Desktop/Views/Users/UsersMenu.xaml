@@ -16,7 +16,7 @@
                 Width="150"
                 Margin="32 0 0 0"
                 Content="Felhasználók"
-                Command="{Binding ShowUserViewCommand}"
+                Command="{Binding ShowUsersCommand}"
             />
             <Button 
                 Style="{StaticResource subMenuButton}"
@@ -24,7 +24,7 @@
                 Width="150"
                 Margin="12 0 0 0"
                 Content="Adminisztrátorok"
-                Command="{Binding ShowAdminViewCommand}"
+                Command="{Binding ShowAdminsCommand}"
             />
         </StackPanel>
     </Border>

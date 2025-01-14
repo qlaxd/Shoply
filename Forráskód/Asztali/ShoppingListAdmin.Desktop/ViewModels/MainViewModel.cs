@@ -13,9 +13,9 @@ namespace ShoppingListAdmin.Desktop.ViewModels
 {
     public partial class MainViewModel : BaseViewModel
     {
-        private ControlPanelViewModel _controlPanelViewModel;
-        private UsersViewModel _usersViewModel;
-        private AdminsViewModel _adminsViewModel;
+        private readonly ControlPanelViewModel _controlPanelViewModel;
+        private readonly UsersViewModel _usersViewModel;
+        private readonly AdminsViewModel _adminsViewModel;
         private readonly ListsViewModel _listsViewModel;
         private readonly ProductViewModel _productViewModel;
         private readonly StatisticsViewModel _statisticsViewModel;
@@ -105,11 +105,6 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             Icon = IconChar.Gear;
             CurrentChildView = _settingsViewModel;
         }
-
-
-
-        [ObservableProperty]
-        private ObservableObject _currentViewModel;
 
         [RelayCommand]
         public void ShowAdmins()
