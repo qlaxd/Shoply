@@ -15,6 +15,7 @@ using ShoppingListAdmin.Desktop.ViewModels.Settings;
 using ShoppingListAdmin.Desktop.Views.Settings;
 using ShoppingListAdmin.Desktop.ViewModels.Products;
 using ShoppingListAdmin.Desktop.Views.Products;
+using ShoppingListAdmin.Desktop.Views.Admins;
 
 namespace KretaDesktop.Extensions
 {
@@ -75,6 +76,13 @@ namespace KretaDesktop.Extensions
             services.AddSingleton<SettingsView>(s => new SettingsView()
             {
                 DataContext = s.GetRequiredService<SettingsViewModel>()
+            });
+
+            // Admins
+            services.AddSingleton<AdminsViewModel>();
+            services.AddSingleton<AdminsView>(s => new AdminsView()
+            {
+                DataContext = s.GetRequiredService<AdminsViewModel>()
             });
         }
     }

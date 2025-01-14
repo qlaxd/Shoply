@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ShoppingListAdmin.Desktop.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Users
 {
-    public partial class AdminsViewModel : ObservableObject
+    public partial class AdminsViewModel : BaseViewModel
     {
         // Adminisztrátorok listája
         [ObservableProperty]

@@ -35,7 +35,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             ProductViewModel productViewModel,
             StatisticsViewModel statisticsViewModel,
             SettingsViewModel settingsViewModel,
-            AdminsViewModel adminViewModel)
+            AdminsViewModel adminsViewModel)
         {
             _controlPanelViewModel = controlPanelViewModel;
             _usersViewModel = usersViewModel;
@@ -43,7 +43,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             _productViewModel = productViewModel;
             _statisticsViewModel = statisticsViewModel;
             _settingsViewModel = settingsViewModel;
-            _adminsViewModel = adminViewModel;
+            _adminsViewModel = adminsViewModel;
 
             CurrentChildView = _controlPanelViewModel;
             ShowDashboard();
@@ -114,7 +114,9 @@ namespace ShoppingListAdmin.Desktop.ViewModels
         [RelayCommand]
         public void ShowAdmins()
         {
-           
+            Caption = "Adminisztrátorok";
+            Icon = IconChar.UserShield;
+            CurrentChildView = _adminsViewModel;
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Windows;
+using ShoppingListAdmin.Desktop.ViewModels.Users;
 
 namespace ShoppingListAdmin.Desktop
 {
@@ -22,6 +23,7 @@ namespace ShoppingListAdmin.Desktop
                 .ConfigureServices(services =>
                 {
                     services.ConfigureViewViewModels();
+                    services.AddSingleton<AdminsViewModel>();
                 })
                 .Build();
 
