@@ -24,5 +24,21 @@ namespace ShoppingListAdmin.Desktop.Views.Admins
         {
             InitializeComponent();
         }
+
+        private void DeleteAdmin_Click(object sender, RoutedEventArgs e)
+        {
+            // Add new admin
+
+        }
+
+        private void EditAdmin_Click(object sender, RoutedEventArgs e)
+        {
+            // Edit admin
+        }
+
+        private void FilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Filter admins
+        }
     }
 }

@@ -24,5 +24,21 @@ namespace ShoppingListAdmin.Desktop.Views.Users
         {
             InitializeComponent();
         }
+
+        private void DeleteUser_Click(object sender, RoutedEventArgs e)
+        {
+            // Add new user
+            
+        }
+
+        private void EditUser_Click(object sender, RoutedEventArgs e)
+        {
+            // Edit user
+        }
+
+        private void FilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Filter users
+        }
     }
 }
