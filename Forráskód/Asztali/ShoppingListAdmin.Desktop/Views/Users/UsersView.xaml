@@ -8,15 +8,14 @@
              xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views.Users"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+             
     <Grid>
-        
         <Grid.RowDefinitions>
             <RowDefinition Height="35"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <local:UsersMenu Grid.Row="0"></local:UsersMenu>
         <ContentControl Grid.Row="1" Content="{Binding CurrentUsersChildView }"></ContentControl>
-
+        <ContentControl Grid.Row="1" Content="{Binding CurrentUsersChildView}"></ContentControl>
         <!-- Felhasználók menü -->
         <local:UsersMenu Grid.Row="0"></local:UsersMenu>
 
@@ -50,9 +49,5 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-
-
-
-
     </Grid>
 </UserControl>

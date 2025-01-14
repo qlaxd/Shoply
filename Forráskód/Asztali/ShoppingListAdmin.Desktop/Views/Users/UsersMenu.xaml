@@ -24,7 +24,7 @@
                 Width="150"
                 Margin="12 0 0 0"
                 Content="Adminisztrátorok"
-                Command=""
+                Command="{Binding ShowAdminViewCommand}"
             />
         </StackPanel>
     </Border>
