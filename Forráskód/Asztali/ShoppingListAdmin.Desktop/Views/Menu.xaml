@@ -44,6 +44,7 @@
 
                     <RadioButton Style="{StaticResource menuButton}"
                                 Tag="{StaticResource colorMidleGreen}">
+                                
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="ListCheck" Style="{StaticResource menuButtonIcon}"/>
                             <TextBlock Text="Listák" Style="{StaticResource menuButtonText}"/>
