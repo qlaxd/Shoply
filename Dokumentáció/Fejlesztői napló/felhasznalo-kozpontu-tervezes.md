@@ -1,19 +1,23 @@
 # Bevásárlólista Alkalmazás - Részletes Tervezési Dokumentáció
 
 ## Projekt témája
+
 A projekt célja egy többplatformos, valós idejű szinkronizációval működő közös bevásárlólista alkalmazás létrehozása. Az alkalmazás lehetővé teszi a felhasználók számára listák létrehozását, megosztását és közös kezelését különböző eszközökön keresztül.
 
 ## Esettanulmány
+
 A modern háztartásokban gyakori probléma, hogy a családtagok nem tudják hatékonyan koordinálni a bevásárlásokat. Többször előfordul, hogy ugyanazt a terméket többen is megveszik, vagy éppen senki sem veszi meg, mert mindenki azt hiszi, hogy a másik már beszerezte. A kommunikáció hiánya jelentős idő- és pénzveszteséget okoz a háztartásoknak.
 
 Az alkalmazásunk célja ennek a problémának a megoldása egy olyan platformmal, ami lehetővé teszi a valós idejű lista-szinkronizációt és együttműködést a háztartás tagjai között.
 
 ## Projektben kifejlesztett szoftverrendszer elnevezése
+
 ShoppingSync - Közös Bevásárlólista Alkalmazás
 
 ## 1. Összefüggések és a szoftver képességei
 
 ### Web Alkalmazás
+
 - Felhasználói regisztráció és bejelentkezés
 - Listák létrehozása és kezelése
 - Valós idejű szinkronizáció
@@ -23,6 +27,7 @@ ShoppingSync - Közös Bevásárlólista Alkalmazás
 - Statisztikák megtekintése
 
 ### Mobil Alkalmazás
+
 - Offline működés szinkronizációval
 - Push értesítések új elemekről
 - Vonalkód szkenner a termékek hozzáadásához
@@ -30,6 +35,7 @@ ShoppingSync - Közös Bevásárlólista Alkalmazás
 - Valós idejű frissítések
 
 ### Desktop Alkalmazás
+
 - Teljes funkcionalitás a web verzióval megegyezően
 - Gyorsbillentyűk támogatása
 - Offline működés
@@ -37,7 +43,8 @@ ShoppingSync - Közös Bevásárlólista Alkalmazás
 
 ## 2. A rendszer használói és feladataik
 
-### Felhasználói szerepkörök:
+### Felhasználói szerepkörök
+
 1. Alap felhasználó
    - Saját listák létrehozása
    - Termékek hozzáadása/törlése
@@ -94,6 +101,7 @@ ShoppingSync - Legyen egyszerű a bevásárlás!
 ## 5. Műszaki Specifikáció
 
 ### Backend
+
 - Node.js alapú szerver
 - WebSocket/Socket.io valós idejű kommunikáció
 - MongoDB adatbázis
@@ -101,6 +109,7 @@ ShoppingSync - Legyen egyszerű a bevásárlás!
 - JWT alapú autentikáció
 
 ### Frontend
+
 - React.js webalkalmazás
 - React Native mobil alkalmazás
 - Electron desktop alkalmazás
@@ -108,6 +117,7 @@ ShoppingSync - Legyen egyszerű a bevásárlás!
 - Redux állapotkezelés
 
 ### Biztonság
+
 - HTTPS protokoll
 - Titkosított jelszótárolás (bcrypt)
 - CSRF védelem
@@ -115,6 +125,7 @@ ShoppingSync - Legyen egyszerű a bevásárlás!
 - Input validáció
 
 ### Deployment
+
 - Docker konténerizáció
 - CI/CD pipeline
 - Automatikus backup
