@@ -27,6 +27,10 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             _usersViewModel = new UsersViewModel();
             _adminsViewModel = new AdminsViewModel();
             _listsViewModel = new ListsViewModel();
+            _productViewModel = new ProductViewModel();
+            _statisticsViewModel = new StatisticsViewModel();
+            _settingsViewModel = new SettingsViewModel();
+            _currentChildView = _controlPanelViewModel;
         }
 
         public MainViewModel(
