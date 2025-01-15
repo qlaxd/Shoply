@@ -18,6 +18,8 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
         [ObservableProperty]
         private string _filter;
 
+
+
         // A szűrési logika
         private void ApplyFilter()
         {
