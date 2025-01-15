@@ -12,7 +12,7 @@
             <RowDefinition Height="35"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <ContentControl Grid.Row="1" Content="{Binding CurrentChildView }"></ContentControl>
+        <ContentControl Grid.Row="1" Content="{Binding CurrentChildView }"></ContentControl> // Ezt még meg kell nézni
         <ContentControl Grid.Row="1" Content="{Binding CurrentChildView}"></ContentControl>
     </Grid>
 </UserControl>

@@ -5,8 +5,10 @@
                     xmlns:usersViewModels="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.Users"
                     xmlns:usersView="clr-namespace:ShoppingListAdmin.Desktop.Views.Users"
                     xmlns:productsViewModels="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.Products"
-                    xmlns:producsViews="clr-namespace:ShoppingListAdmin.Desktop.Views.Products">
-                    
+                    xmlns:producsViews="clr-namespace:ShoppingListAdmin.Desktop.Views.Products"
+                    xmlns:adminsViewModels="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.Users"
+                    xmlns:adminsViews="clr-namespace:ShoppingListAdmin.Desktop.Views.Admins">
+
     <DataTemplate DataType="{x:Type controlPanelViewModels:ControlPanelViewModel}">
         <controlPanelView:ControlPanelView/>
     </DataTemplate>
@@ -16,4 +18,8 @@
     <DataTemplate DataType="{x:Type productsViewModels:ProductViewModel}">
         <producsViews:ProductView/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type adminsViewModels:AdminsViewModel}">
+        <adminsViews:AdminsView/>
+    </DataTemplate>
+    
 </ResourceDictionary>

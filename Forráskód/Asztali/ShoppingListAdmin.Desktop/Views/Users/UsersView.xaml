@@ -14,8 +14,7 @@
             <RowDefinition Height="35"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <ContentControl Grid.Row="1" Content="{Binding CurrentUsersChildView }"></ContentControl>
-        <ContentControl Grid.Row="1" Content="{Binding CurrentUsersChildView}"></ContentControl>
+        
         <!-- Felhasználók menü -->
         <local:UsersMenu Grid.Row="0"></local:UsersMenu>
 
