@@ -21,7 +21,12 @@ exports.register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10); // jelszó hashelése
-    const newUser = new User({ username, email, password: hashedPassword }); 
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+      role: 'user'
+    }); 
     await newUser.save(); // user mentése a MongoDB-be
     console.log(newUser);
     res.status(201).json({ message: 'Sikeres regisztráció!' }); 
