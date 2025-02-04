@@ -48,11 +48,13 @@ api.interceptors.request.use(request => {
 // Debug logok itt is
 api.interceptors.response.use(
   (response) => {
-    console.log('Válasz:', response);
     return response;
   },
   (error) => {
-    console.error('Response hiba:', error.response || error);
+    if (error.response?.status === 401) {  // token lejártakor kijelentkezés
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
     return Promise.reject(error);
   }
 );
