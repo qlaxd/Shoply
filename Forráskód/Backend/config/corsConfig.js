@@ -5,7 +5,7 @@
  * Kezeli a preflight kéréseket
  */
 const ALLOWED_ORIGINS = [
-    'http://localhost:3000',
+    'http://localhost:3000', // TODO: Ezt majd módosítani kell
     `http://${process.env.FRONTEND_IP}:3000`
 ];
 
