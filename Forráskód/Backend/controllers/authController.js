@@ -55,7 +55,8 @@ exports.login = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {  // 1 órás token generálás
+    // A token tartalmazza a user id-ját és a role-ját
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {  // 1 órás access token generálás
       expiresIn: '1h' 
     });
     res.json({ token, message: 'Sikeres bejelentkezés!' }); // token küldése a kliensnek

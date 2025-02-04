@@ -7,15 +7,18 @@ const jwt = require('jsonwebtoken');
  * If the token is missing or invalid, it responds with an appropriate error message.
  */
 const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization');
-  if (!token) return res.status(401).json({ message: 'Access denied. No token provided.' });
+  const token = req.header('Authorization')?.split(' ')[1]; // Bejövő token eltávolítása a 'Bearer' prefixről
+  if (!token) {
+    return res.status(401).json({ message: 'Access denied. No token provided.' });
+  }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);  // .env fájl: hosszú random string
-    req.user = decoded;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // .env fájl: hosszú random string
+    req.user = decoded; 
+    // decoded tartalmazza a user id-ját és a role-ját a payloadban (2. rész a tokenben)
     next();
-  } catch (ex) {
-    res.status(400).json({ message: 'Invalid token.' });
+  } catch (error) {
+    return res.status(400).json({ message: 'Invalid token.' });
   }
 };
 

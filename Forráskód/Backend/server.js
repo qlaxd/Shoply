@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const cors = require('cors');
 
 dotenv.config(); // .env fájl betöltése, hogy elérhető legyen a process.env objektumon keresztül
@@ -34,6 +35,7 @@ mongoose.connect(process.env.MONGO_URI) // MongoDB kapcsolat létrehozása
   });
 
 app.use('/api/auth', authRoutes); // minden authRoutes-ban definiált végpont elé odakerül az /api/auth prefix
+app.use('/api/admin', adminRoutes); // minden adminRoutes-ban definiált végpont elé odakerül az /api/admin prefix
 
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
