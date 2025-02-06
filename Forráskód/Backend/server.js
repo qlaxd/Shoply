@@ -1,9 +1,9 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const cors = require('cors');
+const connectDB = require('./config/db'); // Importáljuk a connectDB függvényt
 
 dotenv.config(); // .env fájl betöltése, hogy elérhető legyen a process.env objektumon keresztül
 
@@ -27,12 +27,7 @@ const corsConfig = require('./config/corsConfig');
 app.use(cors(corsConfig)); // CORS beállítások alkalmazása
 app.use(express.json()); // JSON formátumú kérések feldolgozása
 
-mongoose.connect(process.env.MONGO_URI) // MongoDB kapcsolat létrehozása
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1); // Kilépés hiba esetén
-  });
+connectDB(); // MongoDB kapcsolat létrehozása
 
 app.use('/api/auth', authRoutes); // minden authRoutes-ban definiált végpont elé odakerül az /api/auth prefix
 app.use('/api/admin', adminRoutes); // minden adminRoutes-ban definiált végpont elé odakerül az /api/admin prefix
