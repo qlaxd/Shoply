@@ -29,7 +29,7 @@
         </StackPanel>
 
         <!-- DataGrid a felhasználók listázására -->
-        <DataGrid x:Name="UsersDataGrid" AutoGenerateColumns="False" 
+        <DataGrid x:Name="UsersDataGrid" ItemsSource="{Binding Users}" AutoGenerateColumns="False" 
                   CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" Grid.Row="1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>

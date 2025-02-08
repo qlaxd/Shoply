@@ -5,12 +5,17 @@ using ShoppingListAdmin.Desktop.ViewModels.Products;
 using ShoppingListAdmin.Desktop.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+
 
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Users
 {
     public partial class UsersViewModel : BaseViewModel
     {
+
+       
+
         // Felhasználók listája
         public ObservableCollection<UserModel> Users { get; set; }
 
