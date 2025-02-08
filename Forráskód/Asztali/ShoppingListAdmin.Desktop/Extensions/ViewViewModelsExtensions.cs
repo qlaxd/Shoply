@@ -23,6 +23,10 @@ namespace KretaDesktop.Extensions
     {
         public static void ConfigureViewViewModels(this IServiceCollection services)
         {
+            services.AddSingleton<ApiService>();
+            services.AddSingleton<LoginViewModel>();
+            services.AddSingleton<LoginView>();
+
             // MainView
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<MainView>(s => new MainView()

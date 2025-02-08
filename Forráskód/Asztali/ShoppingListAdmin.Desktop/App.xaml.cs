@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Windows;
-using ShoppingListAdmin.Desktop.ViewModels.Users;
+using ShoppingListAdmin.Desktop.ViewModels.Login;
 
 namespace ShoppingListAdmin.Desktop
 {
@@ -14,61 +14,44 @@ namespace ShoppingListAdmin.Desktop
     /// </summary>
     public partial class App : Application
     {
-        private bool _loginPage = false;
-        private IHost host;
+        private readonly IHost _host;
 
         public App()
         {
-            host = Host.CreateDefaultBuilder()
+            _host = Host.CreateDefaultBuilder()
                 .ConfigureServices(services =>
                 {
+                    services.AddSingleton<ApiService>();
+                    services.AddSingleton<LoginViewModel>();
+                    services.AddSingleton<LoginView>();
                     services.ConfigureViewViewModels();
-                    services.AddSingleton<AdminsViewModel>();
                 })
                 .Build();
-
         }
 
-        protected async override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
-            await host.StartAsync();
-            try
+            await _host.StartAsync();
+
+            var loginView = _host.Services.GetRequiredService<LoginView>();
+            loginView.Show();
+
+            loginView.IsVisibleChanged += (s, ev) =>
             {
-                if (_loginPage)
+                if (loginView.IsVisible == false && loginView.IsLoaded)
                 {
-                    var loginView = host.Services.GetRequiredService<LoginView>();
-                    loginView.Show();
-                    loginView.IsVisibleChanged += (s, ev) =>
-                    {
-                        if (loginView.IsVisible == false && loginView.IsLoaded)
-                        {
-                            var mainView = host.Services.GetRequiredService<MainView>();
-                            mainView.Show();
-                            
-                            try
-                            {
-                                loginView.Close();
-                            }
-                            catch  { }
-                            
-                        }
-                    };
-                }
-                else
-                {
-                    var mainView = host.Services.GetRequiredService<MainView>();
+                    var mainView = _host.Services.GetRequiredService<MainView>();
                     mainView.Show();
-                } 
-            }
-            catch (Exception)
-            {
-            }
+                    loginView.IsVisibleChanged -= (s, ev) =>
+                    loginView.Close();
+                }
+            };
         }
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            await host.StopAsync();
-            host.Dispose();
+            await _host.StopAsync();
+            _host.Dispose();
             base.OnExit(e);
         }
 

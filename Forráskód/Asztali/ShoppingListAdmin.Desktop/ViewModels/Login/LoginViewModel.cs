@@ -1,55 +1,85 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ShoppingListAdmin.Desktop.Repositories;
-using System.Net;
+using System.Threading.Tasks;
+using System;
 using System.Security;
-using System.Security.Principal;
-using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Login
 {
-    partial class LoginViewModel : ObservableObject
+    public partial class LoginViewModel : ObservableObject
     {
-        private UserRepository _userRepository=new();
+        private readonly ApiService _apiService;
+
+        public LoginViewModel(ApiService apiService)
+        {
+            _apiService = apiService;
+        }
 
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
-        private string _username=string.Empty;
+        private string _email = string.Empty;
 
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
-        private SecureString _password=new SecureString();
+        private SecureString _password;
 
         [ObservableProperty]
-        private string _errorMessage=string.Empty;
+        private string _errorMessage = string.Empty;
+
         [ObservableProperty]
         private bool _isViewVisible = true;
 
-        [RelayCommand(CanExecute = nameof(IsUsernameAndPasswordValid))]
-        private void Login()
+        private string ConvertSecureStringToString(SecureString secureString)
         {
-            var isValidUser = _userRepository.AuthenticateUser(new NetworkCredential(Username, Password));
-
-            if (isValidUser)
+            IntPtr unmanagedString = IntPtr.Zero;
+            try
             {
-                Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(Username), null);
-                IsViewVisible = false;
+                unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(secureString);
+                return Marshal.PtrToStringUni(unmanagedString);
             }
-            else
+            finally
             {
-                ErrorMessage = "* Invalid username or password";
+                Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
             }
         }
 
-        private bool IsUsernameAndPasswordValid()
+        [RelayCommand]
+        private async Task LoginAsync()
         {
-            bool validData;
-            if (string.IsNullOrWhiteSpace(Username) || Username.Length < 3 ||
-                Password == null || Password.Length < 3)
-                validData = false;
-            else
-                validData = true;
-            return validData;
+            try
+            {
+                Console.WriteLine($"Login attempt with Email: {Email}");
+                
+                if (string.IsNullOrEmpty(Email) || Password == null || Password.Length == 0)
+                {
+                    ErrorMessage = "Email and password are required";
+                    return;
+                }
+
+                var passwordString = ConvertSecureStringToString(Password);
+                var success = await _apiService.LoginAsync(Email, passwordString);
+                Console.WriteLine($"Login result: {success}");
+                
+                if (success)
+                {
+                    IsViewVisible = false;
+                }
+                else
+                {
+                    ErrorMessage = "Invalid email or password";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Login error: {ex.Message}");
+                ErrorMessage = "Login failed";
+            }
+        }
+
+        private bool CanLogin()
+        {
+            return !string.IsNullOrEmpty(Email) && 
+                   Password?.Length > 0 && 
+                   Email.Contains("@");
         }
     }
 }

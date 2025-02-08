@@ -9,11 +9,25 @@ const ALLOWED_ORIGINS = [
     `http://${process.env.FRONTEND_IP}:3000`
 ];
 
-module.exports = {
-    origin: ALLOWED_ORIGINS,
-    credentials: true, // engedélyezi a hitelesített kéréseket
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // engedélyezett HTTP metódusok
-    allowedHeaders: ['Content-Type', 'Authorization'] // engedélyezett fejlécek
+const corsConfig = {
+    origin: function (origin, callback) {
+        // Allow requests with no origin (desktop apps, mobile apps)
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        // Allow requests from web frontend
+        if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
+            return callback(null, true);
+        }
+
+        callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 };
+
+module.exports = corsConfig;
 
 // importáljuk a server.js-be:

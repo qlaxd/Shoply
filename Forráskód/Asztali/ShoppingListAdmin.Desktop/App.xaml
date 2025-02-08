@@ -13,6 +13,43 @@
                 <ResourceDictionary Source="/Styles/IconButton.xaml"/>
                 <ResourceDictionary Source="/Styles/SubMenuButtonStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="textBoxStyle" TargetType="TextBox">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Background" Value="#3E5C6A"/>
+                <Setter Property="CaretBrush" Value="LightGray"/>
+                <Setter Property="BorderBrush" Value="DarkGray"/>
+                <Setter Property="BorderThickness" Value="0,0,0,2"/>
+                <Setter Property="Height" Value="28"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Padding" Value="20,0,0,0"/>
+            </Style>
+
+            <Style x:Key="passwordBoxStyle" TargetType="PasswordBox">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Background" Value="#3E5C6A"/>
+                <Setter Property="CaretBrush" Value="LightGray"/>
+                <Setter Property="BorderBrush" Value="DarkGray"/>
+                <Setter Property="BorderThickness" Value="0,0,0,2"/>
+                <Setter Property="Height" Value="28"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Padding" Value="20,0,0,0"/>
+            </Style>
+
+            <Style x:Key="loginButton" TargetType="Button">
+                <Setter Property="Background" Value="#3E6057"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="FontFamily" Value="Montserrat"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#083A4D"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
