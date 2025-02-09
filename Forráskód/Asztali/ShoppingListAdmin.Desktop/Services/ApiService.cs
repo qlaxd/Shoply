@@ -57,15 +57,18 @@ public class ApiService
             new AuthenticationHeaderValue("Bearer", token);
     }
 
-    public async Task<List<User>> GetUsersAsync()
+    public async Task<List<UserModel>> GetUsersAsync()
     {
-        return await _httpClient.GetFromJsonAsync<List<User>>("api/users");
+        return await _httpClient.GetFromJsonAsync<List<UserModel>>("api/admin/users");
     }
 
-    public async Task AddUserAsync(User user)
+
+
+    public async Task PromoteToAdminAsync(UserModel userModel)
     {
-        await _httpClient.PostAsJsonAsync("api/users", user);
+        await _httpClient.PostAsJsonAsync($"api/admin/promote/:{userModel.Id}", userModel);
     }
+     
 }
 
 public class LoginResponse
@@ -92,3 +95,4 @@ public class LoginResponse
   //      UsersDataGrid.ItemsSource = _users;
   //  }
 //}
+

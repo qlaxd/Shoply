@@ -75,6 +75,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
         }
 
         // Felhasználók betöltése (példa, adatbázisból vagy API-ból)
+        
         private void LoadUsers()
         {
             // Példa adat, helyette valódi adatforrást kell használni
