@@ -61,7 +61,7 @@ public class ApiService
 
     public async Task<List<UserModel>> GetUsersAsync()
     {
-        return await _httpClient.GetFromJsonAsync<List<UserModel>>("api/admin/users");
+        return await _httpClient.GetFromJsonAsync<List<UserModel>>("admin/users");
     }
 
 
