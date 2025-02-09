@@ -68,7 +68,7 @@ public class ApiService
 
     public async Task PromoteToAdminAsync(UserModel userModel)
     {
-        await _httpClient.PostAsJsonAsync($"api/admin/promote/:{userModel.Id}", userModel);
+        await _httpClient.PostAsJsonAsync($"admin/promote/:{userModel.Id}", userModel);
     }
      
 }
