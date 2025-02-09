@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System;
 using System.Security;
 using System.Runtime.InteropServices;
+using ShoppingListAdmin.Desktop.Services;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Login
 {

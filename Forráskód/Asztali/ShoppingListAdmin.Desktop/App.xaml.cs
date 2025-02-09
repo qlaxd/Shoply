@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Windows;
 using ShoppingListAdmin.Desktop.ViewModels.Login;
+using ShoppingListAdmin.Desktop.Services;
 
 namespace ShoppingListAdmin.Desktop
 {

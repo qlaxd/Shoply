@@ -16,6 +16,7 @@ using ShoppingListAdmin.Desktop.Views.Settings;
 using ShoppingListAdmin.Desktop.ViewModels.Products;
 using ShoppingListAdmin.Desktop.Views.Products;
 using ShoppingListAdmin.Desktop.Views.Admins;
+using ShoppingListAdmin.Desktop.Services;
 
 namespace KretaDesktop.Extensions
 {

@@ -6,6 +6,7 @@ using ShoppingListAdmin.Desktop.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using ShoppingListAdmin.Desktop.Services;
 
 
 

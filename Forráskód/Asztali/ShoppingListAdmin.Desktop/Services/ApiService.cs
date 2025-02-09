@@ -6,6 +6,8 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using ShoppingListAdmin.Desktop.Models;
 
+namespace ShoppingListAdmin.Desktop.Services
+{
 public class ApiService
 {
     private readonly HttpClient _httpClient;
@@ -76,6 +78,7 @@ public class LoginResponse
     public string Token { get; set; }
     public string Message { get; set; }
 }
+
 //
 //    public partial class UsersView : UserControl
 //{
@@ -96,3 +99,4 @@ public class LoginResponse
   //  }
 //}
 
+}
