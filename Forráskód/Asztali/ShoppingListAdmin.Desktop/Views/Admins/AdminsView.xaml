@@ -3,43 +3,118 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views.Admins" 
+             xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views.Admins"
              xmlns:users="clr-namespace:ShoppingListAdmin.Desktop.Views.Users"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+             d:DesignHeight="600" d:DesignWidth="1000"
+             FontFamily="Segoe UI">
 
+    <UserControl.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="8 4"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="13"/>
+            
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#B0BEC5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="RowHeight" Value="40"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="Margin" Value="20 0"/>
+            <Setter Property="VerticalGridLinesBrush" Value="#ECEFF1"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#ECEFF1"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="12 8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0 0 0 1"/>
+            <Setter Property="BorderBrush" Value="#1976D2"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="BorderBrush" Value="#ECEFF1"/>
+            <Style.Triggers>
+                <Trigger Property="AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="White"/>
+                </Trigger>
+                <Trigger Property="AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#F5F5F5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="#F5F5F5">
         <Grid.RowDefinitions>
-            <RowDefinition Height="35"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Felhasználók menü -->
-        <users:UsersMenu Grid.Row="0"></users:UsersMenu>
+        <!-- Header Section -->
+        <users:UsersMenu Grid.Row="0"/>
 
-        <!-- Szűrő panel -->
-        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="1">
-            <TextBox x:Name="FilterUserName" Width="150" Margin="5" VerticalAlignment="Center"/>
-            <Button Content="Szűrés" Width="75" Height="30" Margin="5" VerticalAlignment="Center" Click="FilterButton_Click"/>
-        </StackPanel>
-        <DataGrid x:Name="AdminDataGrid" ItemsSource="{Binding Admins}" AutoGenerateColumns="False" 
-                  CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" Grid.Row="1">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto"/>
-                <DataGridTextColumn Header="Felhasználónév" Binding="{Binding Username}" Width="Auto"/>
-                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="Auto"/>
-                <DataGridTextColumn Header="Jelszó hash" Binding="{Binding PasswordHash}" Width="Auto"/>
-                <DataGridTemplateColumn Header="Műveletek" Width="Auto">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button Content="Törlés" Width="50" Margin="5" Click="DeleteAdmin_Click"/>
-                                <Button Content="Módosítás" Width="70" Margin="5" Click="EditAdmin_Click"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+        <!-- Content Section -->
+        <Border Grid.Row="1" Margin="20" Background="White" CornerRadius="8"
+                BorderThickness="1" BorderBrush="#E0E0E0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Filter Section -->
+
+                <!-- Data Grid -->
+                <DataGrid x:Name="AdminDataGrid" Grid.Row="1" ItemsSource="{Binding Admins}"
+                          AlternationCount="2" SelectionMode="Single" IsReadOnly="True" Margin="-19,-22,-19,-20">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="0.5*"/>
+                        <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="1.5*"/>
+                        <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="2*"/>
+                        <DataGridTextColumn Header="Password Hash" Binding="{Binding PasswordHash}" Width="2*"/>
+
+                        <DataGridTemplateColumn Header="Actions" Width="1.5*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Edit" Width="80" Background="#4CAF50"
+                                                Click="EditAdmin_Click"/>
+                                        <Button Content="Delete" Width="80" Background="#F44336"
+                                                Click="DeleteAdmin_Click"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>
