@@ -66,8 +66,6 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
                 Users.Add(user);
             }
         }
-
-        // CRUD parancsok
         
 
         [RelayCommand]

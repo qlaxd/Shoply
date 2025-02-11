@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controls\ViewModels\" />
     <Folder Include="Views\Settings\" />
   </ItemGroup>
 
