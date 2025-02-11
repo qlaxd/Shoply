@@ -7,106 +7,95 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ShoppingListAdmin.Desktop.Services;
+using ShoppingListAdmin.Desktop.Models;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Users
 {
     public partial class AdminsViewModel : BaseViewModel
     {
-        // Adminisztrátorok listája
-        [ObservableProperty]
-        private ObservableCollection<Admin> _admins;
+        private readonly ApiService _apiService;
 
-        // Konstruktor
-        public AdminsViewModel()
+        // Adminisztrátorok listája
+        public ObservableCollection<UserModel> Admins { get; set; }
+
+        // A szűrési típus (admin/user)
+        [ObservableProperty]
+        private string _filter;
+
+        // A RelayCommand-ot a ViewModel konstruktora hívja meg, és így az adminisztrátorok betöltése
+        public AdminsViewModel(ApiService apiService)
         {
-            _admins = new ObservableCollection<Admin>();
+            _apiService = apiService;
+            Admins = new ObservableCollection<UserModel>();
+            LoadAdmins(); // Adminisztrátorok betöltése
+
+            // Alapértelmezett szűrési érték
+            _filter = "admin"; // Alapértelmezett szűrés az "admin" szerepre
         }
 
-        // Parancs az adminisztrátorok betöltésére
-        [RelayCommand]
-        public async Task LoadAdminsAsync()
+        public AdminsViewModel()
         {
-            // Itt töltheted be az adminisztrátorok listáját, például egy adatbázisból vagy API-ból
-            var admins = await AdminService.GetAdminsAsync();
+        }
+
+        // Adminisztrátorok betöltése (példa, adatbázisból vagy API-ból)
+        private async void LoadAdmins()
+        {
+            var users = await _apiService.GetUsersAsync();
             Admins.Clear();
-            foreach (var admin in admins)
+            foreach (var user in users)
+            {
+                if (user.Role.ToLower() == "admin")
+                {
+                    Admins.Add(user);
+                }
+            }
+        }
+
+        // A szűrés alkalmazása
+        private void ApplyFilter()
+        {
+            var filteredAdmins = Admins.Where(u => u.Role.ToLower() == Filter.ToLower()).ToList();
+            Admins.Clear();
+            foreach (var admin in filteredAdmins)
             {
                 Admins.Add(admin);
             }
         }
 
-        // Parancs egy adminisztrátor törlésére
+        // CRUD parancsok
         [RelayCommand]
-        public async Task DeleteAdminAsync(Admin admin)
+        public void AddAdmin()
         {
-            if (admin != null)
+            // Logika új adminisztrátor hozzáadásához
+            // Például egy új adminisztrátor hozzáadása (valós adatbázis helyett itt csak példa)
+            var newAdmin = new UserModel { Id = "4", Username = "newadmin", Email = "newadmin@example.com", PasswordHash = "newpassword", Role = "admin" };
+            Admins.Add(newAdmin);
+        }
+
+        [RelayCommand]
+        public void EditAdmin()
+        {
+            // Logika adminisztrátor szerkesztéséhez
+            // Például az adminisztrátor szerkesztése, a példában itt nem történik semmi
+        }
+
+        [RelayCommand]
+        public void DeleteAdmin()
+        {
+            // Logika adminisztrátor törléséhez
+            // Például egy adminisztrátor törlése, például az első adminisztrátor törlése
+            if (Admins.Any())
             {
-                // Itt törölhetjük az adminisztrátort (például adatbázisból, vagy API-n keresztül)
-                bool result = await AdminService.DeleteAdminAsync(admin.Id);
-                if (result)
-                {
-                    Admins.Remove(admin);  // Törlés a listából, ha sikeres
-                }
+                Admins.RemoveAt(0);  // Töröljük az első adminisztrátort (példa)
             }
         }
 
-        // Parancs egy adminisztrátor szerkesztésére
+        // A szűrés alkalmazása
         [RelayCommand]
-        public async Task EditAdminAsync(Admin admin)
+        public void FilterAdmins()
         {
-            if (admin != null)
-            {
-                // Itt szerkeszthetjük az adminisztrátort (például egy új adatbekérő képernyőn keresztül)
-                var updatedAdmin = await AdminService.EditAdminAsync(admin);
-                if (updatedAdmin != null)
-                {
-                    // Frissítjük az admin listáját a módosított adminnal
-                    var index = Admins.IndexOf(admin);
-                    if (index >= 0)
-                    {
-                        Admins[index] = updatedAdmin;
-                    }
-                }
-            }
-        }
-    }
-
-    // Admin osztály példa
-    public class Admin
-    {
-        public string Id { get; set; }
-        public string Username { get; set; }
-        public string Email { get; set; }
-    }
-
-    // Példa AdminService, ami kommunikál az adatforrással (API, adatbázis, stb.)
-    public static class AdminService
-    {
-        public static async Task<ObservableCollection<Admin>> GetAdminsAsync()
-        {
-            // Itt kellene az adminok lekérését megvalósítani (API vagy adatbázis)
-            // Példa adat:
-            await Task.Delay(500); // Szimulálunk egy API hívást
-            return new ObservableCollection<Admin>
-            {
-                new Admin { Id = "1", Username = "admin1", Email = "admin1@example.com" },
-                new Admin { Id = "2", Username = "admin2", Email = "admin2@example.com" }
-            };
-        }
-
-        public static async Task<bool> DeleteAdminAsync(string adminId)
-        {
-            // Itt törölhetjük az adminisztrátort
-            await Task.Delay(500); // Szimuláljuk a törlés folyamatát
-            return true; // Visszatérünk true-val, ha sikerült
-        }
-
-        public static async Task<Admin> EditAdminAsync(Admin admin)
-        {
-            // Itt szerkeszthetjük az admin adatokat
-            await Task.Delay(500); // Szimuláljuk a szerkesztést
-            admin.Email = "updated@example.com"; // Például frissítjük az email címet
-            return admin;
+            ApplyFilter();
         }
     }
 }

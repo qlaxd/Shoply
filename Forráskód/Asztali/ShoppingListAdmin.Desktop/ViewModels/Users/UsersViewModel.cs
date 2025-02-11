@@ -33,6 +33,9 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
 
         public UsersViewModel()
         {
+            _apiService = new ApiService(); // Initialize with a default instance or mock
+            Users = new ObservableCollection<UserModel>();
+            _filter = "user"; // Default filter value
         }
 
         // Felhasználók betöltése (példa, adatbázisból vagy API-ból)
@@ -42,14 +45,17 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
             Users.Clear();
             foreach (var user in users)
             {
-                Users.Add(user);
+                if (user.Role.ToLower() == "user")
+                {
+                    Users.Add(user);
+                }
             }
         }
 
         // A szűrési logika
         private void ApplyFilter()
         {
-            var filteredUsers = Users.Where(u => u.Role.ToLower() == _filter.ToLower()).ToList();
+            var filteredUsers = Users.Where(u => u.Role.ToLower() == Filter.ToLower()).ToList();
             Users.Clear();
             foreach (var user in filteredUsers)
             {
