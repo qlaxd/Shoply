@@ -42,8 +42,44 @@ async function seedUsers() {
         email: 'user5@example.com',
         password: await bcrypt.hash('UserJelszo1213', 10),
         role: 'user'
+      },
+      {
+        username: 'user6',
+        email: 'user6@example.com',
+        password: await bcrypt.hash('UserJelszo1415', 10),
+        role: 'user'
+      },
+      {
+        username: 'user7',
+        email: 'user7@example.com',
+        password: await bcrypt.hash('UserJelszo1617', 10),
+        role: 'user'
+      },
+      {
+        username: 'user8',
+        email: 'user8@example.com',
+        password: await bcrypt.hash('UserJelszo1819', 10),
+        role: 'user'
+      },
+      {
+        username: 'user9',
+        email: 'user9@example.com',
+        password: await bcrypt.hash('UserJelszo2021', 10),
+        role: 'user'
+      },
+      {
+        username: 'user10',
+        email: 'user10@example.com',
+        password: await bcrypt.hash('UserJelszo2223', 10),
+        role: 'user'
+      },
+      {
+        username: 'teszt_admin',
+        email: 'teszt_admin@example.com',
+        password: await bcrypt.hash('AdminJelszo456', 10),
+        role: 'admin'
       }
-
+      
     ];
 
     for (const user of users) {

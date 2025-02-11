@@ -29,23 +29,85 @@
         </StackPanel>
 
         <!-- DataGrid a felhasználók listázására -->
-        <DataGrid x:Name="UsersDataGrid" ItemsSource="{Binding Users}" AutoGenerateColumns="False" 
-                  CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" Grid.Row="1">
+        <DataGrid Grid.Row="1" 
+                  x:Name="UsersDataGrid" 
+                  ItemsSource="{Binding Users}" 
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False" 
+                  CanUserDeleteRows="False" 
+                  SelectionMode="Single"
+                  BorderThickness="1"
+                  BorderBrush="#DDDDDD"
+                  RowBackground="White"
+                  AlternatingRowBackground="#F8F9FA"
+                  GridLinesVisibility="Horizontal"
+                  HeadersVisibility="Column"
+                  IsReadOnly="True">
+            
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background" Value="#343A40"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Padding" Value="10,8"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                </Style>
+            </DataGrid.Resources>
+
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto"/>
                 <DataGridTextColumn Header="Felhasználónév" Binding="{Binding Username}" Width="*"/>
                 <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
                 <DataGridTextColumn Header="Jelszó hash" Binding="{Binding PasswordHash}" Width="*"/>
-                <DataGridTemplateColumn Header="Műveletek" Width="120">
+                <DataGridTemplateColumn Header="Műveletek" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button Content="Adminná tétel" Width="100" Margin="5"
+                            <StackPanel Orientation="Horizontal" Margin="5">
+                                <Button Content="Adminná tétel" 
                                         Command="{Binding DataContext.PromoteToAdminCommand, 
                                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                        CommandParameter="{Binding}"/>
-                                <Button Content="Törlés" Width="50" Margin="5" Click="DeleteUser_Click"/>
-                                <Button Content="Módosítás" Width="70" Margin="5" Click="EditUser_Click"/>
+                                        CommandParameter="{Binding}"
+                                        Margin="0,0,5,0"
+                                        Padding="8,5"
+                                        Foreground="White"
+                                        BorderThickness="0">
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="CornerRadius" Value="4"/>
+                                        </Style>
+                                    </Button.Resources>
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="#28A745"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#218838"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="Törlés"
+                                        Click="DeleteUser_Click"
+                                        Margin="0,0,5,0"
+                                        Padding="8,5"
+                                        Foreground="White"
+                                        BorderThickness="0">
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="CornerRadius" Value="4"/>
+                                        </Style>
+                                    </Button.Resources>
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="#DC3545"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#C82333"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

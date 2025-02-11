@@ -25,11 +25,11 @@
         <DataGrid x:Name="AdminDataGrid" ItemsSource="{Binding Admins}" AutoGenerateColumns="False" 
                   CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" Grid.Row="1">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>
-                <DataGridTextColumn Header="Felhasználónév" Binding="{Binding Username}" Width="*"/>
-                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
-                <DataGridTextColumn Header="Jelszó hash" Binding="{Binding PasswordHash}" Width="*"/>
-                <DataGridTemplateColumn Header="Műveletek" Width="120">
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto"/>
+                <DataGridTextColumn Header="Felhasználónév" Binding="{Binding Username}" Width="Auto"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="Auto"/>
+                <DataGridTextColumn Header="Jelszó hash" Binding="{Binding PasswordHash}" Width="Auto"/>
+                <DataGridTemplateColumn Header="Műveletek" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
