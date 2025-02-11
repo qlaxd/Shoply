@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ShoppingListAdmin.Desktop.Services;
 using ShoppingListAdmin.Desktop.Models;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Users
 {
@@ -23,16 +24,25 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
         [ObservableProperty]
         private string _filter;
 
+        public class AdminUpdatedMessage(bool value);
+
         // A RelayCommand-ot a ViewModel konstruktora hívja meg, és így az adminisztrátorok betöltése
         public AdminsViewModel(ApiService apiService)
         {
             _apiService = apiService;
             Admins = new ObservableCollection<UserModel>();
-            LoadAdmins(); // Adminisztrátorok betöltése
+            LoadAdmins(); 
 
-            // Alapértelmezett szűrési érték
-            _filter = "admin"; // Alapértelmezett szűrés az "admin" szerepre
+            
+            WeakReferenceMessenger.Default.Register<AdminUpdatedMessage>(this, (r, m) => 
+            {
+                LoadAdmins();
+            });
+
+            
+            _filter = "admin"; 
         }
+
 
         public AdminsViewModel()
         {

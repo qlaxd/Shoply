@@ -9,6 +9,7 @@ using ShoppingListAdmin.Desktop.Services;
 using System;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
+using static ShoppingListAdmin.Desktop.ViewModels.Users.AdminsViewModel;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Users
 {
@@ -79,7 +80,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
                 await _apiService.PromoteToAdminAsync(user);
                 // Frissítjük a felhasználók listáját a változások megjelenítéséhez
                 LoadUsers();
-                
+                WeakReferenceMessenger.Default.Send(new AdminUpdatedMessage(true));
             }
             catch (Exception ex)
             {
