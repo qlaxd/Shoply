@@ -6,6 +6,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using ShoppingListAdmin.Desktop.Services;
+using System;
+using System.Diagnostics;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Users
 {
@@ -64,21 +67,28 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
         }
 
         // CRUD parancsok
-        [RelayCommand]
-        public void AddUser()
-        {
-            // Logika új felhasználó hozzáadásához
-            // Például egy új felhasználó hozzáadása (valós adatbázis helyett itt csak példa)
-            var newUser = new UserModel { Id = "4", Username = "newuser", Email = "newuser@example.com", PasswordHash = "newpassword", Role = "user" };
-            Users.Add(newUser);
-        }
+        
 
         [RelayCommand]
-        public void EditUser()
+        public async Task PromoteToAdminAsync(UserModel user)
         {
-            // Logika felhasználó szerkesztéséhez
-            // Például a felhasználó szerkesztése, a példában itt nem történik semmi
+        if (user != null)
+        {
+            try
+            {
+                await _apiService.PromoteToAdminAsync(user);
+                // Frissítjük a felhasználók listáját a változások megjelenítéséhez
+                LoadUsers();
+                
+            }
+            catch (Exception ex)
+            {
+                // Hibakezelés
+                Debug.WriteLine($"Error promoting user to admin: {ex.Message}");
+            }
         }
+        }
+        
 
         [RelayCommand]
         public void DeleteUser()

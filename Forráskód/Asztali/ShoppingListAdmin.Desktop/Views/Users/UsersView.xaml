@@ -40,6 +40,10 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Content="Adminná tétel" Width="100" Margin="5"
+                                        Command="{Binding DataContext.PromoteToAdminCommand, 
+                                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"/>
                                 <Button Content="Törlés" Width="50" Margin="5" Click="DeleteUser_Click"/>
                                 <Button Content="Módosítás" Width="70" Margin="5" Click="EditUser_Click"/>
                             </StackPanel>
