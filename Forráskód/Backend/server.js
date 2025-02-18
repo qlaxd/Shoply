@@ -37,15 +37,6 @@ app.use('/api/admin', adminRoutes); // Prefix all endpoints defined in adminRout
 app.use('/api/lists', listRoutes); // Prefix all endpoints defined in listRoutes with /api/lists
 app.use('/api/products', productRoutes); // Prefix all endpoints defined in productRoutes with /api/products
 
-mongoose.connect('mongodb://localhost:27017/shoppinglist', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((error) => {
-  console.error('Error connecting to MongoDB:', error);
-});
 
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;

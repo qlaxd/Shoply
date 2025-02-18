@@ -20,7 +20,17 @@ const UserSchema = new mongoose.Schema({
     type: String,
     enum: ['user', 'admin'],
     default: 'user'
+  },
+  lastLogin: {
+    type: Date,
+    default: Date.now
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   }
+}, {
+  timestamps: true // Ez automatikusan kezeli a createdAt és updatedAt mezőket
 });
 
 module.exports = mongoose.model('User', UserSchema);
