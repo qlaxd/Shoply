@@ -2,8 +2,11 @@ const express = require('express');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const listRoutes = require('./routes/listRoutes');
+const productRoutes = require('./routes/productRoutes'); // Import the product routes
 const cors = require('cors');
 const connectDB = require('./config/db'); // Importáljuk a connectDB függvényt
+const mongoose = require('mongoose');
 
 dotenv.config(); // .env fájl betöltése, hogy elérhető legyen a process.env objektumon keresztül
 
@@ -29,8 +32,20 @@ app.use(express.json()); // JSON formátumú kérések feldolgozása
 
 connectDB(); // MongoDB kapcsolat létrehozása
 
-app.use('/api/auth', authRoutes); // minden authRoutes-ban definiált végpont elé odakerül az /api/auth prefix
-app.use('/api/admin', adminRoutes); // minden adminRoutes-ban definiált végpont elé odakerül az /api/admin prefix
+app.use('/api/auth', authRoutes); // Prefix all endpoints defined in authRoutes with /api/auth
+app.use('/api/admin', adminRoutes); // Prefix all endpoints defined in adminRoutes with /api/admin
+app.use('/api/lists', listRoutes); // Prefix all endpoints defined in listRoutes with /api/lists
+app.use('/api/products', productRoutes); // Prefix all endpoints defined in productRoutes with /api/products
+
+mongoose.connect('mongodb://localhost:27017/shoppinglist', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((error) => {
+  console.error('Error connecting to MongoDB:', error);
+});
 
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
