@@ -4,6 +4,10 @@ const listSchema = new mongoose.Schema({
   name: { type: String, required: true },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+  sharedWith: [{
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    permissionLevel: { type: String, enum: ['view', 'edit'], default: 'view' }
+  }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

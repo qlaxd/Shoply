@@ -1,4 +1,5 @@
 const List = require('../models/List');
+const User = require('../models/User');
 
 // Get all lists
 exports.getAllLists = async (req, res) => {
@@ -13,7 +14,10 @@ exports.getAllLists = async (req, res) => {
 // Get a single list by ID
 exports.getListById = async (req, res) => {
   try {
-    const list = await List.findById(req.params.id).populate('owner');
+    const list = await List.findById(req.params.id).populate({
+      path: 'owner',
+      select: '-password -__v'
+    });
     if (!list) {
       return res.status(404).json({ message: 'List not found' });
     }
@@ -57,5 +61,47 @@ exports.deleteList = async (req, res) => {
     res.status(200).json({ message: 'List deleted' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting list', error });
+  }
+};
+
+// Lista megosztása
+exports.shareList = async (req, res) => {
+  try {
+    const list = await List.findById(req.params.id);
+    const userToShare = await User.findById(req.body.userId);
+
+    if (!list || !userToShare) {
+      return res.status(404).json({ message: 'Lista vagy felhasználó nem található' });
+    }
+
+    // Ellenőrizzük, hogy a kérés küldője a lista tulajdonosa-e
+    if (list.owner.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
+    }
+
+    // Megosztás hozzáadása
+    list.sharedWith.push({ 
+      user: userToShare._id,
+      permissionLevel: req.body.permissionLevel || 'view'
+    });
+    
+    await list.save();
+    res.status(200).json(list);
+  } catch (error) {
+    res.status(500).json({ message: 'Hiba a megosztás során', error });
+  }
+};
+
+// Megosztás visszavonása
+exports.unshareList = async (req, res) => {
+  try {
+    const list = await List.findById(req.params.id);
+    list.sharedWith = list.sharedWith.filter(share => 
+      share.user.toString() !== req.body.userId
+    );
+    await list.save();
+    res.status(200).json(list);
+  } catch (error) {
+    res.status(500).json({ message: 'Hiba a megosztás visszavonása során', error });
   }
 };
