@@ -1,29 +1,22 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginSignup from './pages/LoginSignup/LoginSignup';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home';
-
-const PrivateRoute = ({ children }) => { // csak bejelentkezett felhasználóknak engedélyezett
-  const token = localStorage.getItem('token');
-  return token ? children : <Navigate to="/login" replace />;
-};
+import LoginSignup from './pages/LoginSignup/LoginSignup';
+import PrivateRoute from './components/PrivateRoute';
+import ListEditor from './components/ListEditor/ListEditor';
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginSignup />} />
-        <Route path="/register" element={<LoginSignup />} />
-        <Route 
-          path="/" 
-          element={
-            <PrivateRoute>
-              <Home />
-            </PrivateRoute>
-          } 
-        />
+        <Route path="/register" element={<LoginSignup isRegister />} />
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/lists/:id" element={<ListEditor />} />
+        </Route>
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 

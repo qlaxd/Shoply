@@ -4,7 +4,21 @@ const User = require('../models/User');
 // Get all lists
 exports.getAllLists = async (req, res) => {
   try {
-    const lists = await List.find({}).populate('owner');
+    const lists = await List.find({
+      $or: [
+        { owner: req.user.id },
+        { 'sharedWith.user': req.user.id }
+      ]
+    })
+    .populate('owner')
+    .populate({
+      path: 'products',
+      populate: {
+        path: 'catalogItem',
+        model: 'ProductCatalog'
+      }
+    });
+    
     res.status(200).json(lists);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching lists', error });
