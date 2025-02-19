@@ -112,9 +112,9 @@ AccountSidebarPreview.propTypes = {
 const accounts = [
   {
     id: 1,
-    name: 'Bharat Kashyap',
-    email: 'bharatkashyap@outlook.com',
-    image: 'https://avatars.githubusercontent.com/u/19550456',
+    name: ' Lajkó Levente',
+    email: 'admin@example.com',
+    image: 'https://avatars.githubusercontent.com/u/180977842?v=4',
     projects: [
       {
         id: 3,
@@ -124,8 +124,8 @@ const accounts = [
   },
   {
     id: 2,
-    name: 'Bharat MUI',
-    email: 'bharat@mui.com',
+    name: 'Másik Levente',
+    email: 'bsze3lajlev@vasvari.org',
     color: '#8B4513', // Brown color
     projects: [{ id: 4, title: 'Project A' }],
   },
@@ -241,9 +241,9 @@ SidebarFooterAccount.propTypes = {
 
 const demoSession = {
   user: {
-    name: 'Bharat Kashyap',
-    email: 'bharatkashyap@outlook.com',
-    image: 'https://avatars.githubusercontent.com/u/19550456',
+    name: 'Admin',
+    email: 'admin@example.com',
+    image: 'https://avatars.githubusercontent.com/u/180977842?v=4',
   },
 };
 
