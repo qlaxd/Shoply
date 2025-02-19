@@ -13,10 +13,16 @@ exports.getAllLists = async (req, res) => {
     .populate('owner')
     .populate({
       path: 'products',
+      model: 'Product',
       populate: {
         path: 'catalogItem',
         model: 'ProductCatalog'
       }
+    })
+    .populate({
+      path: 'sharedWith.user',
+      model: 'User',
+      select: '-password -__v'
     });
     
     res.status(200).json(lists);
