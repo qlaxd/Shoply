@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ShoppingListAdmin.Desktop.Services;
+using ShoppingListAdmin.Desktop.ViewModels.Users;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,7 @@ namespace ShoppingListAdmin.Desktop.Views.Users
         public UsersView()
         {
             InitializeComponent();
+            this.DataContext = new UsersViewModel(new ApiService());
         }
 
         private void DeleteUser_Click(object sender, RoutedEventArgs e)

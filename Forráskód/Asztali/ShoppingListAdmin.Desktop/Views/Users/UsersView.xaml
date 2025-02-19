@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.Users"
-             d:DataContext="{d:DesignInstance Type=viewModels:UsersViewModel, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type={x:Type viewModels:UsersViewModel}, IsDesignTimeCreatable=True}"
              xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views.Users"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -66,7 +66,7 @@
                                         Command="{Binding DataContext.PromoteToAdminCommand, 
                                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}"
-                                        Style="{StaticResource iconButton}"
+                                        
                                         Margin="0,0,5,0"
                                         Padding="8,5"
                                         Foreground="White"
@@ -92,8 +92,8 @@
                                         Margin="0,0,5,0"
                                         Padding="8,5"
                                         Foreground="White"
-                                        BorderThickness="0"
-                                        Style="{StaticResource iconButton}">
+                                        BorderThickness="0">
+                                        
                                     <Button.Resources>
                                         <Style TargetType="{x:Type Border}">
                                             <Setter Property="CornerRadius" Value="4"/>
