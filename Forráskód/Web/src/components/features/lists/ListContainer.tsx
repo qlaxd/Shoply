@@ -1,6 +1,6 @@
 import { ShoppingList } from '../../../types';
 import ProductItem from '../products/ProductItem';
-import { Paper, Typography, Chip, Box, IconButton, Tooltip } from '@mui/material';
+import { Paper, Typography, Chip, Box, IconButton, Tooltip, LinearProgress } from '@mui/material';
 import ShareIcon from '@mui/icons-material/Share';
 import { format } from 'date-fns';
 import { hu } from 'date-fns/locale';
@@ -52,15 +52,32 @@ export default function ListContainer({ list, onProductUpdate, onShare }: ListCo
           </Tooltip>
         </Box>
       </Box>
-      <Box sx={{ mb: 2 }}>
-        {list.products.map((product, index) => (
-          <ProductItem 
-            key={product._id || `product-${list._id}-${index}`} 
-            product={product}
-            onTogglePurchased={handleTogglePurchased}
-          />
-        ))}
+      
+      <Box sx={{ mb: 1 }}>
+        <LinearProgress 
+          variant="determinate" 
+          value={progress} 
+          color={progress === 100 ? 'success' : progress > 50 ? 'warning' : 'primary'}
+          sx={{ height: 8, borderRadius: 4 }}
+        />
       </Box>
+
+      <Box sx={{ mb: 2, maxHeight: 400, overflowY: 'auto' }}>
+        {list.products.length === 0 ? (
+          <Typography color="text.secondary" align="center" sx={{ py: 2 }}>
+            Nincsenek termékek a listában
+          </Typography>
+        ) : (
+          list.products.map((product, index) => (
+            <ProductItem 
+              key={product._id || `product-${list._id}-${index}`} 
+              product={product}
+              onTogglePurchased={handleTogglePurchased}
+            />
+          ))
+        )}
+      </Box>
+
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="body2" color="text.secondary">
           Létrehozta: {list.owner.username}
