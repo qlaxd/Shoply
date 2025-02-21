@@ -88,7 +88,7 @@ exports.deleteList = async (req, res) => {
 exports.shareList = async (req, res) => {
   try {
     const list = await List.findById(req.params.id);
-    const userToShare = await User.findById(req.body.userId);
+    const userToShare = await User.findOne({ username: req.body.username });
 
     if (!list || !userToShare) {
       return res.status(404).json({ message: 'Lista vagy felhasználó nem található' });
@@ -99,7 +99,15 @@ exports.shareList = async (req, res) => {
       return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
     }
 
-    // Megosztás hozzáadása
+    // Ellenőrizzük, hogy már meg van-e osztva a felhasználóval
+    const alreadyShared = list.sharedWith.some(share => 
+      share.user.toString() === userToShare._id.toString()
+    );
+    
+    if(alreadyShared) {
+      return res.status(400).json({ message: 'A lista már meg van osztva ezzel a felhasználóval' });
+    }
+
     list.sharedWith.push({ 
       user: userToShare._id,
       permissionLevel: req.body.permissionLevel || 'view'

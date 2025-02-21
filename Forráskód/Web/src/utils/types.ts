@@ -19,6 +19,7 @@ export interface Product {
   catalogItem: ProductCatalog;
   quantity: number;
   isPurchased: boolean;
+  priority?: 'HIGH' | 'MEDIUM' | 'LOW';
 }
 
 export interface SharedWith {
@@ -34,5 +35,6 @@ export interface ShoppingList {
   sharedWith: SharedWith[];
   createdAt: Date;
   updatedAt: Date;
+  priority?: 'HIGH' | 'MEDIUM' | 'LOW';
 } 
 

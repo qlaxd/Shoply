@@ -1,8 +1,7 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home';
 import LoginSignup from './pages/LoginSignup/LoginSignup';
-import PrivateRoute from './components/PrivateRoute';
+import PrivateRoute from './utils/PrivateRoute';
 import ListEditor from './components/ListEditor/ListEditor';
 
 function App() {

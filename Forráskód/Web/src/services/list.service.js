@@ -3,21 +3,8 @@ import api from './api';
 const ListService = {
   getUserLists: async (userId) => {
     try {
-      // Először lekérjük a listákat
-      const listsResponse = await api.get(`/lists`);
-      
-      // Majd lekérjük az összes terméket
-      const productsResponse = await api.get('/products');
-      
-      // A listákhoz hozzárendeljük a termékek részletes adatait
-      const listsWithProducts = listsResponse.data.map(list => ({
-        ...list,
-        products: list.products.map(productId => 
-          productsResponse.data.find(product => product._id === productId)
-        ).filter(Boolean) // Kiszűrjük az esetleges undefined értékeket
-      }));
-
-      return listsWithProducts;
+      const response = await api.get(`/lists`);
+      return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Hiba a listák betöltésekor');
     }
@@ -29,7 +16,32 @@ const ListService = {
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Hiba a lista törlésekor');
     }
+  },
+
+  shareList: async (listId, username, permissionLevel) => {
+    try {
+      await api.post(`/lists/${listId}/share`, { username, permissionLevel });
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Hiba a lista megosztása során');
+    }
+  },
+
+  updateList: async (listId, listData) => {
+    try {
+      await api.put(`/lists/${listId}`, listData);
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Hiba a lista frissítésekor');
+    }
+  },
+
+  unshareList: async (listId, userId) => {
+    try {
+      await api.delete(`/lists/${listId}/unshare`, { data: { userId } });
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Hiba a lista megosztás visszavonása során');
+    }
   }
+
 };
 
 export default ListService; 
