@@ -40,6 +40,15 @@ const ListService = {
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Hiba a lista megosztás visszavonása során');
     }
+  },
+
+  createList: async (listData) => {
+    try {
+      const response = await api.post('/lists', listData);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Hiba a lista létrehozásakor');
+    }
   }
 
 };

@@ -1,7 +1,7 @@
 import { Product } from '../../../utils/types';
-import { Box, Typography, Checkbox, Chip, Skeleton, IconButton } from '@mui/material';
+import { Box, Typography, Checkbox, Skeleton, IconButton } from '@mui/material';
 import { FiberManualRecord, Category, RemoveDone, Add } from '@mui/icons-material';
-import { alpha } from '@mui/material/styles';
+
 
 interface ProductItemProps {
   product: Product;

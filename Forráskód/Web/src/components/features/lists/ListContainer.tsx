@@ -1,6 +1,6 @@
 import { ShoppingList } from '../../../utils/types';
 import ProductItem from '../products/ProductItem';
-import { Paper, Typography, Chip, Box, IconButton, Tooltip, LinearProgress } from '@mui/material';
+import { Paper, Typography, Chip, Box, IconButton, Tooltip, LinearProgress, Button, Dialog, DialogActions, DialogContent, TextField, Select, MenuItem, InputLabel, FormControl, Snackbar, Alert, DialogTitle } from '@mui/material';
 import ShareIcon from '@mui/icons-material/Share';
 import { format } from 'date-fns';
 import { hu } from 'date-fns/locale';
@@ -9,15 +9,28 @@ import GroupIcon from '@mui/icons-material/Group';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EditIcon from '@mui/icons-material/Edit';
 import { alpha } from '@mui/material/styles';
+import { useState } from 'react';
+import ListService from '../../../services/list.service';
+import { useNavigate } from 'react-router-dom';
 
 interface ListContainerProps {
   list: ShoppingList;
   onProductUpdate?: (listId: string, productId: string, updates: any) => void;
   onShare?: (listId: string) => void;
   onEdit?: (listId: string) => void;
+  onDelete?: (listId: string) => void;
+  currentUser?: { id: string };
 }
 
-export default function ListContainer({ list, onProductUpdate, onShare, onEdit }: ListContainerProps) {
+export default function ListContainer({ list, onProductUpdate, onShare, onEdit, onDelete, currentUser }: ListContainerProps) {
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [username, setUsername] = useState('');
+  const [permissionLevel, setPermissionLevel] = useState<'view' | 'edit'>('view');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const navigate = useNavigate();
+
   const handleTogglePurchased = (productId: string) => {
     if (onProductUpdate) {
       const product = list.products.find(p => p._id === productId);
@@ -27,15 +40,40 @@ export default function ListContainer({ list, onProductUpdate, onShare, onEdit }
     }
   };
 
-  const handleShare = () => {
-    if (onShare) {
-      onShare(list._id);
+  const handleShareClick = () => {
+    setShareDialogOpen(true);
+  };
+
+  const handleShareSubmit = async () => {
+    try {
+      await ListService.shareList(list._id, username, permissionLevel);
+      setShareDialogOpen(false);
+      onShare?.(list._id);
+      setSuccessMessage('A lista sikeresen megosztva!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Ismeretlen hiba történt');
+      setSuccessMessage(null);
+    }
+  };
+
+  const handleDeleteList = async () => {
+    try {
+      await ListService.deleteList(list._id);
+      onDelete?.(list._id);
+      setSuccessMessage('A lista sikeresen törölve!');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Hiba a lista törlésekor');
     }
   };
 
   const handleEdit = () => {
-    if (onEdit) {
-      onEdit(list._id);
+    navigate(`/lists/${list._id}`);
+  };
+
+  const handleQuantityChange = (productId: string, newQuantity: number) => {
+    if (onProductUpdate) {
+      onProductUpdate(list._id, productId, { quantity: newQuantity });
     }
   };
 
@@ -85,7 +123,7 @@ export default function ListContainer({ list, onProductUpdate, onShare, onEdit }
               </IconButton>
             </Tooltip>
             <Tooltip title="Megosztás">
-              <IconButton onClick={handleShare} size="small">
+              <IconButton onClick={handleShareClick} size="small">
                 <ShareIcon fontSize="small" />
               </IconButton>
             </Tooltip>
@@ -113,6 +151,7 @@ export default function ListContainer({ list, onProductUpdate, onShare, onEdit }
               key={product._id || `product-${list._id}-${index}`} 
               product={product}
               onTogglePurchased={handleTogglePurchased}
+              onQuantityChange={handleQuantityChange}
             />
           ))
         )}
@@ -128,6 +167,61 @@ export default function ListContainer({ list, onProductUpdate, onShare, onEdit }
           </Typography>
         )}
       </Box>
+
+      <Dialog open={shareDialogOpen} onClose={() => setShareDialogOpen(false)}>
+        <DialogTitle>Lista megosztása</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Felhasználónév"
+            fullWidth
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel>Jogosultság szintje</InputLabel>
+            <Select
+              value={permissionLevel}
+              label="Jogosultság szintje"
+              onChange={(e) => setPermissionLevel(e.target.value as 'view' | 'edit')}
+            >
+              <MenuItem value="view">Megtekintés</MenuItem>
+              <MenuItem value="edit">Szerkesztés</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShareDialogOpen(false)}>Mégse</Button>
+          <Button onClick={handleShareSubmit} variant="contained">Megosztás</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Lista törlése</DialogTitle>
+        <DialogContent>
+          <Typography>Biztosan törölni szeretnéd ezt a listát?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Mégse</Button>
+          <Button onClick={handleDeleteList} color="error" variant="contained">
+            Törlés
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={!!successMessage || !!errorMessage}
+        autoHideDuration={6000}
+        onClose={() => {
+          setSuccessMessage(null);
+          setErrorMessage(null);
+        }}
+      >
+        <Alert severity={successMessage ? "success" : "error"} sx={{ width: '100%' }}>
+          {successMessage || errorMessage}
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 }
