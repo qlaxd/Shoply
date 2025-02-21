@@ -6,7 +6,6 @@ const listRoutes = require('./routes/listRoutes');
 const productRoutes = require('./routes/productRoutes'); // Import the product routes
 const cors = require('cors');
 const connectDB = require('./config/db'); // Importáljuk a connectDB függvényt
-const mongoose = require('mongoose');
 
 dotenv.config(); // .env fájl betöltése, hogy elérhető legyen a process.env objektumon keresztül
 
@@ -20,7 +19,8 @@ if (isDev) {
       method: req.method,
       url: req.url,
       origin: req.headers.origin,
-      headers: req.headers
+      headers: req.headers,
+      body: req.body,
     });
     next();
   });

@@ -1,5 +1,5 @@
 import { Product } from '../../../utils/types';
-import { Box, Typography, Checkbox, Skeleton, IconButton } from '@mui/material';
+import { Box, Typography, Checkbox, Skeleton, IconButton, Tooltip } from '@mui/material';
 import { FiberManualRecord, Category, RemoveDone, Add } from '@mui/icons-material';
 
 
@@ -71,22 +71,32 @@ const ProductItem = ({ product, onTogglePurchased, onQuantityChange }: ProductIt
       />
       
       <Box sx={{ flexGrow: 1 }}>
-        <Typography 
-          variant="body1"
-          sx={{
-            fontWeight: 500,
-            textDecoration: product.isPurchased ? 'line-through' : 'none',
-            color: product.isPurchased ? 'text.disabled' : 'text.primary',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1
-          }}
+        <Tooltip 
+          title={
+            <>
+              <Typography variant="body2">{product.notes}</Typography>
+              {product.catalogItem?.categoryHierarchy?.join(' › ')}
+            </>
+          }
+          arrow
         >
-          {product.catalogItem.name}
-          {product.priority === 'HIGH' && (
-            <FiberManualRecord color="error" sx={{ fontSize: '0.8rem' }} />
-          )}
-        </Typography>
+          <Typography 
+            variant="body1"
+            sx={{
+              fontWeight: 500,
+              textDecoration: product.isPurchased ? 'line-through' : 'none',
+              color: product.isPurchased ? 'text.disabled' : 'text.primary',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
+            }}
+          >
+            {product.catalogItem.name}
+            {product.priority === 'HIGH' && (
+              <FiberManualRecord color="error" sx={{ fontSize: '0.8rem' }} />
+            )}
+          </Typography>
+        </Tooltip>
         
         {product.catalogItem.categoryHierarchy?.length > 0 && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
@@ -98,14 +108,30 @@ const ProductItem = ({ product, onTogglePurchased, onQuantityChange }: ProductIt
         )}
       </Box>
       
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <IconButton size="small" onClick={handleDecrement}>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 1,
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 1,
+        padding: '2px 8px'
+      }}>
+        <IconButton 
+          size="medium" 
+          onClick={handleDecrement}
+          sx={{ p: 0.5 }}
+        >
           <RemoveDone fontSize="small" />
         </IconButton>
         <Typography variant="body2" sx={{ minWidth: '24px', textAlign: 'center' }}>
-          {product.quantity}
+          {product.quantity} {product.unit || 'db'}
         </Typography>
-        <IconButton size="small" onClick={handleIncrement}>
+        <IconButton 
+          size="medium" 
+          onClick={handleIncrement}
+          sx={{ p: 0.5 }}
+        >
           <Add fontSize="small" />
         </IconButton>
       </Box>

@@ -19,7 +19,9 @@ export interface Product {
   catalogItem: ProductCatalog;
   quantity: number;
   isPurchased: boolean;
-  priority?: 'HIGH' | 'MEDIUM' | 'LOW';
+  priority?: 'LOW' | 'NORMAL' | 'HIGH';
+  notes?: string;
+  unit?: string;
 }
 
 export interface SharedWith {

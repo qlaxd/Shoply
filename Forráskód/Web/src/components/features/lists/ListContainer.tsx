@@ -22,7 +22,7 @@ interface ListContainerProps {
   currentUser?: { id: string };
 }
 
-export default function ListContainer({ list, onProductUpdate, onShare, onEdit, onDelete, currentUser }: ListContainerProps) {
+export default function ListContainer({ list, onProductUpdate, onShare, onDelete, currentUser }: ListContainerProps) {
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [username, setUsername] = useState('');
   const [permissionLevel, setPermissionLevel] = useState<'view' | 'edit'>('view');
@@ -167,6 +167,16 @@ export default function ListContainer({ list, onProductUpdate, onShare, onEdit, 
           </Typography>
         )}
       </Box>
+
+      {list.sharedWith.map(sharedUser => (
+        <Chip
+          key={sharedUser.user._id}
+          label={sharedUser.user.username}
+          size="small"
+          variant="outlined"
+          sx={{ fontSize: '0.75rem' }}
+        />
+      ))}
 
       <Dialog open={shareDialogOpen} onClose={() => setShareDialogOpen(false)}>
         <DialogTitle>Lista megosztása</DialogTitle>

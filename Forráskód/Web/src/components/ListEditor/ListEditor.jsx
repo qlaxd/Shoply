@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Snackbar, Alert } from '@mui/material';
 import ListService from '../../services/list.service';
+import { useNavigate } from 'react-router-dom';
 
 const ListEditor = ({ list, onSave }) => {
   const [listName, setListName] = useState('');
   const [priority, setPriority] = useState('NORMAL');
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (list) {
@@ -18,12 +20,20 @@ const ListEditor = ({ list, onSave }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await ListService.updateList(list._id, {
-        name: listName,
-        priority
-      });
+      if (list) {
+        await ListService.updateList(list._id, {
+          name: listName,
+          priority
+        });
+      } else {
+        const newList = await ListService.createList({
+          name: listName,
+          priority
+        });
+        navigate(`/lists/${newList._id}`);
+      }
       onSave?.();
-      setSuccessMessage('A lista sikeresen frissítve!');
+      setSuccessMessage(list ? 'A lista sikeresen frissítve!' : 'A lista sikeresen létrehozva!');
       setErrorMessage(null);
     } catch (error) {
       setErrorMessage(error.message || 'Hiba történt a mentés során');
@@ -55,6 +65,29 @@ const ListEditor = ({ list, onSave }) => {
             <MenuItem value="LOW">Alacsony</MenuItem>
             <MenuItem value="NORMAL">Normál</MenuItem>
             <MenuItem value="HIGH">Magas</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Megosztva</InputLabel>
+          <Select
+            value={list?.sharedWith?.map(user => user._id) || []}
+            label="Megosztva"
+            multiple
+            renderValue={(selected) => selected.length > 0 
+              ? selected.join(', ') 
+              : 'Nincs megosztás'
+            }
+          >
+            {list?.sharedWith?.length > 0 ? (
+              list.sharedWith.map(user => (
+                <MenuItem key={user._id} value={user._id}>
+                  {user.username}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>Nincs megosztott felhasználó</MenuItem>
+            )}
           </Select>
         </FormControl>
 
