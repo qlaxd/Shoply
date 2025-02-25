@@ -190,16 +190,15 @@ exports.removeProductFromList = async (req, res) => {
 
     // Ellenőrizzük a jogosultságot
     if (list.owner.toString() !== req.user.id && 
-        !list.sharedWith.some(share => 
+        !list.sharedUsers.some(share => 
           share.user.toString() === req.user.id && 
           ['edit', 'admin'].includes(share.permissionLevel)
         )) {
       return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
     }
-
     // Termék eltávolítása a listából
     list.products = list.products.filter(
-      product => product.toString() !== req.params.productId
+      product => product._id.toString() !== req.params.productId
     );
     
     await list.save();
@@ -224,7 +223,7 @@ exports.removeProductFromList = async (req, res) => {
 exports.updateProductInList = async (req, res) => {
   try {
     const { listId, productId } = req.params;
-    const { quantity, isPurchased } = req.body;
+    const { quantity, isPurchased, notes } = req.body;
     
     const list = await List.findById(listId);
     if (!list) {
@@ -233,7 +232,7 @@ exports.updateProductInList = async (req, res) => {
 
     // Ellenőrizzük a jogosultságot
     if (list.owner.toString() !== req.user.id && 
-        !list.sharedWith.some(share => 
+        !list.sharedUsers.some(share => 
           share.user.toString() === req.user.id && 
           ['edit', 'admin'].includes(share.permissionLevel)
         )) {
@@ -241,7 +240,7 @@ exports.updateProductInList = async (req, res) => {
     }
 
     // Ellenőrizzük, hogy a termék a listához tartozik-e
-    if (!list.products.includes(productId)) {
+    if (!list.products.some(product => product._id.toString() === productId)) {
       return res.status(404).json({ message: 'A termék nem található a listában' });
     }
     
@@ -249,21 +248,20 @@ exports.updateProductInList = async (req, res) => {
     const updateData = {};
     if (quantity !== undefined) updateData.quantity = quantity;
     if (isPurchased !== undefined) updateData.isPurchased = isPurchased;
+    if (notes !== undefined) updateData.notes = notes;
     
-    const product = await Product.findByIdAndUpdate(
-      productId,
-      updateData,
-      { new: true }
-    );
+    // A termék frissítése közvetlenül a listában
+    const productIndex = list.products.findIndex(product => product._id.toString() === productId);
+    if (productIndex !== -1) {
+      Object.assign(list.products[productIndex], updateData);
+      await list.save();
+    }
     
     // Populált lista visszaadása
     const updatedList = await List.findById(listId)
       .populate({
-        path: 'products',
-        populate: {
-          path: 'catalogItem',
-          model: 'ProductCatalog'
-        }
+        path: 'products.catalogItem',
+        model: 'ProductCatalog'
       });
     
     res.status(200).json(updatedList);
