@@ -1,22 +1,21 @@
 const mongoose = require('mongoose');
 
-const AuditLogSchema = new mongoose.Schema({
+const auditLogSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
   actionType: {
     type: String,
-    required: true
+    required: true,
+    enum: ['CREATE', 'UPDATE', 'DELETE', 'SHARE', 'LOGIN', 'LOGOUT', 'REGISTER']
   },
   targetType: {
     type: String,
-    enum: ['list', 'product', 'user'],
-    required: true
+    enum: ['list', 'product', 'user']
   },
-  targetId: {
-    type: mongoose.Schema.Types.ObjectId
-  },
+  targetId: mongoose.Schema.Types.ObjectId,
+  details: mongoose.Schema.Types.Mixed,
   ipAddress: String,
   userAgent: String,
   timestamp: {
@@ -25,4 +24,7 @@ const AuditLogSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('AuditLog', AuditLogSchema); 
+auditLogSchema.index({ timestamp: -1 });
+auditLogSchema.index({ user: 1, actionType: 1 });
+
+module.exports = mongoose.model('AuditLog', auditLogSchema); 

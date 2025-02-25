@@ -1,5 +1,6 @@
 const mongoose = require('../../../Backend/node_modules/mongoose');
 const ProductCatalog = require('../../../Backend/models/ProductCatalog');
+const Category = require('../../../Backend/models/Category');
 const User = require('../../../Backend/models/User');
 
 async function seedProductCatalogs() {
@@ -12,60 +13,105 @@ async function seedProductCatalogs() {
       throw new Error('Admin felhasználó nem található! Először futtasd a users/seedUsers.js scriptet!');
     }
 
+    // Kategóriák lekérése
+    const categories = await Category.find();
+    if (categories.length === 0) {
+      throw new Error('Nincsenek kategóriák! Először futtasd a categories/seedCategories.js scriptet!');
+    }
+
+    // Kategóriák keresése névvel
+    const findCategoryByName = (name) => {
+      return categories.find(cat => cat.name === name);
+    };
+
     const productCatalogs = [
       {
         name: 'Félbarna kenyér',
-        categoryHierarchy: ['Élelmiszerek', 'Pékáruk'],
+        category: findCategoryByName('Pékáruk')._id,
         defaultUnit: 'kg',
-        createdBy: admin._id
+        createdBy: admin._id,
+        usageCount: Math.floor(Math.random() * 100)
       },
       {
         name: 'Zsemle',
-        categoryHierarchy: ['Élelmiszerek', 'Pékáruk'],
+        category: findCategoryByName('Pékáruk')._id,
         defaultUnit: 'db',
-        createdBy: admin._id
+        createdBy: admin._id,
+        usageCount: Math.floor(Math.random() * 100)
       },
       {
         name: 'Tej 2,8%',
-        categoryHierarchy: ['Élelmiszerek', 'Tejtermékek'],
+        category: findCategoryByName('Tejtermékek')._id,
         defaultUnit: 'l',
-        createdBy: admin._id
+        createdBy: admin._id,
+        usageCount: Math.floor(Math.random() * 100)
       },
       {
         name: 'Trappista sajt',
-        categoryHierarchy: ['Élelmiszerek', 'Tejtermékek'],
+        category: findCategoryByName('Tejtermékek')._id,
         defaultUnit: 'kg',
-        createdBy: admin._id
+        createdBy: admin._id,
+        usageCount: Math.floor(Math.random() * 100)
       },
       {
         name: 'Mosogatószer',
-        categoryHierarchy: ['Háztartási cikkek', 'Tisztítószerek'],
+        category: findCategoryByName('Tisztítószerek')._id,
         defaultUnit: 'db',
-        createdBy: admin._id
+        createdBy: admin._id,
+        barcode: '5900000000001',
+        usageCount: Math.floor(Math.random() * 100)
       },
       {
         name: 'Mosópor',
-        categoryHierarchy: ['Háztartási cikkek', 'Tisztítószerek'],
+        category: findCategoryByName('Tisztítószerek')._id,
         defaultUnit: 'kg',
-        createdBy: admin._id
+        createdBy: admin._id,
+        barcode: '5900000000002',
+        usageCount: Math.floor(Math.random() * 100)
       },
       {
         name: 'Tányérkészlet',
-        categoryHierarchy: ['Háztartási cikkek', 'Konyhai eszközök'],
+        category: findCategoryByName('Konyhai eszközök')._id,
         defaultUnit: 'készlet',
-        createdBy: admin._id
+        createdBy: admin._id,
+        usageCount: Math.floor(Math.random() * 100)
       },
       {
         name: 'USB kábel',
-        categoryHierarchy: ['Elektronika', 'Számítástechnika'],
+        category: findCategoryByName('Számítástechnika')._id,
         defaultUnit: 'db',
-        createdBy: admin._id
+        createdBy: admin._id,
+        barcode: '5900000000003',
+        usageCount: Math.floor(Math.random() * 100)
       },
       {
         name: 'Egér',
-        categoryHierarchy: ['Elektronika', 'Számítástechnika'],
+        category: findCategoryByName('Számítástechnika')._id,
         defaultUnit: 'db',
-        createdBy: admin._id
+        createdBy: admin._id,
+        barcode: '5900000000004',
+        usageCount: Math.floor(Math.random() * 100)
+      },
+      {
+        name: 'Csirkemell',
+        category: findCategoryByName('Húsáruk')._id,
+        defaultUnit: 'kg',
+        createdBy: admin._id,
+        usageCount: Math.floor(Math.random() * 100)
+      },
+      {
+        name: 'Alma',
+        category: findCategoryByName('Zöldségek és gyümölcsök')._id,
+        defaultUnit: 'kg',
+        createdBy: admin._id,
+        usageCount: Math.floor(Math.random() * 100)
+      },
+      {
+        name: 'WC papír',
+        category: findCategoryByName('Fürdőszobai kellékek')._id,
+        defaultUnit: 'csomag',
+        createdBy: admin._id,
+        usageCount: Math.floor(Math.random() * 100)
       }
     ];
 

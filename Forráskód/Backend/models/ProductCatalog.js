@@ -1,15 +1,21 @@
 const mongoose = require('mongoose');
 
-const ProductCatalogSchema = new mongoose.Schema({
+const productCatalogSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     unique: true
   },
-  categoryHierarchy: [{
-    type: String
-  }],
+  category:  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category'
+  },
   defaultUnit: String,
+  barcode: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -26,4 +32,7 @@ const ProductCatalogSchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('ProductCatalog', ProductCatalogSchema); 
+// Teljes szöveges keresés támogatása
+productCatalogSchema.index({ name: "text" });
+
+module.exports = mongoose.model('ProductCatalog', productCatalogSchema); 

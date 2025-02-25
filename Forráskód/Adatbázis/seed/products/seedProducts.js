@@ -1,6 +1,7 @@
 const mongoose = require('../../../Backend/node_modules/mongoose');
 const Product = require('../../../Backend/models/Product');
 const ProductCatalog = require('../../../Backend/models/ProductCatalog');
+const User = require('../../../Backend/models/User');
 
 async function seedProducts() {
   try {
@@ -12,20 +13,62 @@ async function seedProducts() {
       throw new Error('Nincsenek termék katalógus elemek! Először futtasd a productCatalogs/seedProductCatalogs.js scriptet!');
     }
 
-    // Minden katalógus elemhez létrehozunk néhány terméket különböző mennyiségekkel
-    for (const catalogItem of catalogItems) {
-      // Minden katalógus elemhez 3 különböző terméket hozunk létre
-      const quantities = [1, 2, 5]; // Különböző mennyiségek
+    // Admin felhasználó keresése (opcionális, ha szükséges)
+    const admin = await User.findOne({ role: 'admin' });
+    
+    // Legalább 20 termék létrehozása, hogy a rendszer rendelkezzen termék példányokkal
+    const productsToCreate = [
+      // Katalógus alapú termékek
+      ...catalogItems.slice(0, 5).map(item => ({
+        catalogItem: item._id,
+        quantity: Math.floor(Math.random() * 10) + 1,
+        isPurchased: false
+      })),
       
-      for (const quantity of quantities) {
-        const product = new Product({
-          catalogItem: catalogItem._id,
-          quantity: quantity,
-          isPurchased: Math.random() < 0.5 // 50% esély a megvásárlásra
-        });
-
+      // Katalógus nélküli termékek
+      {
+        name: "Házi készítésű lekvár",
+        unit: "üveg",
+        quantity: 3,
+        isPurchased: false
+      },
+      {
+        name: "Speciális gyógytea",
+        unit: "csomag",
+        quantity: 2,
+        isPurchased: false
+      },
+      {
+        name: "Házi sütemény",
+        unit: "db",
+        quantity: 12,
+        isPurchased: false
+      }
+    ];
+    
+    for (const productData of productsToCreate) {
+      // Ha katalógus alapú termék, ellenőrizzük, létezik-e már
+      let checkCondition = productData.catalogItem 
+        ? { catalogItem: productData.catalogItem, quantity: productData.quantity }
+        : { name: productData.name, quantity: productData.quantity };
+        
+      const existingProduct = await Product.findOne(checkCondition);
+      
+      if (!existingProduct) {
+        const product = new Product(productData);
         await product.save();
-        console.log(`Termék létrehozva: ${catalogItem.name} - ${quantity} ${catalogItem.defaultUnit}`);
+        
+        let productName = productData.catalogItem 
+          ? (await ProductCatalog.findById(productData.catalogItem)).name
+          : productData.name;
+          
+        console.log(`Termék létrehozva: ${productName} - ${productData.quantity} ${productData.unit || 'db'}`);
+      } else {
+        let productName = productData.catalogItem 
+          ? (await ProductCatalog.findById(productData.catalogItem)).name
+          : productData.name;
+          
+        console.log(`Termék már létezik: ${productName}`);
       }
     }
 

@@ -1,4 +1,4 @@
-const mongoose = require('../../../Backend/node_modules/mongoose/types');
+const mongoose = require('../../../Backend/node_modules/mongoose');
 const User = require('../../../Backend/models/User');
 
 async function deSeedUsers() {
