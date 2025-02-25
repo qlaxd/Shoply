@@ -51,7 +51,8 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {  // token lejártakor kijelentkezés
+    if (error.response?.status === 401 || 
+        (error.response?.status === 400 && error.response?.data?.message === 'Invalid token.')) {
       localStorage.removeItem('token');
       window.location.href = '/login';
     }

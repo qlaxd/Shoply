@@ -24,7 +24,7 @@ export interface Product {
   unit?: string;
 }
 
-export interface SharedWith {
+export interface SharedUsers{
   user: User;
   permissionLevel: 'view' | 'edit';
 }
@@ -34,7 +34,7 @@ export interface ShoppingList {
   name: string;
   owner: User;
   products: Product[];
-  sharedWith: SharedWith[];
+  sharedUsers: SharedUsers[];
   createdAt: Date;
   updatedAt: Date;
   priority?: 'HIGH' | 'MEDIUM' | 'LOW';

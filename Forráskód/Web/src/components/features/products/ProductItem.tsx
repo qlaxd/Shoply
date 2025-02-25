@@ -2,7 +2,6 @@ import { Product } from '../../../utils/types';
 import { Box, Typography, Checkbox, Skeleton, IconButton, Tooltip } from '@mui/material';
 import { FiberManualRecord, Category, RemoveDone, Add } from '@mui/icons-material';
 
-
 interface ProductItemProps {
   product: Product;
   onTogglePurchased?: (productId: string) => void;
@@ -16,11 +15,16 @@ const ProductItem = ({ product, onTogglePurchased, onQuantityChange }: ProductIt
     }
   };
 
-  const handleDecrement = () => onQuantityChange?.(product._id, product.quantity - 1);
+  const handleDecrement = () => {
+    if (product.quantity > 1) {
+      onQuantityChange?.(product._id, product.quantity - 1);
+    }
+  };
+  
   const handleIncrement = () => onQuantityChange?.(product._id, product.quantity + 1);
 
-  // Ha nincs catalogItem, akkor egy betöltő állapotot mutatunk
-  if (!product.catalogItem) {
+  // Ha nem töltött be a termék vagy hiányzik a catalogItem, akkor betöltő állapotot mutatunk
+  if (!product || !product._id) {
     return (
       <Box 
         sx={{ 
@@ -46,6 +50,13 @@ const ProductItem = ({ product, onTogglePurchased, onQuantityChange }: ProductIt
       </Box>
     );
   }
+
+  // A termék neve alapján: ha van catalogItem, annak nevét használjuk, egyébként a termék _id-ját vagy üres stringet
+  const productName = product.catalogItem?.name || product._id || '';
+  // A kategóriahierarchia kezelése
+  const categoryHierarchy = product.catalogItem?.categoryHierarchy || [];
+  // Mértékegység meghatározása (ha nincs megadva, db az alapértelmezett)
+  const unitToDisplay = product.unit || product.catalogItem?.defaultUnit || 'db';
 
   return (
     <Box sx={{ 
@@ -74,8 +85,8 @@ const ProductItem = ({ product, onTogglePurchased, onQuantityChange }: ProductIt
         <Tooltip 
           title={
             <>
-              <Typography variant="body2">{product.notes}</Typography>
-              {product.catalogItem?.categoryHierarchy?.join(' › ')}
+              {product.notes && <Typography variant="body2">{product.notes}</Typography>}
+              {categoryHierarchy.length > 0 && categoryHierarchy.join(' › ')}
             </>
           }
           arrow
@@ -91,18 +102,18 @@ const ProductItem = ({ product, onTogglePurchased, onQuantityChange }: ProductIt
               gap: 1
             }}
           >
-            {product.catalogItem.name}
+            {productName}
             {product.priority === 'HIGH' && (
               <FiberManualRecord color="error" sx={{ fontSize: '0.8rem' }} />
             )}
           </Typography>
         </Tooltip>
         
-        {product.catalogItem.categoryHierarchy?.length > 0 && (
+        {categoryHierarchy.length > 0 && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
             <Category fontSize="small" color="action" />
             <Typography variant="caption" color="text.secondary">
-              {product.catalogItem.categoryHierarchy.join(' › ')}
+              {categoryHierarchy.join(' › ')}
             </Typography>
           </Box>
         )}
@@ -121,11 +132,12 @@ const ProductItem = ({ product, onTogglePurchased, onQuantityChange }: ProductIt
           size="medium" 
           onClick={handleDecrement}
           sx={{ p: 0.5 }}
+          disabled={product.quantity <= 1}
         >
           <RemoveDone fontSize="small" />
         </IconButton>
         <Typography variant="body2" sx={{ minWidth: '24px', textAlign: 'center' }}>
-          {product.quantity} {product.unit || 'db'}
+          {product.quantity} {unitToDisplay}
         </Typography>
         <IconButton 
           size="medium" 

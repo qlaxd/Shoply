@@ -18,7 +18,7 @@ const authMiddleware = (req, res, next) => {
     // decoded tartalmazza a user id-ját és a role-ját a payloadban (2. rész a tokenben)
     next();
   } catch (error) {
-    return res.status(400).json({ message: 'Invalid token.' });
+    return res.status(401).json({ message: 'Invalid token.' });
   }
 };
 

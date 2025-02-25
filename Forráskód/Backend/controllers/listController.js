@@ -8,30 +8,29 @@ exports.getAllLists = async (req, res) => {
     const lists = await List.find({
       $or: [
         { owner: req.user.id },
-        { 'sharedWith.user': req.user.id }
+        { 'sharedUsers.user': req.user.id }
       ]
     })
-    .populate('owner')
     .populate({
-      path: 'products',
-      model: 'Product',
-      populate: {
-        path: 'catalogItem',
-        model: 'ProductCatalog'
-      }
+      path: 'owner',
+      select: '-password -__v'
+    })
+    .populate('products.catalogItem')
+    .populate({
+      path: 'products.addedBy',
+      select: '-password -__v'
     })
     .populate({
-      path: 'sharedWith.user',
+      path: 'sharedUsers.user',
       model: 'User',
       select: '-password -__v'
     });
     
     res.status(200).json(lists);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching lists', error });
+    res.status(500).json({ message: 'Hiba a listák lekérdezésekor', error });
   }
 };
-
 // Get a single list by ID
 exports.getListById = async (req, res) => {
   try {
@@ -101,7 +100,7 @@ exports.shareList = async (req, res) => {
     }
 
     // Ellenőrizzük, hogy már meg van-e osztva a felhasználóval
-    const alreadyShared = list.sharedWith.some(share => 
+    const alreadyShared = list.sharedUsers.some(share => 
       share.user.toString() === userToShare._id.toString()
     );
     
@@ -109,7 +108,7 @@ exports.shareList = async (req, res) => {
       return res.status(400).json({ message: 'A lista már meg van osztva ezzel a felhasználóval' });
     }
 
-    list.sharedWith.push({ 
+    list.sharedUsers.push({ 
       user: userToShare._id,
       permissionLevel: req.body.permissionLevel || 'view'
     });
@@ -125,7 +124,10 @@ exports.shareList = async (req, res) => {
 exports.unshareList = async (req, res) => {
   try {
     const list = await List.findById(req.params.id);
-    list.sharedWith = list.sharedWith.filter(share => 
+    if (list.owner.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
+    }
+    list.sharedUsers = list.sharedUsers.filter(share => 
       share.user.toString() !== req.body.userId
     );
     await list.save();
@@ -145,7 +147,7 @@ exports.addProductToList = async (req, res) => {
 
     // Ellenőrizzük a jogosultságot
     if (list.owner.toString() !== req.user.id && 
-        !list.sharedWith.some(share => 
+        !list.sharedUsers.some(share => 
           share.user.toString() === req.user.id && 
           ['edit', 'admin'].includes(share.permissionLevel)
         )) {
