@@ -1,5 +1,6 @@
 const List = require('../models/List');
 const User = require('../models/User');
+const Product = require('../models/Product');
 
 // Get all lists
 exports.getAllLists = async (req, res) => {
@@ -131,5 +132,140 @@ exports.unshareList = async (req, res) => {
     res.status(200).json(list);
   } catch (error) {
     res.status(500).json({ message: 'Hiba a megosztás visszavonása során', error });
+  }
+};
+
+// Termék hozzáadása a listához 
+exports.addProductToList = async (req, res) => {
+  try {
+    const list = await List.findById(req.params.id);
+    if (!list) {
+      return res.status(404).json({ message: 'Lista nem található' });
+    }
+
+    // Ellenőrizzük a jogosultságot
+    if (list.owner.toString() !== req.user.id && 
+        !list.sharedWith.some(share => 
+          share.user.toString() === req.user.id && 
+          ['edit', 'admin'].includes(share.permissionLevel)
+        )) {
+      return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
+    }
+
+    const productData = req.body;
+    
+    // Új termék létrehozása
+    const product = new Product(productData);
+    await product.save();
+    
+    // Termék hozzáadása a listához
+    list.products.push(product._id);
+    await list.save();
+    
+    // Populált lista visszaadása
+    const updatedList = await List.findById(list._id)
+      .populate({
+        path: 'products',
+        populate: {
+          path: 'catalogItem',
+          model: 'ProductCatalog'
+        }
+      });
+    
+    res.status(200).json(updatedList);
+  } catch (error) {
+    res.status(500).json({ message: 'Hiba a termék hozzáadása során', error });
+  }
+};
+
+// Termék eltávolítása a listából
+exports.removeProductFromList = async (req, res) => {
+  try {
+    const list = await List.findById(req.params.listId);
+    if (!list) {
+      return res.status(404).json({ message: 'Lista nem található' });
+    }
+
+    // Ellenőrizzük a jogosultságot
+    if (list.owner.toString() !== req.user.id && 
+        !list.sharedWith.some(share => 
+          share.user.toString() === req.user.id && 
+          ['edit', 'admin'].includes(share.permissionLevel)
+        )) {
+      return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
+    }
+
+    // Termék eltávolítása a listából
+    list.products = list.products.filter(
+      product => product.toString() !== req.params.productId
+    );
+    
+    await list.save();
+    
+    // Populált lista visszaadása
+    const updatedList = await List.findById(list._id)
+      .populate({
+        path: 'products',
+        populate: {
+          path: 'catalogItem',
+          model: 'ProductCatalog'
+        }
+      });
+    
+    res.status(200).json(updatedList);
+  } catch (error) {
+    res.status(500).json({ message: 'Hiba a termék eltávolítása során', error });
+  }
+};
+
+// Termék mennyiségének vagy megvásárlási státuszának módosítása
+exports.updateProductInList = async (req, res) => {
+  try {
+    const { listId, productId } = req.params;
+    const { quantity, isPurchased } = req.body;
+    
+    const list = await List.findById(listId);
+    if (!list) {
+      return res.status(404).json({ message: 'Lista nem található' });
+    }
+
+    // Ellenőrizzük a jogosultságot
+    if (list.owner.toString() !== req.user.id && 
+        !list.sharedWith.some(share => 
+          share.user.toString() === req.user.id && 
+          ['edit', 'admin'].includes(share.permissionLevel)
+        )) {
+      return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
+    }
+
+    // Ellenőrizzük, hogy a termék a listához tartozik-e
+    if (!list.products.includes(productId)) {
+      return res.status(404).json({ message: 'A termék nem található a listában' });
+    }
+    
+    // Termék módosítása
+    const updateData = {};
+    if (quantity !== undefined) updateData.quantity = quantity;
+    if (isPurchased !== undefined) updateData.isPurchased = isPurchased;
+    
+    const product = await Product.findByIdAndUpdate(
+      productId,
+      updateData,
+      { new: true }
+    );
+    
+    // Populált lista visszaadása
+    const updatedList = await List.findById(listId)
+      .populate({
+        path: 'products',
+        populate: {
+          path: 'catalogItem',
+          model: 'ProductCatalog'
+        }
+      });
+    
+    res.status(200).json(updatedList);
+  } catch (error) {
+    res.status(500).json({ message: 'Hiba a termék módosítása során', error });
   }
 };
