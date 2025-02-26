@@ -1,387 +1,147 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
-import { createTheme } from '@mui/material/styles';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { AppProvider } from '@toolpad/core/AppProvider';
-import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import AuthService from '../../services/auth.service';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Container, Button, TextField, InputAdornment, Grid, CircularProgress } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
-import {
-  Account,
-  AccountPreview,
-  AccountPopoverFooter,
-  SignOutButton,
-} from '@toolpad/core/Account';
+import ShoppingListCard from '../../components/features/lists/ShoppingListCard';
+import Header from '../../components/layout/Header/Header';
 import './Home.css';
-import { useState, useEffect } from 'react';
-import ListService from '../../services/list.service';
-import ListContainer from '../../components/features/lists/ListContainer';
-import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
 
-const NAVIGATION = [
-  {
-    kind: 'header',
-    title: 'Main items',
-  },
-  {
-    segment: 'dashboard',
-    title: 'Dashboard',
-    icon: <DashboardIcon />,
-  },
-  {
-    segment: 'orders',
-    title: 'Orders',
-    icon: <ShoppingCartIcon />,
-  },
-];
-
-const demoTheme = createTheme({
-  cssVariables: {
-    colorSchemeSelector: 'data-toolpad-color-scheme',
-  },
-  colorSchemes: { light: true, dark: true },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
-});
-
-function DemoPageContent({ pathname }) {
-  return (
-    <Box
-      sx={{
-        py: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-      }}
-    >
-      <Typography>Dashboard content for {pathname}</Typography>
-    </Box>
-  );
-}
-
-DemoPageContent.propTypes = {
-  pathname: PropTypes.string.isRequired,
-};
-
-function AccountSidebarPreview(props) {
-  const { handleClick, open, mini } = props;
-  return (
-    <Stack direction="column" p={0}>
-      <Divider />
-      <AccountPreview
-        variant={mini ? 'condensed' : 'expanded'}
-        handleClick={handleClick}
-        open={open}
-      />
-    </Stack>
-  );
-}
-
-AccountSidebarPreview.propTypes = {
-  /**
-   * The handler used when the preview is expanded
-   */
-  handleClick: PropTypes.func,
-  mini: PropTypes.bool.isRequired,
-  /**
-   * The state of the Account popover
-   * @default false
-   */
-  open: PropTypes.bool,
-};
-
-const accounts = [
-  {
-    id: 1,
-    name: ' Lajkó Levente',
-    email: 'admin@example.com',
-    image: 'https://avatars.githubusercontent.com/u/180977842?v=4',
-    projects: [
-      {
-        id: 3,
-        title: 'Project X',
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Másik Levente',
-    email: 'bsze3lajlev@vasvari.org',
-    color: '#8B4513', // Brown color
-    projects: [{ id: 4, title: 'Project A' }],
-  },
-];
-
-function SidebarFooterAccountPopover({ handleLogout }) {
-  return (
-    <Stack direction="column">
-      <Typography variant="body2" mx={2} mt={1}>
-        Accounts
-      </Typography>
-      <MenuList>
-        {accounts.map((account) => (
-          <MenuItem
-            key={account.id}
-            component="button"
-            sx={{
-              justifyContent: 'flex-start',
-              width: '100%',
-              columnGap: 2,
-            }}
-          >
-            <ListItemIcon>
-              <Avatar
-                sx={{
-                  width: 32,
-                  height: 32,
-                  fontSize: '0.95rem',
-                  bgcolor: account.color,
-                }}
-                src={account.image ?? ''}
-                alt={account.name ?? ''}
-              >
-                {account.name[0]}
-              </Avatar>
-            </ListItemIcon>
-            <ListItemText
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                width: '100%',
-              }}
-              primary={account.name}
-              secondary={account.email}
-              primaryTypographyProps={{ variant: 'body2' }}
-              secondaryTypographyProps={{ variant: 'caption' }}
-            />
-          </MenuItem>
-        ))}
-      </MenuList>
-      <Divider />
-      <AccountPopoverFooter>
-        <SignOutButton onClick={handleLogout} />
-      </AccountPopoverFooter>
-    </Stack>
-  );
-}
-
-const createPreviewComponent = (mini) => {
-  function PreviewComponent(props) {
-    return <AccountSidebarPreview {...props} mini={mini} />;
-  }
-  return PreviewComponent;
-};
-
-function SidebarFooterAccount({ mini, handleLogout }) {
-  const PreviewComponent = React.useMemo(() => createPreviewComponent(mini), [mini]);
-  return (
-    <Account
-      slots={{
-        preview: PreviewComponent,
-        popoverContent: () => <SidebarFooterAccountPopover handleLogout={handleLogout} />,
-      }}
-      slotProps={{
-        popover: {
-          transformOrigin: { horizontal: 'left', vertical: 'bottom' },
-          anchorOrigin: { horizontal: 'right', vertical: 'bottom' },
-          disableAutoFocus: true,
-          slotProps: {
-            paper: {
-              elevation: 0,
-              sx: {
-                overflow: 'visible',
-                filter: (theme) =>
-                  `drop-shadow(0px 2px 8px ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.32)'})`,
-                mt: 1,
-                '&::before': {
-                  content: '""',
-                  display: 'block',
-                  position: 'absolute',
-                  bottom: 10,
-                  left: 0,
-                  width: 10,
-                  height: 10,
-                  bgcolor: 'background.paper',
-                  transform: 'translate(-50%, -50%) rotate(45deg)',
-                  zIndex: 0,
-                },
-              },
-            },
-          },
-        },
-      }}
-    />
-  );
-}
-
-SidebarFooterAccount.propTypes = {
-  mini: PropTypes.bool.isRequired,
-  handleLogout: PropTypes.func.isRequired,
-};
-
-const demoSession = {
-  user: {
-    name: 'Admin',
-    email: 'admin@example.com',
-    image: 'https://avatars.githubusercontent.com/u/180977842?v=4',
-  },
-};
-
-function DashboardLayoutAccountSidebar(props) {
-  const { window } = props;
+const Home = () => {
   const navigate = useNavigate();
-
-  const [pathname, setPathname] = React.useState('/dashboard');
-  const [session, setSession] = React.useState(demoSession);
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [newListTitle, setNewListTitle] = useState('');
 
-  const handleLogout = React.useCallback(() => {
-    AuthService.logout();
-    navigate('/login', { replace: true });
-  }, [navigate]);
-
-  const router = React.useMemo(() => {
-    return {
-      pathname,
-      searchParams: new URLSearchParams(),
-      navigate: (path) => setPathname(String(path)),
-    };
-  }, [pathname]);
-
-  const authentication = React.useMemo(() => {
-    return {
-      signIn: () => {
-        setSession(demoSession);
+  useEffect(() => {
+    // TODO: Implement API call to fetch shopping lists
+    // Placeholder data for now
+    const dummyLists = [
+      { 
+        id: 1, 
+        title: 'Hétvégi grillparti', 
+        priority: 1, 
+        products: [
+          { id: 1, name: 'Csirkemell', addedBy: 'Gábor' },
+          { id: 2, name: 'Sör', addedBy: 'Péter' },
+          { id: 3, name: 'Faszén', addedBy: 'Anna' },
+        ] 
       },
-      signOut: handleLogout,
-    };
-  }, [handleLogout]);
+      { 
+        id: 2, 
+        title: 'Heti bevásárlás', 
+        priority: 2, 
+        products: [
+          { id: 4, name: 'Tej', addedBy: 'Éva' },
+          { id: 5, name: 'Kenyér', addedBy: 'Gábor' },
+          { id: 6, name: 'Sajt', addedBy: 'Anna' },
+        ] 
+      },
+    ];
+    
+    setLists(dummyLists);
+    setLoading(false);
+  }, []);
 
-  const handleProductUpdate = async (listId, productId, updates) => {
-    try {
-      // Itt kellene meghívni a backend API-t a termék frissítéséhez
-      // Egyelőre csak optimisztikusan frissítjük a frontend állapotot
-      setLists(prevLists => 
-        prevLists.map(list => {
-          if (list._id === listId) {
-            return {
-              ...list,
-              products: list.products.map(product => 
-                product._id === productId 
-                  ? { ...product, ...updates }
-                  : product
-              )
-            };
-          }
-          return list;
-        })
-      );
-    } catch (err) {
-      setError('Hiba történt a termék frissítése során');
-      console.error('Termék frissítési hiba:', err);
+  const handleCreateList = () => {
+    if (newListTitle.trim()) {
+      // TODO: Implement API call to create new list
+      // For now, just add to local state
+      const newList = {
+        id: lists.length + 1,
+        title: newListTitle,
+        priority: lists.length + 1,
+        products: []
+      };
+      
+      setLists([...lists, newList]);
+      setNewListTitle('');
+    } else {
+      // Open list editor without a title
+      navigate('/list/new');
     }
   };
 
-  useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const fetchedLists = await ListService.getUserLists();
-        setLists(fetchedLists);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
+  const handleEditList = (id) => {
+    navigate(`/list/${id}`);
+  };
 
-    fetchLists();
-  }, []);
-
-  // Remove this const when copying and pasting into your project.
-  const demoWindow = window !== undefined ? window() : undefined;
-
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <Alert severity="error">{error}</Alert>
-      </Box>
-    );
-  }
+  const filteredLists = lists.filter(list => 
+    list.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <AppProvider
-      navigation={NAVIGATION}
-      router={router}
-      theme={demoTheme}
-      window={demoWindow}
-      authentication={authentication}
-      session={session}
-    >
-      <DashboardLayout
-        slots={{ 
-          toolbarAccount: () => null, 
-          sidebarFooter: (props) => <SidebarFooterAccount {...props} handleLogout={handleLogout} /> 
-        }}
-      >
-        <Box sx={{ p: 3 }}>
-          <Typography variant="h4" gutterBottom>
-            Bevásárlólisták
+    <>
+      <Header />
+      <Container maxWidth="md" className="dashboard-container">
+        <Box sx={{ my: 4 }}>
+          <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+            Bevásárló Listák
           </Typography>
-          {lists.length === 0 ? (
-            <Typography>Még nincsenek bevásárlólisták.</Typography>
-          ) : (
-            <Stack spacing={2}>
-              {lists.map(list => (
-                <ListContainer 
-                  key={list._id} 
-                  list={list}
-                  onProductUpdate={handleProductUpdate}
-                />
+          
+          <Box sx={{ display: 'flex', mb: 3 }}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Keresés a listákban..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ mr: 2 }}
+            />
+            
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <TextField
+                placeholder="Új lista neve..."
+                variant="outlined"
+                value={newListTitle}
+                onChange={(e) => setNewListTitle(e.target.value)}
+                sx={{ mr: 1 }}
+              />
+              <Button 
+                variant="contained" 
+                color="primary" 
+                startIcon={<AddIcon />}
+                onClick={handleCreateList}
+              >
+                Új lista
+              </Button>
+            </Box>
+          </Box>
+
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : filteredLists.length > 0 ? (
+            <Grid container spacing={3}>
+              {filteredLists.map((list) => (
+                <Grid item xs={12} sm={6} md={4} key={list.id}>
+                  <ShoppingListCard 
+                    list={list} 
+                    onEdit={() => handleEditList(list.id)} 
+                  />
+                </Grid>
               ))}
-            </Stack>
+            </Grid>
+          ) : (
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
+              <Typography variant="h6" color="textSecondary">
+                Nincsenek bevásárló listák. Hozz létre egyet az "Új lista" gombbal!
+              </Typography>
+            </Box>
           )}
         </Box>
-      </DashboardLayout>
-    </AppProvider>
+      </Container>
+    </>
   );
-}
-
-DashboardLayoutAccountSidebar.propTypes = {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * Remove this when copying and pasting into your project.
-   */
-  window: PropTypes.func,
 };
 
-export default DashboardLayoutAccountSidebar;
+export default Home;

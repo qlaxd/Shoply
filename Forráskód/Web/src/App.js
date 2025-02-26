@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home';
 import LoginSignup from './pages/LoginSignup/LoginSignup';
 import PrivateRoute from './utils/PrivateRoute';
-import ListEditor from './components/ListEditor/ListEditor';
+import ListEditor from './components/features/lists/ListEditor';
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         <Route path="/register" element={<LoginSignup isRegister />} />
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<Home />} />
-          <Route path="/lists/:id" element={<ListEditor />} />
+          <Route path="/list/:id" element={<ListEditor />} />
         </Route>
       </Routes>
     </BrowserRouter>

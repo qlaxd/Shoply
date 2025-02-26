@@ -4,7 +4,7 @@ const ProductCatalogService = {
   // Összes katalógus elem lekérdezése
   getAllCatalogItems: async () => {
     try {
-      const response = await api.get('/product-catalogs');
+      const response = await api.get('/productCatalogs');
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Hiba a katalógus elemek betöltésekor');
@@ -14,7 +14,7 @@ const ProductCatalogService = {
   // Katalógus elem keresése
   searchCatalogItems: async (query) => {
     try {
-      const response = await api.get(`/product-catalogs/search`, {
+      const response = await api.get(`/productCatalogs/search`, {
         params: { query }
       });
       return response.data;
@@ -26,7 +26,7 @@ const ProductCatalogService = {
   // Katalógus elem lekérdezése ID alapján
   getCatalogItemById: async (id) => {
     try {
-      const response = await api.get(`/product-catalogs/${id}`);
+      const response = await api.get(`/productCatalogs/${id}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Hiba a katalógus elem betöltésekor');
@@ -36,7 +36,7 @@ const ProductCatalogService = {
   // Új katalógus elem létrehozása (admin jogosultság szükséges)
   createCatalogItem: async (catalogData) => {
     try {
-      const response = await api.post('/product-catalogs', catalogData);
+      const response = await api.post('/productCatalogs', catalogData);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Hiba a katalógus elem létrehozásakor');
@@ -46,7 +46,7 @@ const ProductCatalogService = {
   // Katalógus elem frissítése (admin jogosultság szükséges)
   updateCatalogItem: async (id, catalogData) => {
     try {
-      const response = await api.put(`/product-catalogs/${id}`, catalogData);
+      const response = await api.put(`/productCatalogs/${id}`, catalogData);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Hiba a katalógus elem frissítésekor');
@@ -56,7 +56,7 @@ const ProductCatalogService = {
   // Katalógus elem törlése (admin jogosultság szükséges)
   deleteCatalogItem: async (id) => {
     try {
-      const response = await api.delete(`/product-catalogs/${id}`);
+      const response = await api.delete(`/productCatalogs/${id}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Hiba a katalógus elem törlésekor');

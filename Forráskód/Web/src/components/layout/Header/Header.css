@@ -1,0 +1,36 @@
+.app-header {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.header-logo-icon {
+  margin-right: 8px;
+}
+
+.user-menu-button {
+  margin-left: 16px;
+}
+
+.user-menu-content {
+  min-width: 200px;
+}
+
+.user-info {
+  padding: 16px;
+}
+
+@media (max-width: 600px) {
+  .header-title {
+    font-size: 1.25rem;
+  }
+  
+  .nav-links {
+    display: none;
+  }
+} 

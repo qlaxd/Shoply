@@ -124,100 +124,19 @@ This document provides a detailed explanation of the app's flow and features. It
 ## Data Models
 
 ### 1. User Schema
-```javascript
-{
-id: ObjectId,
-username: { type: String, required: true, unique: true },
-email: { type: String, required: true, unique: true },
-password: { type: String, required: true },
-role: { type: String, enum: ['user', 'admin'], default: 'user' },
-lastLogin: Date,
-isActive: { type: Boolean, default: true },
-createdAt: Date,
-updatedAt: Date
-}
-```
 
 ### 2. List Schema
-```javascript
-{
-id: ObjectId,
-title: { type: String, required: true },
-owner: { type: ObjectId, ref: 'User', required: true },
-sharedUsers: [{ type: ObjectId, ref: 'User' }],
-priority: { type: Number, default: 0 },
-products: [{
-id: ObjectId,
-name: { type: String, required: true },
-quantity: { type: Number, default: 1 },
-category: { type: String, ref: 'Category' },
-addedBy: { type: ObjectId, ref: 'User' },
-status: { type: String, enum: ['pending', 'completed'], default: 'pending' },
-barcode: String,
-notes: String
-}],
-version: { type: Number, default: 0 },
-lastModified: Date,
-status: { type: String, enum: ['active', 'completed', 'archived'], default: 'active' },
-deleted: { type: Boolean, default: false },
-createdAt: Date,
-updatedAt: Date
-}
-```
-
 
 ### 3. Product Catalog Schema
-```javascript
-{
-id: ObjectId,
-name: { type: String, required: true, unique: true },
-categoryHierarchy: [String],
-defaultUnit: String,
-barcode: { type: String, unique: true, sparse: true },
-createdBy: { type: ObjectId, ref: 'User' },
-lastUsed: Date,
-usageCount: { type: Number, default: 0 }
-}
-```
-
 
 ### 4. AuditLog Schema
-```javascript
-{
-id: ObjectId,
-user: { type: ObjectId, ref: 'User' },
-actionType: { type: String, required: true },
-targetType: { type: String, enum: ['list', 'product', 'user'] },
-targetId: ObjectId,
-ipAddress: String,
-userAgent: String,
-timestamp: { type: Date, default: Date.now }
-}
-```
 
-### Shopping List (Example Schema)
-```javascript
-{
-  _id: ObjectId,
-  title: String,          // e.g., "Weekend Grill Party"
-  priority: Number,       // for sorting lists on the dashboard
-  products: [
-    {
-      _id: ObjectId,
-      name: String,
-      addedBy: ObjectId,  // Reference to the user who added the product
-      status: String      // e.g., "pending" or "completed"
-    }
-  ],
-  status: String,         // e.g., "active", "completed"
-  createdAt: Date,
-  updatedAt: Date
-}
-```
 
 ## API Endpoints
 
 ### Shopping List Endpoints
+
+- [Backend API Dokumentáció](Dokumentáció/Fejlesztői%20napló/api/Backend-API.md)
 
 - **GET /api/lists**  
   Retrieves all active shopping lists for the authenticated user.

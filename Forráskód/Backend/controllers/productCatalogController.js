@@ -31,7 +31,7 @@ exports.getCatalogItemById = async (req, res) => {
 // Új katalógus elem létrehozása
 exports.createCatalogItem = async (req, res) => {
   try {
-    const { name, categoryHierarchy, defaultUnit } = req.body;
+    const { name, category, defaultUnit } = req.body;
     
     if (!name) {
       return res.status(400).json({ message: 'A katalógus elem neve kötelező' });
@@ -44,7 +44,7 @@ exports.createCatalogItem = async (req, res) => {
     
     const catalogItem = new ProductCatalog({
       name,
-      categoryHierarchy: categoryHierarchy || [],
+      category: category || [],
       defaultUnit: defaultUnit || 'db'
     });
     
@@ -59,7 +59,7 @@ exports.createCatalogItem = async (req, res) => {
 // Katalógus elem módosítása
 exports.updateCatalogItem = async (req, res) => {
   try {
-    const { name, categoryHierarchy, defaultUnit } = req.body;
+    const { name, category, defaultUnit } = req.body;
     
     // Ha a nevet módosítják, ellenőrizzük, hogy nem foglalt-e
     if (name) {
@@ -75,7 +75,7 @@ exports.updateCatalogItem = async (req, res) => {
     
     const catalogItem = await ProductCatalog.findByIdAndUpdate(
       req.params.id,
-      { name, categoryHierarchy, defaultUnit },
+      { name, category, defaultUnit },
       { new: true }
     );
     
@@ -129,7 +129,7 @@ exports.searchCatalogItems = async (req, res) => {
     const catalogItems = await ProductCatalog.find({
       $or: [
         { name: { $regex: query, $options: 'i' } },
-        { 'categoryHierarchy': { $regex: query, $options: 'i' } }
+        { 'category': { $regex: query, $options: 'i' } }
       ]
     });
     

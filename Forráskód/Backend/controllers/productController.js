@@ -132,7 +132,7 @@ exports.searchProducts = async (req, res) => {
     const catalogItems = await ProductCatalog.find({
       $or: [
         { name: { $regex: query, $options: 'i' } },
-        { 'categoryHierarchy': { $regex: query, $options: 'i' } }
+        { 'category': { $regex: query, $options: 'i' } }
       ]
     });
     

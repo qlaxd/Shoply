@@ -15,7 +15,7 @@ GET /api/products
     "catalogItem": {
       "_id": "67b4ccc82de718b6120e5245",
       "name": "Tej 2,8%",
-      "categoryHierarchy": ["Élelmiszerek", "Tejtermékek"],
+      "category": ["Élelmiszerek", "Tejtermékek"],
       "defaultUnit": "l"
     },
     "quantity": 1,
@@ -39,7 +39,7 @@ GET /api/products/:id
   "catalogItem": {
     "_id": "67b4ccc82de718b6120e5245",
     "name": "Tej 2,8%",
-    "categoryHierarchy": ["Élelmiszerek", "Tejtermékek"],
+    "category": ["Élelmiszerek", "Tejtermékek"],
     "defaultUnit": "l"
   },
   "quantity": 1,

@@ -90,7 +90,7 @@
         "catalogItem": {
           "_id": "67b4ccc82de718b6120e5245",
           "name": "Tej",
-          "categoryHierarchy": ["Élelmiszerek", "Tejtermékek"],
+          "category": ["Élelmiszerek", "Tejtermékek"],
           "defaultUnit": "l"
         },
         "quantity": 3,
@@ -144,7 +144,7 @@
       "catalogItem": {
         "_id": "67b4ccc82de718b6120e5245",
         "name": "Tej",
-        "categoryHierarchy": ["Élelmiszerek", "Tejtermékek"],
+        "category": ["Élelmiszerek", "Tejtermékek"],
         "defaultUnit": "l"
       },
       "quantity": 3,
@@ -363,7 +363,7 @@
     "catalogItem": {
       "_id": "67b4ccc82de718b6120e5245",
       "name": "Tej",
-      "categoryHierarchy": ["Élelmiszerek", "Tejtermékek"],
+      "category": ["Élelmiszerek", "Tejtermékek"],
       "defaultUnit": "l"
     },
     "quantity": 3,
@@ -424,7 +424,7 @@
     "catalogItem": {
       "_id": "67b4ccc82de718b6120e5245",
       "name": "Tej",
-      "categoryHierarchy": ["Élelmiszerek", "Tejtermékek"],
+      "category": ["Élelmiszerek", "Tejtermékek"],
       "defaultUnit": "l"
     },
     "quantity": 5,
@@ -460,7 +460,7 @@
   {
     "_id": "67be5f355b7d4a909f52b129",
     "name": "Alma",
-    "categoryHierarchy": ["Élelmiszerek", "Zöldségek és Gyümölcsök"],
+    "category": ["Élelmiszerek", "Zöldségek és Gyümölcsök"],
     "defaultUnit": "db",
     "createdAt": "2024-02-03T12:00:00.000Z",
     "updatedAt": "2024-02-03T12:00:00.000Z"
@@ -468,7 +468,7 @@
   {
     "_id": "67b4ccc82de718b6120e5245",
     "name": "Tej",
-    "categoryHierarchy": ["Élelmiszerek", "Tejtermékek"],
+    "category": ["Élelmiszerek", "Tejtermékek"],
     "defaultUnit": "l",
     "createdAt": "2024-02-02T10:00:00.000Z",
     "updatedAt": "2024-02-02T10:00:00.000Z"
@@ -495,7 +495,7 @@
 {
   "_id": "67be5f355b7d4a909f52b129",
   "name": "Alma",
-  "categoryHierarchy": ["Élelmiszerek", "Zöldségek és Gyümölcsök"],
+  "category": ["Élelmiszerek", "Zöldségek és Gyümölcsök"],
   "defaultUnit": "db",
   "createdAt": "2024-02-03T12:00:00.000Z",
   "updatedAt": "2024-02-03T12:00:00.000Z"
@@ -523,7 +523,7 @@
   {
     "_id": "67b4ccc82de718b6120e5245",
     "name": "Tej",
-    "categoryHierarchy": ["Élelmiszerek", "Tejtermékek"],
+    "category": ["Élelmiszerek", "Tejtermékek"],
     "defaultUnit": "l",
     "createdAt": "2024-02-02T10:00:00.000Z",
     "updatedAt": "2024-02-02T10:00:00.000Z"
@@ -531,7 +531,7 @@
   {
     "_id": "67b4ccc82de718b6120e5246",
     "name": "Kakaós tej",
-    "categoryHierarchy": ["Élelmiszerek", "Tejtermékek"],
+    "category": ["Élelmiszerek", "Tejtermékek"],
     "defaultUnit": "l",
     "createdAt": "2024-02-02T10:00:00.000Z",
     "updatedAt": "2024-02-02T10:00:00.000Z"
@@ -552,7 +552,7 @@
 ```json
 {
   "name": "Túró Rudi",
-  "categoryHierarchy": ["Élelmiszerek", "Tejtermékek"],
+  "category": ["Élelmiszerek", "Tejtermékek"],
   "defaultUnit": "db"
 }
 ```
@@ -562,7 +562,7 @@
 {
   "_id": "67be5f355b7d4a909f52b130",
   "name": "Túró Rudi",
-  "categoryHierarchy": ["Élelmiszerek", "Tejtermékek"],
+  "category": ["Élelmiszerek", "Tejtermékek"],
   "defaultUnit": "db",
   "createdAt": "2024-02-03T14:00:00.000Z",
   "updatedAt": "2024-02-03T14:00:00.000Z"
@@ -585,7 +585,7 @@
 ```json
 {
   "name": "Alma",
-  "categoryHierarchy": ["Élelmiszerek", "Zöldségek és Gyümölcsök"],
+  "category": ["Élelmiszerek", "Zöldségek és Gyümölcsök"],
   "defaultUnit": "db"
 }
 ```
@@ -595,7 +595,7 @@
 {
   "_id": "67be5f355b7d4a909f52b129",
   "name": "Alma",
-  "categoryHierarchy": ["Élelmiszerek", "Zöldségek és Gyümölcsök"],
+  "category": ["Élelmiszerek", "Zöldségek és Gyümölcsök"],
   "defaultUnit": "db",
   "createdAt": "2024-02-03T12:00:00.000Z",
   "updatedAt": "2024-02-03T15:00:00.000Z"
