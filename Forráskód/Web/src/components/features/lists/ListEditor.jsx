@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Box, 
-  TextField, 
-  Button, 
   Typography, 
   Container, 
   Paper, 
@@ -11,13 +9,9 @@ import {
   ListItemText, 
   IconButton,
   Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   InputAdornment,
   Avatar,
-  Slider,
+  Slider
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -27,63 +21,186 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { blue } from '@mui/material/colors';
 import Header from '../../layout/Header/Header';
 
+// Common komponensek importálása
+import Button from '../../common/Button';
+import Input from '../../common/Input';
+import Modal from '../../common/Modal';
+import Loader from '../../common/Loader';
+
+// Services importálása
+import ListService from '../../../services/list.service';
+import ProductService from '../../../services/product.service';
+import ProductCatalogService from '../../../services/productCatalog.service';
+import AuthService from '../../../services/auth.service';
+
 const ListEditor = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isNewList = id === 'new';
   
+  // Állapotok
   const [listTitle, setListTitle] = useState('');
   const [priority, setPriority] = useState(3);
   const [newProduct, setNewProduct] = useState('');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(!isNewList);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+  const [error, setError] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
   
-  // Simulated user data
-  const currentUser = { id: 1, name: 'Felhasználó' };
+  // Felhasználói adatok
+  const userId = localStorage.getItem('userId');
+  const username = localStorage.getItem('username');
 
+  // Létező lista adatainak betöltése
   useEffect(() => {
-    if (!isNewList) {
-      // TODO: Replace with API call to fetch list details
-      // Placeholder data
-      setTimeout(() => {
-        setListTitle('Heti bevásárlás');
-        setPriority(2);
-        setProducts([
-          { id: 1, name: 'Tej', addedBy: 'Gábor' },
-          { id: 2, name: 'Kenyér', addedBy: 'Anna' },
-        ]);
-        setLoading(false);
-      }, 500);
-    }
-  }, [id, isNewList, loading, setLoading]);
+    const fetchListData = async () => {
+      if (!isNewList) {
+        try {
+          setLoading(true);
+          setError(null);
+          
+          const listData = await ListService.getListById(id);
+          
+          if (listData && listData._id) {
+            setListTitle(listData.title || '');
+            setPriority(listData.priority || 3);
+            
+            // Ha a products egy tömb objektumokkal
+            if (Array.isArray(listData.products)) {
+              setProducts(listData.products.map(product => ({
+                id: product._id || product.id,
+                name: product.name,
+                addedBy: product.addedBy || 'Ismeretlen'
+              })));
+            } else {
+              setProducts([]);
+            }
+          } else {
+            throw new Error('Érvénytelen lista adat érkezett a szerverről');
+          }
+        } catch (err) {
+          console.error('Hiba a lista betöltésekor:', err);
+          setError('Nem sikerült betölteni a lista adatait: ' + (err.message || 'Ismeretlen hiba'));
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
 
-  const handleAddProduct = () => {
+    fetchListData();
+  }, [id, isNewList]);
+
+  // Termék keresés a katalógusban
+  const handleProductSearch = async (query) => {
+    if (query.trim().length > 2) {
+      try {
+        setSearching(true);
+        setError(null);
+        
+        const results = await ProductCatalogService.searchCatalogItems(query);
+        
+        if (Array.isArray(results)) {
+          setSearchResults(results.map(item => ({
+            id: item._id || item.id,
+            name: item.name
+          })));
+        } else {
+          setSearchResults([]);
+        }
+      } catch (err) {
+        console.error('Hiba a termékek keresésekor:', err);
+        // Nem jelenítünk meg hibaüzenetet a keresési hibáknál, csak loggoljuk
+      } finally {
+        setSearching(false);
+      }
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  // Termék hozzáadása
+  const handleAddProduct = async () => {
     if (newProduct.trim()) {
-      const newProductObj = {
-        id: Date.now(), // Temporary ID
-        name: newProduct,
-        addedBy: currentUser.name
-      };
-      
-      setProducts([...products, newProductObj]);
-      setNewProduct('');
+      try {
+        setError(null);
+        
+        const newProductObj = {
+          name: newProduct,
+          addedBy: username || 'Felhasználó'
+        };
+        
+        if (!isNewList) {
+          // Létező listához adjuk a terméket
+          const addedProductResponse = await ListService.addProductToList(id, newProductObj);
+          
+          if (addedProductResponse && (addedProductResponse._id || addedProductResponse.id)) {
+            // Ha a backend visszaadta a teljes terméket
+            const addedProduct = {
+              id: addedProductResponse._id || addedProductResponse.id,
+              name: addedProductResponse.name || newProduct,
+              addedBy: addedProductResponse.addedBy || username || 'Felhasználó'
+            };
+            
+            setProducts(prevProducts => [...prevProducts, addedProduct]);
+          } else {
+            // Ha a backend nem adott vissza valid terméket, de a kérés sikeres volt
+            // Helyi állapotba helyezzük az új terméket ideiglenes ID-val
+            setProducts(prevProducts => [...prevProducts, { 
+              id: `temp-${Date.now()}`, 
+              ...newProductObj 
+            }]);
+          }
+        } else {
+          // Új lista esetén csak lokálisan tároljuk, amíg nem mentjük a listát
+          setProducts(prevProducts => [...prevProducts, { 
+            id: `temp-${Date.now()}`,
+            ...newProductObj 
+          }]);
+        }
+        
+        // Termék hozzáadása után töröljük a beviteli mezőt és keresési eredményeket
+        setNewProduct('');
+        setSearchResults([]);
+      } catch (err) {
+        console.error('Hiba a termék hozzáadásakor:', err);
+        setError('Nem sikerült hozzáadni a terméket: ' + (err.message || 'Ismeretlen hiba'));
+      }
     }
   };
 
-  const handleDeleteProduct = (productId) => {
-    setProducts(products.filter(product => product.id !== productId));
+  // Termék törlése
+  const handleDeleteProduct = async (productId) => {
+    try {
+      setError(null);
+      
+      if (!isNewList && !productId.toString().startsWith('temp-')) {
+        // Csak akkor hívunk API-t, ha már mentett listáról van szó és nem ideiglenes termék ID
+        await ListService.removeProductFromList(id, productId);
+      }
+      
+      // Mindenképp frissítjük a helyi állapotot
+      setProducts(products.filter(product => product.id !== productId));
+    } catch (err) {
+      console.error('Hiba a termék törlésekor:', err);
+      setError('Nem sikerült törölni a terméket: ' + (err.message || 'Ismeretlen hiba'));
+    }
   };
 
+  // Enter billentyű kezelése az új termék hozzáadásánál
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && newProduct.trim()) {
+      e.preventDefault();
       handleAddProduct();
     }
   };
 
+  // Lista mentés előtti ellenőrzés
   const handleSave = () => {
     if (products.length === 0) {
-      // Show error or prompt
+      setError('Legalább egy terméket hozzá kell adni a listához');
       return;
     }
     
@@ -95,31 +212,74 @@ const ListEditor = () => {
     saveList();
   };
 
-  const saveList = () => {
-    // TODO: Implement API call to save the list
-    console.log('Saving list:', { 
-      id: isNewList ? null : id,
-      title: listTitle,
-      priority,
-      products 
-    });
-    
-    // Navigate back to the dashboard
-    navigate('/');
+  // Lista mentése
+  const saveList = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Ellenőrizzük, hogy van-e bejelentkezett felhasználó
+      if (!userId) {
+        setError('Listát csak bejelentkezett felhasználó hozhat létre vagy módosíthat.');
+        setLoading(false);
+        return;
+      }
+      
+      const listData = {
+        title: listTitle.trim(),
+        priority: priority,
+        products: products.map(p => ({ 
+          name: p.name, 
+          addedBy: p.addedBy || username || 'Felhasználó' 
+        })),
+        owner: userId
+      };
+      
+      if (isNewList) {
+        await ListService.createList(listData);
+      } else {
+        await ListService.updateList(id, listData);
+      }
+      
+      // Sikeres mentés után navigáljunk vissza a listákhoz
+      navigate('/');
+    } catch (err) {
+      console.error(`Hiba a lista ${isNewList ? 'létrehozásakor' : 'frissítésekor'}:`, err);
+      
+      // Részletesebb hibaüzenet megjelenítése
+      if (err.response?.data?.error?.message) {
+        setError(`Nem sikerült ${isNewList ? 'létrehozni' : 'frissíteni'} a listát: ${err.response.data.error.message}`);
+      } else if (err.message) {
+        setError(`Nem sikerült ${isNewList ? 'létrehozni' : 'frissíteni'} a listát: ${err.message}`);
+      } else {
+        setError(`Nem sikerült ${isNewList ? 'létrehozni' : 'frissíteni'} a listát. Ellenőrizd, hogy be vagy-e jelentkezve.`);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Dialógusban a mentés kezelése
   const handleDialogSave = () => {
     if (listTitle.trim()) {
       setSaveDialogOpen(false);
       saveList();
+    } else {
+      setError('A lista címét meg kell adni');
     }
   };
 
+  // Prioritás jelölők
   const priorityMarks = [
     { value: 1, label: 'Magas' },
     { value: 2, label: 'Közepes' },
     { value: 3, label: 'Alacsony' }
   ];
+
+  // Betöltési állapot megjelenítése
+  if (loading) {
+    return <Loader text="Lista betöltése..." fullPage={true} />;
+  }
 
   return (
     <>
@@ -135,8 +295,16 @@ const ListEditor = () => {
             </Typography>
           </Box>
 
+          {/* Hibaüzenet megjelenítése */}
+          {error && (
+            <Paper sx={{ p: 2, mb: 3, bgcolor: 'error.light' }}>
+              <Typography color="error">{error}</Typography>
+            </Paper>
+          )}
+
+          {/* Lista adatok szerkesztése */}
           <Paper sx={{ p: 3, mb: 3 }}>
-            <TextField
+            <Input
               fullWidth
               label="Lista Címe"
               variant="outlined"
@@ -165,18 +333,22 @@ const ListEditor = () => {
             </Box>
           </Paper>
 
+          {/* Termékek kezelése */}
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Termékek
             </Typography>
             
             <Box sx={{ display: 'flex', mb: 3 }}>
-              <TextField
+              <Input
                 fullWidth
                 variant="outlined"
                 placeholder="Új termék hozzáadása..."
                 value={newProduct}
-                onChange={(e) => setNewProduct(e.target.value)}
+                onChange={(e) => {
+                  setNewProduct(e.target.value);
+                  handleProductSearch(e.target.value);
+                }}
                 onKeyPress={handleKeyPress}
                 InputProps={{
                   endAdornment: (
@@ -193,6 +365,27 @@ const ListEditor = () => {
               />
             </Box>
             
+            {/* Keresési találatok megjelenítése */}
+            {searchResults.length > 0 && (
+              <Paper elevation={3} sx={{ mb: 3, maxHeight: 200, overflow: 'auto' }}>
+                <List dense>
+                  {searchResults.map(item => (
+                    <ListItem
+                      key={item.id}
+                      button
+                      onClick={() => {
+                        setNewProduct(item.name);
+                        setSearchResults([]);
+                      }}
+                    >
+                      <ListItemText primary={item.name} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+            )}
+            
+            {/* Termékek listája */}
             {products.length > 0 ? (
               <List>
                 {products.map((product, index) => (
@@ -214,11 +407,11 @@ const ListEditor = () => {
                           fontSize: '0.9rem'
                         }}
                       >
-                        {product.addedBy.charAt(0)}
+                        {product.name.substring(0, 1).toUpperCase()}
                       </Avatar>
                       <ListItemText 
                         primary={product.name} 
-                        secondary={`Hozzáadta: ${product.addedBy}`} 
+                        secondary={`Hozzáadta: ${product.addedBy || 'Ismeretlen'}`} 
                       />
                     </ListItem>
                   </React.Fragment>
@@ -233,6 +426,7 @@ const ListEditor = () => {
             )}
           </Paper>
           
+          {/* Mentés gomb */}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
             <Button 
               variant="contained" 
@@ -247,32 +441,42 @@ const ListEditor = () => {
           </Box>
         </Box>
         
-        {/* Dialog for entering list title if missing */}
-        <Dialog open={saveDialogOpen} onClose={() => setSaveDialogOpen(false)}>
-          <DialogTitle>Add címet a listának</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Lista címe"
-              fullWidth
-              variant="outlined"
-              value={listTitle}
-              onChange={(e) => setListTitle(e.target.value)}
-              placeholder="Pl. Hétvégi grillparti"
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setSaveDialogOpen(false)}>Mégse</Button>
-            <Button 
-              onClick={handleDialogSave}
-              disabled={!listTitle.trim()}
-              variant="contained"
-            >
-              Mentés
-            </Button>
-          </DialogActions>
-        </Dialog>
+        {/* Címbekérő modális ablak */}
+        <Modal
+          open={saveDialogOpen}
+          onClose={() => setSaveDialogOpen(false)}
+          title="Adj címet a listának"
+          description="A lista mentéséhez adj meg egy címet, ami alapján később könnyen azonosítható lesz."
+          actions={
+            <>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => setSaveDialogOpen(false)}
+              >
+                Mégsem
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleDialogSave}
+                disabled={!listTitle.trim()}
+              >
+                Mentés
+              </Button>
+            </>
+          }
+        >
+          <Input
+            autoFocus
+            fullWidth
+            value={listTitle}
+            onChange={(e) => setListTitle(e.target.value)}
+            label="Lista címe"
+            placeholder="Pl. Hétvégi grillparti"
+            sx={{ mt: 2 }}
+          />
+        </Modal>
       </Container>
     </>
   );

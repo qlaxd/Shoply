@@ -40,6 +40,8 @@ const AuthService = {
   login: async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
     localStorage.setItem('token', response.data.token);
+    localStorage.setItem('userId', response.data.userId);
+    localStorage.setItem('username', response.data.username);
     return response.data;
   },
 
@@ -50,6 +52,7 @@ const AuthService = {
 
   logout: () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
   }
 };
 

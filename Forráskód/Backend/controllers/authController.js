@@ -59,7 +59,7 @@ exports.login = async (req, res) => {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {  // 1 órás access token generálás
       expiresIn: '10000000000' 
     });
-    res.json({ token, message: 'Sikeres bejelentkezés!' }); // token küldése a kliensnek
+    res.json({ token, userId: user._id, username: user.username, message: 'Sikeres bejelentkezés!' }); // token küldése a kliensnek
   } catch (error) {
     res.status(500).json({ 
       message: 'Hiba történt a bejelentkezés során. Kérlek próbáld újra!' 
