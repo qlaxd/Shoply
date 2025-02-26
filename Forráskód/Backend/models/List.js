@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Category = require('./Category');
 
 const listSchema = new mongoose.Schema({
   title: { 
@@ -45,6 +46,7 @@ const listSchema = new mongoose.Schema({
       ref: 'User' 
     },
     notes: String
+
   }],
   version: { 
     type: Number, 

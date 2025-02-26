@@ -21,28 +21,20 @@ async function seedProducts() {
       // Katalógus alapú termékek
       ...catalogItems.slice(0, 5).map(item => ({
         catalogItem: item._id,
-        quantity: Math.floor(Math.random() * 10) + 1,
-        isPurchased: false
       })),
       
       // Katalógus nélküli termékek
       {
         name: "Házi készítésű lekvár",
         unit: "üveg",
-        quantity: 3,
-        isPurchased: false
       },
       {
         name: "Speciális gyógytea",
-        unit: "csomag",
-        quantity: 2,
-        isPurchased: false
+        unit: "csomag"  
       },
       {
         name: "Házi sütemény",
-        unit: "db",
-        quantity: 12,
-        isPurchased: false
+        unit: "db"
       }
     ];
     

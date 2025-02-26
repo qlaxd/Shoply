@@ -17,8 +17,6 @@ const productSchema = new mongoose.Schema({
       return this.catalogItem ? undefined : 'db';
     }
   },
-  quantity: { type: Number, required: true },
-  isPurchased: { type: Boolean, default: false }
 });
  
 module.exports = mongoose.model('Product', productSchema);

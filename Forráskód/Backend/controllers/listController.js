@@ -154,7 +154,11 @@ exports.addProductToList = async (req, res) => {
       return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
     }
 
-    const productData = req.body;
+    const productData = {
+      catalogItem: req.body.catalogItem,
+      name: req.body.name,
+      unit: req.body.unit
+    };
     
     // Új termék létrehozása
     const product = new Product(productData);
