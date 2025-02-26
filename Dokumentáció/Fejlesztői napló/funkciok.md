@@ -30,14 +30,7 @@ Felhasználók megjegyzéseket fűzhetnek a termékekhez, és megadhatják a sz�
 
 Értesítések küldése a közelgő bevásárlásokról vagy ha valaki új terméket ad a listához.
 
-### Sablonok
-
-Lehetővé tenni sablonok létrehozását gyakran vásárolt termékekhez.
-
-### Keresés és szűrés
-
-Termékek gyors keresése és szűrése a listában.
-
+### Sablonokr
 ### Statisztikák
 
 Információk arról, hogy mely termékek a leggyakrabban vásároltak, vagy mikor szoktak vásárolni a felhasználók.

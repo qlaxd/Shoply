@@ -96,7 +96,7 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
             >{''}</Avatar>
             <ListItemText 
               primary={product.name} 
-              secondary={`Hozzáadta: ${product.addedBy || 'Ismeretlen'}`}
+              secondary={`Hozzáadta: ${typeof product.addedBy === 'object' ? product.addedBy.username : product.addedBy || 'Ismeretlen'}`}
               primaryTypographyProps={{ variant: 'body2' }}
               secondaryTypographyProps={{ variant: 'caption' }}
             />

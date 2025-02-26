@@ -1,25 +1,5 @@
-import React from 'react';
-import { CircularProgress, Box, Typography, styled } from '@mui/material';
+import { CircularProgress, Box, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
-
-const LoaderWrapper = styled(Box)(({ theme, size, fullPage }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  ...(fullPage && {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    zIndex: theme.zIndex.modal,
-  }),
-  ...(!fullPage && {
-    padding: theme.spacing(2),
-  }),
-}));
 
 const Loader = ({
   size = 'medium',
@@ -41,8 +21,28 @@ const Loader = ({
     }
   };
 
+  // A fullPage prop alapján határozzuk meg a stílusokat, és nem adjuk tovább a DOM-nak
+  const fullPageStyle = fullPage ? {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    zIndex: 1300, // theme.zIndex.modal értéke általában 1300
+  } : {};
+
+  const containerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: fullPage ? 0 : 2,
+    ...fullPageStyle
+  };
+
   return (
-    <LoaderWrapper size={size} fullPage={fullPage} {...rest}>
+    <Box sx={containerStyle} {...rest}>
       <CircularProgress
         size={getSizeValue()}
         color={color}
@@ -57,7 +57,7 @@ const Loader = ({
           {text}
         </Typography>
       )}
-    </LoaderWrapper>
+    </Box>
   );
 };
 

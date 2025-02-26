@@ -8,17 +8,17 @@ import {
   ListItem, 
   ListItemText, 
   IconButton,
-  Divider,
   InputAdornment,
-  Avatar,
-  Slider
+  Slider,
+  ListItemIcon,
+  Checkbox,
+  ListItemSecondaryAction
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
 import { useNavigate, useParams } from 'react-router-dom';
-import { blue } from '@mui/material/colors';
 import Header from '../../layout/Header/Header';
 
 // Common komponensek importálása
@@ -29,9 +29,7 @@ import Loader from '../../common/Loader';
 
 // Services importálása
 import ListService from '../../../services/list.service';
-import ProductService from '../../../services/product.service';
 import ProductCatalogService from '../../../services/productCatalog.service';
-import AuthService from '../../../services/auth.service';
 
 const ListEditor = () => {
   const navigate = useNavigate();
@@ -48,7 +46,6 @@ const ListEditor = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
   
   // Felhasználói adatok
   const userId = localStorage.getItem('userId');
@@ -126,7 +123,6 @@ const ListEditor = () => {
     if (newProduct.trim()) {
       try {
         setError(null);
-        
         const newProductObj = {
           name: newProduct,
           addedBy: username || 'Felhasználó'
@@ -276,6 +272,35 @@ const ListEditor = () => {
     { value: 3, label: 'Alacsony' }
   ];
 
+  // Termék vásárlási állapotának módosítása
+  const handleToggleProduct = async (productId) => {
+    try {
+      // Keressük meg a terméket az aktuális termékek között
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+      
+      // Ellenkező állapotba állítjuk
+      const newIsPurchased = !product.isPurchased;
+      
+      // Ha már létező lista, akkor küldjük a kérést a backendre
+      if (!isNewList) {
+        await ListService.updateProductInList(id, productId, { isPurchased: newIsPurchased });
+      }
+      
+      // Frissítjük a helyi állapotot
+      setProducts(prevProducts => 
+        prevProducts.map(p => 
+          p.id === productId 
+            ? { ...p, isPurchased: newIsPurchased } 
+            : p
+        )
+      );
+    } catch (err) {
+      console.error('Hiba a termék állapotának módosításakor:', err);
+      setError('Nem sikerült módosítani a termék állapotát: ' + (err.message || 'Ismeretlen hiba'));
+    }
+  };
+
   // Betöltési állapot megjelenítése
   if (loading) {
     return <Loader text="Lista betöltése..." fullPage={true} />;
@@ -369,18 +394,24 @@ const ListEditor = () => {
             {searchResults.length > 0 && (
               <Paper elevation={3} sx={{ mb: 3, maxHeight: 200, overflow: 'auto' }}>
                 <List dense>
-                  {searchResults.map(item => (
-                    <ListItem
-                      key={item.id}
-                      button
-                      onClick={() => {
-                        setNewProduct(item.name);
-                        setSearchResults([]);
-                      }}
-                    >
-                      <ListItemText primary={item.name} />
+                  {searching ? (
+                    <ListItem>
+                      <ListItemText primary="Keresés folyamatban..." />
                     </ListItem>
-                  ))}
+                  ) : (
+                    searchResults.map(item => (
+                      <ListItem
+                        key={item.id}
+                        button
+                        onClick={() => {
+                          setNewProduct(item.name);
+                          setSearchResults([]);
+                        }}
+                      >
+                        <ListItemText primary={item.name} />
+                      </ListItem>
+                    ))
+                  )}
                 </List>
               </Paper>
             )}
@@ -389,32 +420,24 @@ const ListEditor = () => {
             {products.length > 0 ? (
               <List>
                 {products.map((product, index) => (
-                  <React.Fragment key={product.id}>
-                    {index > 0 && <Divider component="li" />}
-                    <ListItem 
-                      secondaryAction={
-                        <IconButton edge="end" onClick={() => handleDeleteProduct(product.id)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      }
-                    >
-                      <Avatar 
-                        sx={{ 
-                          bgcolor: blue[500], 
-                          width: 32, 
-                          height: 32, 
-                          mr: 2,
-                          fontSize: '0.9rem'
-                        }}
-                      >
-                        {product.name.substring(0, 1).toUpperCase()}
-                      </Avatar>
-                      <ListItemText 
-                        primary={product.name} 
-                        secondary={`Hozzáadta: ${product.addedBy || 'Ismeretlen'}`} 
+                  <ListItem key={product.id || index} dense>
+                    <ListItemIcon>
+                      <Checkbox
+                        edge="start"
+                        checked={product.isPurchased || false}
+                        onChange={() => handleToggleProduct(product.id)}
                       />
-                    </ListItem>
-                  </React.Fragment>
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={product.name}
+                      secondary={`Hozzáadta: ${typeof product.addedBy === 'object' ? product.addedBy.username : product.addedBy || 'Ismeretlen'}`}
+                    />
+                    <ListItemSecondaryAction>
+                      <IconButton edge="end" onClick={() => handleDeleteProduct(product.id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
                 ))}
               </List>
             ) : (

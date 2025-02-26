@@ -1,6 +1,7 @@
 const List = require('../models/List');
 const User = require('../models/User');
 const Product = require('../models/Product');
+const mongoose = require('mongoose');
 
 // Get all lists
 exports.getAllLists = async (req, res) => {
@@ -18,7 +19,7 @@ exports.getAllLists = async (req, res) => {
     .populate('products.catalogItem')
     .populate({
       path: 'products.addedBy',
-      select: '-password -__v'
+      select: 'username name -password -_id'
     })
     .populate({
       path: 'sharedUsers.user',
@@ -34,25 +35,89 @@ exports.getAllLists = async (req, res) => {
 // Get a single list by ID
 exports.getListById = async (req, res) => {
   try {
-    const list = await List.findById(req.params.id).populate({
+    const list = await List.findById(req.params.id)
+    .populate({
       path: 'owner',
       select: '-password -__v'
+    })
+    .populate('products.catalogItem')
+    .populate({
+      path: 'products.addedBy',
+      select: 'username name -_id'
+    })
+    .populate({
+      path: 'sharedUsers.user',
+      model: 'User',
+      select: '-password -__v'
     });
+    
     if (!list) {
-      return res.status(404).json({ message: 'List not found' });
+      return res.status(404).json({ message: 'Lista nem található' });
     }
     res.status(200).json(list);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching list', error });
+    res.status(500).json({ message: 'Hiba a lista lekérdezésekor', error });
   }
 };
 
 // Create a new list
 exports.createList = async (req, res) => {
   try {
-    const list = new List(req.body);
+    // Klónozzuk a request body-t, hogy ne módosítsuk közvetlenül
+    const listData = { ...req.body };
+    
+    // Ha vannak termékek, ellenőrizzük és javítsuk az addedBy mezőt
+    if (Array.isArray(listData.products)) {
+      const productsPromises = listData.products.map(async product => {
+        // Ha nincs addedBy, használjuk a bejelentkezett felhasználó ID-ját
+        if (!product.addedBy) {
+          return { ...product, addedBy: req.user.id };
+        }
+        
+        // Ha az addedBy már ObjectId formátumú, használjuk azt
+        if (mongoose.Types.ObjectId.isValid(product.addedBy)) {
+          return product;
+        }
+        
+        // Ha az addedBy felhasználónév (string), keressük meg a felhasználót
+        try {
+          const user = await User.findOne({ username: product.addedBy });
+          if (user) {
+            return { ...product, addedBy: user._id };
+          } else {
+            // Ha nem található a felhasználó, használjuk a bejelentkezett felhasználót
+            return { ...product, addedBy: req.user.id };
+          }
+        } catch (err) {
+          console.error('Hiba a felhasználó keresése során:', err);
+          return { ...product, addedBy: req.user.id };
+        }
+      });
+      
+      // Megvárjuk az összes promise befejezését
+      listData.products = await Promise.all(productsPromises);
+    }
+    
+    // Beállítjuk a tulajdonost, ha nincs megadva
+    if (!listData.owner) {
+      listData.owner = req.user.id;
+    }
+    
+    const list = new List(listData);
     await list.save();
-    res.status(201).json(list);
+    
+    // Populáljuk az adatokat a válaszban
+    const populatedList = await List.findById(list._id)
+      .populate({
+        path: 'owner',
+        select: 'username name -_id'
+      })
+      .populate({
+        path: 'products.addedBy',
+        select: 'username name -_id'
+      });
+    
+    res.status(201).json(populatedList);
   } catch (error) {
     res.status(500).json({ message: 'Error creating list', error });
   }
@@ -61,11 +126,63 @@ exports.createList = async (req, res) => {
 // Update a list by ID
 exports.updateList = async (req, res) => {
   try {
-    const list = await List.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!list) {
-      return res.status(404).json({ message: 'List not found' });
+    // Klónozzuk a request body-t, hogy ne módosítsuk közvetlenül
+    const updateData = { ...req.body };
+    
+    // Ha vannak termékek, ellenőrizzük és javítsuk az addedBy mezőt
+    if (Array.isArray(updateData.products)) {
+      const productsPromises = updateData.products.map(async product => {
+        // Ha nincs addedBy, használjuk a bejelentkezett felhasználó ID-ját
+        if (!product.addedBy) {
+          return { ...product, addedBy: req.user.id };
+        }
+        
+        // Ha az addedBy már ObjectId formátumú, használjuk azt
+        if (mongoose.Types.ObjectId.isValid(product.addedBy)) {
+          return product;
+        }
+        
+        // Ha az addedBy felhasználónév (string), keressük meg a felhasználót
+        try {
+          const user = await User.findOne({ username: product.addedBy });
+          if (user) {
+            return { ...product, addedBy: user._id };
+          } else {
+            // Ha nem található a felhasználó, használjuk a bejelentkezett felhasználót
+            return { ...product, addedBy: req.user.id };
+          }
+        } catch (err) {
+          console.error('Hiba a felhasználó keresése során:', err);
+          return { ...product, addedBy: req.user.id };
+        }
+      });
+      
+      // Megvárjuk az összes promise befejezését
+      updateData.products = await Promise.all(productsPromises);
     }
-    res.status(200).json(list);
+    
+    const list = await List.findByIdAndUpdate(
+      req.params.id, 
+      updateData, 
+      { new: true, runValidators: true }
+    );
+    
+    if (!list) {
+      return res.status(404).json({ message: 'Lista nem található' });
+    }
+    
+    // Populáljuk az adatokat a válaszban
+    const populatedList = await List.findById(list._id)
+      .populate({
+        path: 'owner',
+        select: 'username name -_id'
+      })
+      .populate({
+        path: 'products.addedBy',
+        select: 'username name -_id'
+      });
+    
+    res.status(200).json(populatedList);
   } catch (error) {
     res.status(500).json({ message: 'Error updating list', error });
   }
@@ -154,10 +271,31 @@ exports.addProductToList = async (req, res) => {
       return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
     }
 
+    // Az addedBy mező kezelése
+    let addedById = req.user.id; // Alapértelmezetten a kérést küldő felhasználó
+
+    // Ha van addedBy a kérésben, ellenőrizzük és feldolgozzuk
+    if (req.body.addedBy) {
+      // Ha az addedBy nem ObjectId, akkor megpróbáljuk felhasználónév alapján megtalálni
+      if (!mongoose.Types.ObjectId.isValid(req.body.addedBy)) {
+        const user = await User.findOne({ username: req.body.addedBy });
+        if (user) {
+          addedById = user._id;
+        }
+      } else {
+        // Ha már eleve ObjectId, akkor használjuk
+        addedById = req.body.addedBy;
+      }
+    }
+
     const productData = {
       catalogItem: req.body.catalogItem,
       name: req.body.name,
-      unit: req.body.unit
+      unit: req.body.unit,
+      addedBy: addedById,
+      quantity: req.body.quantity || 1,
+      isPurchased: req.body.isPurchased || false,
+      notes: req.body.notes || ""
     };
     
     // Új termék létrehozása
@@ -168,14 +306,21 @@ exports.addProductToList = async (req, res) => {
     list.products.push(product._id);
     await list.save();
     
-    // Populált lista visszaadása
+    // Populált lista visszaadása, ahol az addedBy mező tartalmazza a felhasználói adatokat
     const updatedList = await List.findById(list._id)
       .populate({
         path: 'products',
-        populate: {
-          path: 'catalogItem',
-          model: 'ProductCatalog'
-        }
+        populate: [
+          {
+            path: 'catalogItem',
+            model: 'ProductCatalog'
+          },
+          {
+            path: 'addedBy',
+            model: 'User',
+            select: 'username name -_id'
+          }
+        ]
       });
     
     res.status(200).json(updatedList);

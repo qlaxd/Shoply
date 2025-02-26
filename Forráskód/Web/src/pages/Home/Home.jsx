@@ -17,7 +17,6 @@ import Grid2 from '@mui/material/Grid2';
 // Importáljuk a közös komponenseket
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
-import Card from '../../components/common/Card';
 import Modal from '../../components/common/Modal';
 import Loader from '../../components/common/Loader';
 import Header from '../../components/layout/Header/Header';
@@ -27,8 +26,6 @@ import ShoppingListCard from '../../components/features/lists/ShoppingListCard';
 
 // Importáljuk a service-eket
 import ListService from '../../services/list.service';
-import AuthService from '../../services/auth.service';
-
 import './Home.css';
 
 // Navigációs konfiguráció

@@ -62,7 +62,7 @@ const Header = () => {
           </IconButton>
           
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Bevásárló Listák
+            Listáim
           </Typography>
           
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
