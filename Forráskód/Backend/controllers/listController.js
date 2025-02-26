@@ -19,7 +19,7 @@ exports.getAllLists = async (req, res) => {
     .populate('products.catalogItem')
     .populate({
       path: 'products.addedBy',
-      select: 'username name -password -_id'
+      select: '-password -__v'
     })
     .populate({
       path: 'sharedUsers.user',
@@ -43,7 +43,7 @@ exports.getListById = async (req, res) => {
     .populate('products.catalogItem')
     .populate({
       path: 'products.addedBy',
-      select: 'username name -_id'
+      select: '-password -__v'
     })
     .populate({
       path: 'sharedUsers.user',
@@ -114,7 +114,7 @@ exports.createList = async (req, res) => {
       })
       .populate({
         path: 'products.addedBy',
-        select: 'username name -_id'
+        select: '-password -__v'
       });
     
     res.status(201).json(populatedList);
@@ -179,7 +179,7 @@ exports.updateList = async (req, res) => {
       })
       .populate({
         path: 'products.addedBy',
-        select: 'username name -_id'
+        select: '-password -__v'
       });
     
     res.status(200).json(populatedList);
@@ -318,7 +318,7 @@ exports.addProductToList = async (req, res) => {
           {
             path: 'addedBy',
             model: 'User',
-            select: 'username name -_id'
+            select: '-password -_id'
           }
         ]
       });
