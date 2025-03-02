@@ -6,7 +6,7 @@ exports.getAllUsers = async (req, res) => {
     return res.status(200).json(users);
   } catch (error) {
     console.error('Hiba a felhasználók lekérdezésekor:', error);
-    rn res.status(500).json({ message: 'Szerverhiba történt.' });
+    return res.status(500).json({ message: 'Szerverhiba történt.' });
   }
 };
 
