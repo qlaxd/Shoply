@@ -44,9 +44,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
         }
 
 
-        public AdminsViewModel()
-        {
-        }
+        
 
         // Adminisztrátorok betöltése (példa, adatbázisból vagy API-ból)
         private async void LoadAdmins()

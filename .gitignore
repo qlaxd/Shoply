@@ -15,7 +15,8 @@
 .cursorrules
 # Mono auto generated files
 mono_crash.*
-
+.vscode
+.cursor
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using ShoppingListAdmin.Desktop.Models;
+using System.Diagnostics;
 
 namespace ShoppingListAdmin.Desktop.Services
 {
@@ -54,17 +55,37 @@ public class ApiService
 
     private void SetAuthToken(string token)
     {
-        _authToken = token;
-        _httpClient.DefaultRequestHeaders.Authorization = 
-            new AuthenticationHeaderValue("Bearer", token);
+        if (!string.IsNullOrEmpty(token))
+        {
+            _authToken = token;
+            _httpClient.DefaultRequestHeaders.Authorization = 
+                new AuthenticationHeaderValue("Bearer", token);
+        }
     }
 
     public async Task<List<UserModel>> GetUsersAsync()
     {
-        return await _httpClient.GetFromJsonAsync<List<UserModel>>("admin/users");
+        try 
+        {
+            if (string.IsNullOrEmpty(_authToken))
+            {
+                throw new UnauthorizedAccessException("No authentication token available");
+            }
+
+            var response = await _httpClient.GetAsync("admin/users");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<UserModel>>();
+            }
+            
+            throw new HttpRequestException($"Error: {response.StatusCode}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"GetUsersAsync error: {ex.Message}");
+            throw;
+        }
     }
-
-
 
     public async Task PromoteToAdminAsync(UserModel userModel)
     {
@@ -73,30 +94,11 @@ public class ApiService
      
 }
 
-public class LoginResponse
-{
-    public string Token { get; set; }
-    public string Message { get; set; }
-}
+    public class LoginResponse
+    {
+        public string Token { get; set; }
+        public string Message { get; set; }
+    }
 
-//
-//    public partial class UsersView : UserControl
-//{
-//   private readonly ApiService _apiService;
-//    private List<User> _users;
-//
-//    public UsersView()
-//    {
-//        InitializeComponent();
- //       _apiService = new ApiService();
-//        LoadUsers();
-  //  }
-//
- //   private async void LoadUsers()
-  //  {
- //       _users = await _apiService.GetUsersAsync();
-  //      UsersDataGrid.ItemsSource = _users;
-  //  }
-//}
 
 }

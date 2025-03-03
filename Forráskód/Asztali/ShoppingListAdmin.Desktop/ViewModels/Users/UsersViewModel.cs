@@ -45,14 +45,19 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
         // Felhasználók betöltése (példa, adatbázisból vagy API-ból)
         private async void LoadUsers()
         {
-            var users = await _apiService.GetUsersAsync();
-            Users.Clear();
-            foreach (var user in users)
+            try 
             {
-                if (user.Role.ToLower() == "user")
+                var users = await _apiService.GetUsersAsync();
+                Users.Clear();
+                foreach (var user in users.Where(u => u.Role.ToLower() == "user"))
                 {
                     Users.Add(user);
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"LoadUsers error: {ex.Message}");
+                // Esetleg navigáció a login képernyőre ha 401-es hiba
             }
         }
 
