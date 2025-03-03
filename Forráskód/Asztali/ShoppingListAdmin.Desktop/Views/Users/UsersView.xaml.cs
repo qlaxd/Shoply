@@ -25,7 +25,7 @@ namespace ShoppingListAdmin.Desktop.Views.Users
         public UsersView()
         {
             InitializeComponent();
-            this.DataContext = new UsersViewModel(new ApiService());
+            
         }
 
         private void DeleteUser_Click(object sender, RoutedEventArgs e)

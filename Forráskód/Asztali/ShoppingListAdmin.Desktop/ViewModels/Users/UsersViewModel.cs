@@ -24,25 +24,14 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
         [ObservableProperty]
         private string _filter;
 
-        public UsersViewModel()
-        {
-            _apiService = new ApiService(); // Initialize with a default instance or mock
-            Users = new ObservableCollection<UserModel>();
-            _filter = "user"; // Default filter value
-        }
-
-        // A RelayCommand-ot a ViewModel konstruktora hívja meg, és így a felhasználók betöltése
         public UsersViewModel(ApiService apiService)
         {
             _apiService = apiService;
             Users = new ObservableCollection<UserModel>();
             LoadUsers(); // Felhasználók betöltése
-
-            // Alapértelmezett szűrési érték
-            _filter = "user"; // Alapértelmezett szűrés a "user" szerepre
+            _filter = "user"; // Alapértelmezett szűrés
         }
 
-        // Felhasználók betöltése (példa, adatbázisból vagy API-ból)
         private async void LoadUsers()
         {
             try 

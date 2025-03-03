@@ -8,6 +8,7 @@ using ShoppingListAdmin.Desktop.ViewModels.Lists;
 using ShoppingListAdmin.Desktop.ViewModels.Statistics;
 using ShoppingListAdmin.Desktop.ViewModels.Settings;
 using ShoppingListAdmin.Desktop.ViewModels.Products;
+using ShoppingListAdmin.Desktop.Services;
 
 namespace ShoppingListAdmin.Desktop.ViewModels
 {
@@ -23,9 +24,9 @@ namespace ShoppingListAdmin.Desktop.ViewModels
 
         public MainViewModel()
         {
+            var apiService = new ApiService(); // Assuming ApiService has a parameterless constructor
             _controlPanelViewModel = new ControlPanelViewModel();
-            _usersViewModel = new UsersViewModel();
-            
+            _usersViewModel = new UsersViewModel(apiService);
             _listsViewModel = new ListsViewModel();
             _productViewModel = new ProductViewModel();
             _statisticsViewModel = new StatisticsViewModel();
