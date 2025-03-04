@@ -105,7 +105,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
         public ICommand RemoveProductCommand { get; }
 
         // INotifyPropertyChanged implementáció
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)
         {

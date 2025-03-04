@@ -23,7 +23,7 @@ namespace ShoppingListAdmin.Desktop.Models
         }
 
         // INotifyPropertyChanged esemény, amely értesíti a ViewModel-t a változásról
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         // Esemény kiváltása, ha valamelyik property változik
         protected virtual void OnPropertyChanged(string propertyName)
@@ -34,7 +34,8 @@ namespace ShoppingListAdmin.Desktop.Models
         // Alapértelmezett konstruktor
         public ProductListModel()
         {
-            Products = new ObservableCollection<ProductModel>();
+            _products = new ObservableCollection<ProductModel>();
+            Products = _products;
         }
 
         // Termék hozzáadása a listához
