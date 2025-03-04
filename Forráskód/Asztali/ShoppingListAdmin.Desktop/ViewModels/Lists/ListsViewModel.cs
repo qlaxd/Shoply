@@ -10,7 +10,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
     public class ListsViewModel : BaseViewModel
     {
         private ProductListModel _productListModel;
-        private ProductModel _selectedProduct;
+        private ProductModel? _selectedProduct;
         private string _newProductName;
         private string _newProductCategory;
         private decimal _newProductPrice;
@@ -21,7 +21,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
         public ObservableCollection<ProductModel> Products => _productListModel.Products;
 
         // Kiválasztott termék
-        public ProductModel SelectedProduct
+        public ProductModel? SelectedProduct
         {
             get => _selectedProduct;
             set
@@ -105,9 +105,9 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
         public ICommand RemoveProductCommand { get; }
 
         // INotifyPropertyChanged implementáció
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public new event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected new virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -118,12 +118,16 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
             _productListModel = new ProductListModel();
             _productListModel.PropertyChanged += ProductListModel_PropertyChanged;
 
+            _selectedProduct = new ProductModel();
+            _newProductName = string.Empty;
+            _newProductCategory = string.Empty;
+
             // Parancsok inicializálása
             AddProductCommand = new RelayCommand(AddProduct, CanAddProduct);
             RemoveProductCommand = new RelayCommand(RemoveProduct, CanRemoveProduct);
         }
 
-        private void ProductListModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ProductListModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ProductListModel.Products))
             {

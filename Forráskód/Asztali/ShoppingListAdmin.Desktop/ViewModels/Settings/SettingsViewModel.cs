@@ -27,7 +27,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Settings
 
         public SettingsViewModel()
         {
-
+            _fontSize = string.Empty;
         }
     }
 }
