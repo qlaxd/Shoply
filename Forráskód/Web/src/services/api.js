@@ -39,11 +39,6 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-// Debug logolás
-api.interceptors.request.use(request => {
-  console.log('Teljes kimenő kérés: ', request);
-  return request;
-});
 
 // Debug logok itt is
 api.interceptors.response.use(
