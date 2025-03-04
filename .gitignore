@@ -9,14 +9,15 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.vscode/
+*.cursor/
+*.cursor/rules
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 .cursorrules
 # Mono auto generated files
 mono_crash.*
-.vscode
-.cursor
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
