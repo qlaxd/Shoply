@@ -101,7 +101,7 @@ namespace ShoppingListAdmin.Desktop.Models
         }
 
         // INotifyPropertyChanged esemény, amely értesíti a ViewModel-t a változásról
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         // Esemény kiváltása, ha valamelyik property változik
         protected virtual void OnPropertyChanged(string propertyName)
@@ -110,11 +110,17 @@ namespace ShoppingListAdmin.Desktop.Models
         }
 
         // Alapértelmezett konstruktor
-        public ProductModel() { }
+        public ProductModel()
+        {
+            _name = string.Empty;
+            _category = string.Empty;
+        }
 
         // Paraméterekkel rendelkező konstruktor
         public ProductModel(int id, string name, string category, decimal price, int quantity, bool isAvailable)
         {
+            _name = name ?? throw new ArgumentNullException(nameof(name));
+            _category = category ?? throw new ArgumentNullException(nameof(category));
             Id = id;
             Name = name;
             Category = category;
