@@ -63,6 +63,11 @@ public class ApiService
         }
     }
 
+    public string GetAuthToken()
+    {
+        return _authToken;
+    }
+
     public async Task<List<UserModel>> GetUsersAsync()
     {
         try 
