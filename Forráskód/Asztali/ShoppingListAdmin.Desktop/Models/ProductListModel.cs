@@ -2,10 +2,9 @@
 using System.ComponentModel;
 using System.Linq;
 
-
 namespace ShoppingListAdmin.Desktop.Models
 {
-    public class ProductListModel
+    public class ProductListModel : INotifyPropertyChanged
     {
         private ObservableCollection<ProductModel> _products;
 

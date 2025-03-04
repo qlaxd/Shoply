@@ -116,10 +116,19 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
         public ListsViewModel()
         {
             _productListModel = new ProductListModel();
+            _productListModel.PropertyChanged += ProductListModel_PropertyChanged;
 
             // Parancsok inicializálása
             AddProductCommand = new RelayCommand(AddProduct, CanAddProduct);
             RemoveProductCommand = new RelayCommand(RemoveProduct, CanRemoveProduct);
+        }
+
+        private void ProductListModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ProductListModel.Products))
+            {
+                OnPropertyChanged(nameof(Products));
+            }
         }
 
         // Új termék hozzáadása
