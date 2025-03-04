@@ -12,7 +12,8 @@
 *.vscode/
 *.cursor/
 *.cursor/rules
-
+*.vscode
+*.cursor
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 .cursorrules
