@@ -61,7 +61,7 @@ namespace ShoppingListAdmin.Desktop.Models
         // Adott termék keresése ID alapján
         public ProductModel FindProductById(int id)
         {
-            return Products.FirstOrDefault(p => p.Id == id);
+            return Products.FirstOrDefault(p => p.Id == id) ?? new ProductModel();
         }
     }
 }
