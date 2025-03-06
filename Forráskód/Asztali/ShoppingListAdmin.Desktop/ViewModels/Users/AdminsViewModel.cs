@@ -24,7 +24,15 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
         [ObservableProperty]
         private string _filter;
 
-        public class AdminUpdatedMessage(bool value);
+        public class AdminUpdatedMessage
+        {
+            public bool Value { get; }
+
+            public AdminUpdatedMessage(bool value)
+            {
+                Value = value;
+            }
+        }
 
         // A RelayCommand-ot a ViewModel konstruktora hívja meg, és így az adminisztrátorok betöltése
         public AdminsViewModel(ApiService apiService)
