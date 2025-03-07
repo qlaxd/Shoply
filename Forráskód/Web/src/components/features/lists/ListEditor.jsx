@@ -109,7 +109,7 @@ const ListEditor = () => {
         }
       } catch (err) {
         console.error('Hiba a termékek keresésekor:', err);
-        // Nem jelenítünk meg hibaüzenetet a keresési hibáknál, csak loggoljuk
+        setSearchResults([]);
       } finally {
         setSearching(false);
       }
