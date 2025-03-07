@@ -70,7 +70,7 @@ const Modal = ({
         <>
           <StyledDialogTitle id="modal-title">
             <Typography variant="h6" component="div">
-              {title}
+              Bevásárlólista
             </Typography>
             {!hideCloseButton && (
               <IconButton

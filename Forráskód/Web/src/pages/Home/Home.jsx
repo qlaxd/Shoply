@@ -227,6 +227,10 @@ const Home = () => {
       navigation={NAVIGATION}
       router={router}
       theme={customTheme}
+      branding={{
+        title: "Bevásárlólistáim",
+        logo: <ShoppingCartIcon style={{ transform: 'translateY(10px)' }} />
+      }}
     >
       <DashboardLayout>
         <Header />
