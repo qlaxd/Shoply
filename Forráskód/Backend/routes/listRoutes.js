@@ -18,7 +18,7 @@ router.put('/:id', authMiddleware, updateList);
 // Delete a list by ID
 router.delete('/:id', authMiddleware, deleteList);
 
-// Lista megosztása POST http://localhost:5000/api/lists/{userId}/share 
+// Lista megosztása POST http://localhost:5000/api/lists/{userId}/share
 router.post('/:id/share', authMiddleware, shareList);
 
 // Megosztás visszavonása DELETE http://localhost:5000/api/lists/{userId}/unshare
