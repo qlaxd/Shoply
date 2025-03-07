@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Category = require('./Category');
+const ProductCatalog = require('./ProductCatalog');
 
 const listSchema = new mongoose.Schema({
   title: { 
@@ -31,12 +32,20 @@ const listSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId, 
       ref: 'ProductCatalog'
     },
-    name: String, // Fallback ha nem katalógusból származik
+    name: {
+      type: String,
+      required: function() { return !this.catalogItem; }
+    },
     quantity: { 
       type: Number, 
       default: 1 
     },
-    unit: String,
+    unit: {
+      type: String,
+      default: function() {
+        return this.catalogItem ? undefined : 'db';
+      }
+    },
     isPurchased: { 
       type: Boolean, 
       default: false 
@@ -46,7 +55,6 @@ const listSchema = new mongoose.Schema({
       ref: 'User' 
     },
     notes: String
-
   }],
   version: { 
     type: Number, 

@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const listRoutes = require('./routes/listRoutes');
-const productRoutes = require('./routes/productRoutes'); // Import the product routes
 const productCatalogRoutes = require('./routes/productCatalogRoutes'); // Import the product catalog routes
 const cors = require('cors');
 const connectDB = require('./config/db'); // Importáljuk a connectDB függvényt
@@ -36,7 +35,6 @@ connectDB(); // MongoDB kapcsolat létrehozása
 app.use('/api/auth', authRoutes); // Prefix all endpoints defined in authRoutes with /api/auth
 app.use('/api/admin', adminRoutes); // Prefix all endpoints defined in adminRoutes with /api/admin
 app.use('/api/lists', listRoutes); // Prefix all endpoints defined in listRoutes with /api/lists
-app.use('/api/products', productRoutes); // Prefix all endpoints defined in productRoutes with /api/products
 app.use('/api/productCatalogs', productCatalogRoutes); // Prefix all endpoints defined in productCatalogRoutes with /api/productCatalogs
 
 const PORT = process.env.PORT;
