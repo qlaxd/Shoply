@@ -92,7 +92,7 @@ const ListEditor = () => {
 
   // Termék keresés a katalógusban
   const handleProductSearch = async (query) => {
-    if (query.trim().length > 2) {
+    if (query.trim().length >= 1) {
       try {
         setSearching(true);
         setError(null);
