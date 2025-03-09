@@ -135,9 +135,9 @@
                         Width="220">
                     <StackPanel Orientation="Vertical"
                                 Margin="0,10,0,0">
-                        <Image Source="/Images/kreta.png"
+                        <Image Source="/Images/profile.png"
                                Width="100" Height="100"/>
-                        <TextBlock Text="Iskolai adminisztrációs program."
+                        <TextBlock Text="Közös Vásárlólista adminisztrációs program."
                                Foreground="LightGray"
                                FontSize="12"
                                FontWeight="Medium"
