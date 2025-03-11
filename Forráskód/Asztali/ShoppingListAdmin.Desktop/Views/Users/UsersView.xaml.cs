@@ -8,9 +8,6 @@ using System.Windows.Controls;
 
 namespace ShoppingListAdmin.Desktop.Views.Users
 {
-    /// <summary>
-    /// Interaction logic for UsersView.xaml
-    /// </summary>
     public partial class UsersView : UserControl
     {
         public UsersView()
@@ -18,9 +15,20 @@ namespace ShoppingListAdmin.Desktop.Views.Users
             InitializeComponent();
         }
 
-        private void DeleteUser_Click(object sender, RoutedEventArgs e)
+        private async void DeleteUser_Click(object sender, RoutedEventArgs e)
         {
-            // Add new user
+            if (sender is Button button && button.DataContext is UserModel user)
+            {
+                var viewModel = DataContext as UsersViewModel;
+                if (viewModel != null)
+                {
+                    var result = MessageBox.Show($"Biztosan törölni szeretnéd a(z) {user.Username} felhasználót?", "Megerősítés", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        await viewModel.DeleteUserAsync(user);
+                    }
+                }
+            }
         }
 
         private async void EditUser_Click(object sender, RoutedEventArgs e)

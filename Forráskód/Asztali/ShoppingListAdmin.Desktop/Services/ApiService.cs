@@ -98,11 +98,15 @@ public class ApiService
         await _httpClient.PostAsJsonAsync($"admin/promote/{userModel.Id}", userModel);
     }
 
-    public async Task UpdateUserAsync(UserModel user)
+    public async Task UpdateUserAsync(UserModel userModel)
+    {
+        await _httpClient.PutAsJsonAsync($"admin/users/{userModel.Id}", userModel);
+    }
+     
+    public async Task DeleteUserAsync(UserModel user)
     {
         await _httpClient.PutAsJsonAsync($"admin/users/{user.Id}", user);
     }
-     
 }
 
     public class LoginResponse

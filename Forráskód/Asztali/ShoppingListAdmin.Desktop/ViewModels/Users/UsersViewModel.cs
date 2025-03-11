@@ -65,32 +65,39 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
         [RelayCommand]
         public async Task PromoteToAdminAsync(UserModel user)
         {
-        if (user != null)
-        {
-            try
+            if (user != null)
             {
-                await _apiService.PromoteToAdminAsync(user);
-                // Frissítjük a felhasználók listáját a változások megjelenítéséhez
-                LoadUsers();
-                WeakReferenceMessenger.Default.Send(new AdminUpdatedMessage(true));
+                try
+                {
+                    await _apiService.PromoteToAdminAsync(user);
+                    // Frissítjük a felhasználók listáját a változások megjelenítéséhez
+                    LoadUsers();
+                    WeakReferenceMessenger.Default.Send(new AdminUpdatedMessage(true));
+                }
+                catch (Exception ex)
+                {
+                    // Hibakezelés
+                    Debug.WriteLine($"Error promoting user to admin: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                // Hibakezelés
-                Debug.WriteLine($"Error promoting user to admin: {ex.Message}");
-            }
-        }
         }
         
 
         [RelayCommand]
-        public void DeleteUser()
+        public async Task DeleteUserAsync(UserModel user)
         {
-            // Logika felhasználó törléséhez
-            // Például egy felhasználó törlése, például az első felhasználó törlése
-            if (Users.Any())
+            if (user != null)
             {
-                Users.RemoveAt(0);  // Töröljük az első felhasználót (példa)
+                try
+                {
+                    await _apiService.DeleteUserAsync(user);
+                    Users.Remove(user);  // Töröljük a felhasználót a listából
+                }
+                catch (Exception ex)
+                {
+                    // Hibakezelés
+                    Debug.WriteLine($"Error deleting user: {ex.Message}");
+                }
             }
         }
 
