@@ -10,6 +10,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import HistoryIcon from '@mui/icons-material/History';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import PeopleIcon from '@mui/icons-material/People';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createTheme } from '@mui/material/styles';
 
@@ -49,7 +51,23 @@ const NAVIGATION = [
   {
     title: 'Profilom',
     icon: <PersonIcon />,
-    path: '/profile'
+    path: '/profile',
+    children: [
+      {
+        title: 'Profil megtekintése',
+        path: '/profile'
+      },
+      {
+        title: 'Jelszó módosítása',
+        icon: <VpnKeyIcon />,
+        path: '/profile/change-password'
+      },
+      {
+        title: 'Felhasználók keresése',
+        icon: <PeopleIcon />,
+        path: '/users/search'
+      }
+    ]
   },
   {
     title: 'Kijelentkezés',
