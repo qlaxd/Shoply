@@ -14,7 +14,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 // Import custom page header
-import CustomPageHeader from '../../common/PageHeader';
 import '../../common/PageHeader/styles.css';
 
 // Navigációs konfiguráció a Toolpad formátumában
@@ -82,7 +81,7 @@ const NAVIGATION = [
     ]
   },
   {
-    segment: 'logout',
+    segment: 'login',
     title: 'Kijelentkezés',
     icon: <LogoutIcon />,
     path: '/login'
