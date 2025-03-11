@@ -145,7 +145,7 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
   const [sharing, setSharing] = useState(false);
   const [error, setError] = useState(null);
   const [shareSuccess, setShareSuccess] = useState(false);
-  const [permissionLevel, setPermissionLevel] = useState('read');
+  const [permissionLevel, setPermissionLevel] = useState('view');
   const [shareMethod, setShareMethod] = useState('username'); // 'username', 'email'
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -197,7 +197,7 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
     setSearchResults([]);
     setError(null);
     setShareSuccess(false);
-    setPermissionLevel('read');
+    setPermissionLevel('view');
     setShareMethod('username');
   };
 
@@ -257,7 +257,7 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
       setShareEmail('');
       setSearchResults([]);
       
-      const successMessage = `A lista sikeresen megosztva ${shareTarget} címzettnek ${permissionLevel === 'read' ? 'olvasási' : 'szerkesztési'} jogosultsággal!`;
+      const successMessage = `A lista sikeresen megosztva ${shareTarget} címzettnek ${permissionLevel === 'view' ? 'olvasási' : 'szerkesztési'} jogosultsággal!`;
       setSnackbarMessage(successMessage);
       
       // 2 másodperc múlva bezárjuk a dialógust
@@ -775,8 +775,8 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
             >
               <Button
                 fullWidth
-                variant={permissionLevel === 'read' ? 'contained' : 'text'}
-                onClick={() => setPermissionLevel('read')}
+                variant={permissionLevel === 'view' ? 'contained' : 'text'}
+                onClick={() => setPermissionLevel('view')}
                 sx={{ py: 1, borderRadius: 0 }}
               >
                 Olvasás
@@ -784,8 +784,8 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
               <Divider orientation="vertical" flexItem />
               <Button
                 fullWidth
-                variant={permissionLevel === 'write' ? 'contained' : 'text'}
-                onClick={() => setPermissionLevel('write')}
+                variant={permissionLevel === 'edit' ? 'contained' : 'text'}
+                onClick={() => setPermissionLevel('edit')}
                 sx={{ py: 1, borderRadius: 0 }}
               >
                 Szerkesztés
