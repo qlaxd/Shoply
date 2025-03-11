@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   List, 
-  ListItem, 
   ListItemButton, 
   ListItemIcon, 
   ListItemText, 
   Collapse, 
   Typography,
   Divider,
-  Badge,
   Chip,
   CircularProgress,
   Paper,
-  useTheme
+  useTheme,
+  useMediaQuery,
+  Grid
 } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -40,6 +40,7 @@ const CategorySelector = ({ onCategorySelect, selectedCategory = 'all' }) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(true);
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // Kategóriák betöltése
   useEffect(() => {
@@ -91,7 +92,7 @@ const CategorySelector = ({ onCategorySelect, selectedCategory = 'all' }) => {
       sx={{ 
         width: '100%', 
         overflow: 'hidden',
-        mb: 3
+        mb: { xs: 2, md: 3 }
       }}
     >
       <List 
@@ -125,39 +126,62 @@ const CategorySelector = ({ onCategorySelect, selectedCategory = 'all' }) => {
               <CircularProgress size={24} />
             </Box>
           ) : (
-            <List component="div" disablePadding>
-              {categories.map((category) => (
-                <ListItemButton 
-                  key={category.id}
-                  selected={selectedCategory === category.id}
-                  onClick={() => handleCategorySelect(category.id)}
-                  sx={{ 
-                    pl: 4,
-                    '&.Mui-selected': {
-                      bgcolor: theme.palette.primary.light + '20',
-                      borderLeft: `4px solid ${theme.palette.primary.main}`,
-                    },
-                    '&.Mui-selected:hover': {
-                      bgcolor: theme.palette.primary.light + '30',
-                    }
-                  }}
-                >
-                  <ListItemText 
-                    primary={category.name} 
-                    primaryTypographyProps={{ 
-                      variant: 'body2',
-                      color: selectedCategory === category.id ? 'primary' : 'inherit'
+            isMobile ? (
+              <Box sx={{ p: 2 }}>
+                <Grid container spacing={1}>
+                  {categories.map((category) => (
+                    <Grid item xs={6} sm={4} key={category.id}>
+                      <Chip
+                        label={`${category.name} (${category.count})`}
+                        onClick={() => handleCategorySelect(category.id)}
+                        color={selectedCategory === category.id ? "primary" : "default"}
+                        variant={selectedCategory === category.id ? "filled" : "outlined"}
+                        sx={{ 
+                          width: '100%', 
+                          justifyContent: 'flex-start',
+                          height: 'auto',
+                          py: 0.5
+                        }}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            ) : (
+              <List component="div" disablePadding>
+                {categories.map((category) => (
+                  <ListItemButton 
+                    key={category.id}
+                    selected={selectedCategory === category.id}
+                    onClick={() => handleCategorySelect(category.id)}
+                    sx={{ 
+                      pl: 4,
+                      '&.Mui-selected': {
+                        bgcolor: theme.palette.primary.light + '20',
+                        borderLeft: `4px solid ${theme.palette.primary.main}`,
+                      },
+                      '&.Mui-selected:hover': {
+                        bgcolor: theme.palette.primary.light + '30',
+                      }
                     }}
-                  />
-                  <Chip 
-                    label={category.count} 
-                    size="small"
-                    color={selectedCategory === category.id ? "primary" : "default"}
-                    variant={selectedCategory === category.id ? "filled" : "outlined"}
-                  />
-                </ListItemButton>
-              ))}
-            </List>
+                  >
+                    <ListItemText 
+                      primary={category.name} 
+                      primaryTypographyProps={{ 
+                        variant: 'body2',
+                        color: selectedCategory === category.id ? 'primary' : 'inherit'
+                      }}
+                    />
+                    <Chip 
+                      label={category.count} 
+                      size="small"
+                      color={selectedCategory === category.id ? "primary" : "default"}
+                      variant={selectedCategory === category.id ? "filled" : "outlined"}
+                    />
+                  </ListItemButton>
+                ))}
+              </List>
+            )
           )}
         </Collapse>
       </List>

@@ -12,9 +12,13 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  Chip,
   Drawer,
-  useMediaQuery
+  useMediaQuery,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  FormHelperText
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import InventoryIcon from '@mui/icons-material/Inventory';
@@ -32,7 +36,6 @@ import ProductDetails from '../../components/features/products/ProductDetails';
 
 // Importáljuk a szolgáltatásokat
 import ListService from '../../services/list.service';
-import ProductCatalogService from '../../services/productCatalog.service';
 
 const ProductCatalogPage = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -44,9 +47,11 @@ const ProductCatalogPage = () => {
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false);
   
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Listák betöltése
   useEffect(() => {
@@ -78,6 +83,9 @@ const ProductCatalogPage = () => {
   // Kategória választás kezelése
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
+    if (isMobile) {
+      setCategoryDrawerOpen(false);
+    }
   };
 
   // Lista választás kezelése
@@ -128,12 +136,21 @@ const ProductCatalogPage = () => {
     setDrawerOpen(!drawerOpen);
   };
 
-  // Fiók tartalom
+  const handleCategoryDrawerToggle = () => {
+    setCategoryDrawerOpen(!categoryDrawerOpen);
+  };
+
+  // Fiók tartalom - termék hozzáadás
   const drawerContent = (
-    <Box sx={{ width: isMobile ? '100vw' : 300, p: 2 }}>
+    <Box sx={{ 
+      width: isMobile ? '100%' : 300, 
+      p: 2,
+      maxHeight: isMobile ? '70vh' : '100vh',
+      overflow: 'auto'
+    }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h6">Termék hozzáadása</Typography>
-        <IconButton onClick={handleDrawerToggle}>
+        <IconButton onClick={handleDrawerToggle} edge="end" aria-label="bezárás">
           <CloseIcon />
         </IconButton>
       </Box>
@@ -149,20 +166,42 @@ const ProductCatalogPage = () => {
     </Box>
   );
 
+  // Fiók tartalom - kategóriák
+  const categoryDrawerContent = (
+    <Box sx={{ 
+      width: isMobile ? '100%' : 300, 
+      p: 2,
+      maxHeight: isMobile ? '70vh' : '100vh',
+      overflow: 'auto'
+    }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h6">Kategóriák</Typography>
+        <IconButton onClick={handleCategoryDrawerToggle} edge="end" aria-label="bezárás">
+          <CloseIcon />
+        </IconButton>
+      </Box>
+      <Divider sx={{ mb: 2 }} />
+      <CategorySelector 
+        onCategorySelect={handleCategorySelect}
+        selectedCategory={selectedCategory}
+      />
+    </Box>
+  );
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: { xs: 2, sm: 3 } }}>
         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
           Termékkatalógus
         </Typography>
         
         {/* Fő tartalom */}
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           {/* Listák kiválasztása és termék hozzáadási gomb */}
           <Grid item xs={12}>
-            <Paper elevation={1} sx={{ p: 2 }}>
+            <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 } }}>
               <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={isMobile ? 12 : 4}>
                   <Typography variant="subtitle1">
                     Aktív bevásárlólista:
                   </Typography>
@@ -170,23 +209,20 @@ const ProductCatalogPage = () => {
                     <Loader size={24} />
                   ) : lists.length > 0 ? (
                     <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                      <select
-                        value={selectedListId || ''}
-                        onChange={handleListChange}
-                        style={{
-                          padding: '8px',
-                          borderRadius: '4px',
-                          border: '1px solid #ccc',
-                          width: '100%',
-                          fontSize: '1rem'
-                        }}
-                      >
-                        {lists.map(list => (
-                          <option key={list._id} value={list._id}>
-                            {list.title}
-                          </option>
-                        ))}
-                      </select>
+                      <FormControl fullWidth>
+                        <Select
+                          value={selectedListId || ''}
+                          onChange={handleListChange}
+                          displayEmpty
+                          sx={{ minWidth: '100%' }}
+                        >
+                          {lists.map(list => (
+                            <MenuItem key={list._id} value={list._id}>
+                              {list.title}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     </Box>
                   ) : (
                     <Typography variant="body2" color="error">
@@ -195,12 +231,29 @@ const ProductCatalogPage = () => {
                   )}
                 </Grid>
                 
-                <Grid item xs={12} sm={8} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Grid item xs={12} sm={isMobile ? 12 : 8} sx={{ 
+                  display: 'flex', 
+                  justifyContent: { xs: 'flex-start', sm: 'flex-end' },
+                  flexWrap: 'wrap',
+                  gap: 1,
+                  mt: { xs: 2, sm: 0 }
+                }}>
+                  {isMobile && (
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={handleCategoryDrawerToggle}
+                      sx={{ flex: '1 1 auto', minWidth: isSmallMobile ? '100%' : 'auto' }}
+                    >
+                      Kategóriák
+                    </Button>
+                  )}
                   <Button
                     variant="contained"
                     color="primary"
                     onClick={handleDrawerToggle}
                     disabled={!selectedListId}
+                    sx={{ flex: '1 1 auto', minWidth: isSmallMobile ? '100%' : 'auto' }}
                   >
                     Saját termék hozzáadása
                   </Button>
@@ -210,30 +263,35 @@ const ProductCatalogPage = () => {
           </Grid>
           
           {/* Fő tartalom: Katalógus böngésző és kategória szűrő */}
-          <Grid item xs={12} md={3}>
-            <CategorySelector 
-              onCategorySelect={handleCategorySelect}
-              selectedCategory={selectedCategory}
-            />
-          </Grid>
+          {!isMobile && (
+            <Grid item xs={12} md={3}>
+              <CategorySelector 
+                onCategorySelect={handleCategorySelect}
+                selectedCategory={selectedCategory}
+              />
+            </Grid>
+          )}
           
-          <Grid item xs={12} md={9}>
-            <Paper elevation={1} sx={{ p: 2 }}>
+          <Grid item xs={12} md={!isMobile ? 9 : 12}>
+            <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 } }}>
               <Box sx={{ mb: 2 }}>
                 <Tabs 
                   value={selectedTab} 
                   onChange={handleTabChange}
-                  variant="fullWidth"
+                  variant={isMobile ? "scrollable" : "fullWidth"}
+                  scrollButtons={isMobile ? "auto" : false}
                 >
                   <Tab 
-                    label="Termékkatalógus" 
+                    label={isMobile ? "" : "Termékkatalógus"} 
                     icon={<InventoryIcon />} 
                     iconPosition="start"
+                    aria-label="Termékkatalógus"
                   />
                   <Tab 
-                    label="Kategóriák" 
+                    label={isMobile ? "" : "Kategóriák"} 
                     icon={<CategoryIcon />} 
                     iconPosition="start"
+                    aria-label="Kategóriák"
                   />
                 </Tabs>
               </Box>
@@ -268,6 +326,7 @@ const ProductCatalogPage = () => {
         onClose={handleCloseProductDialog}
         maxWidth="md"
         fullWidth
+        fullScreen={isMobile}
       >
         <DialogTitle sx={{ m: 0, p: 2 }}>
           <IconButton
@@ -309,6 +368,15 @@ const ProductCatalogPage = () => {
         onClose={handleDrawerToggle}
       >
         {drawerContent}
+      </Drawer>
+
+      {/* Fiók a kategóriákhoz (csak mobilon) */}
+      <Drawer
+        anchor={isMobile ? 'bottom' : 'left'}
+        open={categoryDrawerOpen}
+        onClose={handleCategoryDrawerToggle}
+      >
+        {categoryDrawerContent}
       </Drawer>
     </Box>
   );

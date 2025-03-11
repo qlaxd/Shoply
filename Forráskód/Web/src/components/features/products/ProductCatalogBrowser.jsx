@@ -10,7 +10,9 @@ import {
   Alert,
   Snackbar,
   useTheme,
-  Pagination
+  Pagination,
+  InputAdornment,
+  useMediaQuery
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -27,6 +29,7 @@ import ProductCatalogService from '../../../services/productCatalog.service';
 // Termékenkénti kártya komponens
 const ProductCatalogItem = ({ product, onAddToList }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   return (
     <Card
@@ -51,39 +54,38 @@ const ProductCatalogItem = ({ product, onAddToList }) => {
           ))}
         </Box>
       }
-      content={
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="body2">
-            {`Egység: ${product.unit || 'db'}`}
-          </Typography>
-          {product.description && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              {product.description}
-            </Typography>
-          )}
-        </Box>
-      }
       actions={
         <Button
           variant="contained"
           color="primary"
+          size={isMobile ? "small" : "medium"}
           startIcon={<AddShoppingCartIcon />}
-          size="small"
           onClick={() => onAddToList(product)}
-          fullWidth
+          fullWidth={isMobile}
+          sx={{ mt: isMobile ? 1 : 0 }}
         >
-          Hozzáadás a listához
+          Hozzáadás
         </Button>
       }
       sx={{
         height: '100%',
-        transition: 'transform 0.2s',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: theme.shadows[4]
-        }
+        display: 'flex',
+        flexDirection: 'column'
       }}
-    />
+      contentProps={{
+        sx: { flexGrow: 1 }
+      }}
+    >
+      <Box sx={{ py: 1 }}>
+        <Typography variant="body2" color="text.secondary">
+          {product.description || 'Nincs leírás'}
+        </Typography>
+        
+        <Typography variant="body2" sx={{ mt: 1.5 }}>
+          <strong>Mértékegység:</strong> {product.defaultUnit || 'db'}
+        </Typography>
+      </Box>
+    </Card>
   );
 };
 
@@ -100,8 +102,11 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
     severity: 'success'
   });
 
-  const itemsPerPage = 9;
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
+  const itemsPerPage = isMobile ? 6 : 9;
 
   // Termékek betöltése
   const fetchProducts = async (query = '') => {
@@ -138,27 +143,28 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
     const query = e.target.value;
     setSearchQuery(query);
     
-    // Törölni a korábbi időzítőt
+    // Töröljük az előző időzítőt, ha van
     if (searchTimeout) {
       clearTimeout(searchTimeout);
     }
     
-    // Új időzítő beállítása
+    // Új időzítő beállítása a kereséssel
     const timeoutId = setTimeout(() => {
       fetchProducts(query);
-    }, 500);
+    }, 500); // 500ms késleltetés a kereséshez
     
     setSearchTimeout(timeoutId);
   };
 
-  // Oldal váltás kezelése
+  // Lapozás kezelése
   const handlePageChange = (event, value) => {
     setPage(value);
+    window.scrollTo(0, 0);
   };
 
   // Snackbar bezárásának kezelése
   const handleCloseSnackbar = () => {
-    setSnackbar(prev => ({ ...prev, open: false }));
+    setSnackbar({ ...snackbar, open: false });
   };
 
   // Termék hozzáadásának kezelése
@@ -166,7 +172,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
     if (!selectedListId) {
       setSnackbar({
         open: true,
-        message: 'Nincs kiválasztva lista! Kérjük, válasszon ki egy listát, amelyhez hozzá szeretné adni a terméket.',
+        message: 'Nincs kiválasztva bevásárlólista!',
         severity: 'warning'
       });
       return;
@@ -194,7 +200,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
           display: 'flex', 
           alignItems: 'center', 
           mb: 3,
-          flexWrap: 'wrap',
+          flexDirection: { xs: 'column', sm: 'row' },
           gap: 2
         }}
       >
@@ -204,16 +210,23 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
           onChange={handleSearchChange}
           startIcon={<SearchIcon />}
           fullWidth
-          sx={{ flexGrow: 1, minWidth: '250px' }}
+          sx={{ flexGrow: 1, minWidth: '100%' }}
         />
         
-        <Button
-          variant="outlined"
-          color="primary"
-          startIcon={<FilterListIcon />}
-        >
-          Szűrés
-        </Button>
+        <Box sx={{ 
+          display: 'flex', 
+          width: { xs: '100%', sm: 'auto' },
+          justifyContent: { xs: 'flex-end', sm: 'flex-start' }
+        }}>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<FilterListIcon />}
+            sx={{ minWidth: isSmallMobile ? '100%' : 'auto' }}
+          >
+            Szűrés
+          </Button>
+        </Box>
       </Box>
 
       {/* Hibaüzenet */}
@@ -243,9 +256,9 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
             </Alert>
           ) : (
             <>
-              <Grid container spacing={3}>
+              <Grid container spacing={2}>
                 {paginatedProducts.map((product) => (
-                  <Grid item xs={12} sm={6} md={4} key={product._id}>
+                  <Grid item xs={12} sm={6} md={4} key={product._id} sx={{ display: 'flex' }}>
                     <ProductCatalogItem 
                       product={product} 
                       onAddToList={handleAddToList} 
@@ -260,7 +273,8 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
                   sx={{ 
                     display: 'flex', 
                     justifyContent: 'center',
-                    mt: 4
+                    mt: 4,
+                    pb: 2
                   }}
                 >
                   <Pagination 
@@ -268,6 +282,8 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
                     page={page} 
                     onChange={handlePageChange} 
                     color="primary"
+                    size={isMobile ? "small" : "medium"}
+                    siblingCount={isMobile ? 0 : 1}
                   />
                 </Box>
               )}

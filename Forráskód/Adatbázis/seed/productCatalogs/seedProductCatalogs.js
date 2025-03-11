@@ -30,28 +30,32 @@ async function seedProductCatalogs() {
         category: findCategoryByName('Pékáruk')._id,
         defaultUnit: 'kg',
         createdBy: admin._id,
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
       {
         name: 'Zsemle',
         category: findCategoryByName('Pékáruk')._id,
         defaultUnit: 'db',
         createdBy: admin._id,
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
       {
         name: 'Tej 2,8%',
         category: findCategoryByName('Tejtermékek')._id,
         defaultUnit: 'l',
         createdBy: admin._id,
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
       {
         name: 'Trappista sajt',
         category: findCategoryByName('Tejtermékek')._id,
         defaultUnit: 'kg',
         createdBy: admin._id,
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
       {
         name: 'Mosogatószer',
@@ -59,7 +63,8 @@ async function seedProductCatalogs() {
         defaultUnit: 'db',
         createdBy: admin._id,
         barcode: '5900000000001',
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
       {
         name: 'Mosópor',
@@ -67,14 +72,16 @@ async function seedProductCatalogs() {
         defaultUnit: 'kg',
         createdBy: admin._id,
         barcode: '5900000000002',
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
       {
         name: 'Tányérkészlet',
         category: findCategoryByName('Konyhai eszközök')._id,
         defaultUnit: 'készlet',
         createdBy: admin._id,
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
       {
         name: 'USB kábel',
@@ -82,7 +89,8 @@ async function seedProductCatalogs() {
         defaultUnit: 'db',
         createdBy: admin._id,
         barcode: '5900000000003',
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
       {
         name: 'Egér',
@@ -90,28 +98,32 @@ async function seedProductCatalogs() {
         defaultUnit: 'db',
         createdBy: admin._id,
         barcode: '5900000000004',
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
       {
         name: 'Csirkemell',
         category: findCategoryByName('Húsáruk')._id,
         defaultUnit: 'kg',
         createdBy: admin._id,
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
       {
         name: 'Alma',
         category: findCategoryByName('Zöldségek és gyümölcsök')._id,
         defaultUnit: 'kg',
         createdBy: admin._id,
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
       {
         name: 'WC papír',
         category: findCategoryByName('Fürdőszobai kellékek')._id,
         defaultUnit: 'csomag',
         createdBy: admin._id,
-        usageCount: Math.floor(Math.random() * 100)
+        usageCount: Math.floor(Math.random() * 100),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       }
     ];
 

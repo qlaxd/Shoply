@@ -5,8 +5,14 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  height: 100vh;
-  background: linear-gradient(#04c1f5, #0932c5);
+  min-height: 100vh;
+  background: linear-gradient(135deg, #04c1f5, #0932c5) fixed;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+html {
+  height: 100%;
 }
 
 code {

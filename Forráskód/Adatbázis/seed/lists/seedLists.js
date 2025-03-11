@@ -57,6 +57,7 @@ async function createListForUser(user, catalogItems, status) {
     // Termék hozzáadása a listához
     products.push({
       catalogItem: randomCatalogItem._id,
+      name: randomCatalogItem.name, // Név hozzáadása (az új modell alapján)
       quantity: Math.floor(Math.random() * 5) + 1, // 1-5 közötti mennyiség
       unit: randomCatalogItem.defaultUnit,
       isPurchased: status !== 'active' ? true : Math.random() < 0.3, // aktív listán 30% esély, befejezett/archivált listán 100%
@@ -85,7 +86,8 @@ async function createListForUser(user, catalogItems, status) {
       status: status,
       priority: Math.floor(Math.random() * 3), // 0-2 prioritás
       version: 1,
-      lastModified: new Date()
+      lastModified: new Date(),
+      deleted: false
     });
     
     await newList.save();
@@ -113,6 +115,7 @@ async function createSharedLists(users) {
       
       products.push({
         catalogItem: randomCatalogItem._id,
+        name: randomCatalogItem.name, // Név hozzáadása (az új modell alapján)
         quantity: Math.floor(Math.random() * 5) + 1,
         unit: randomCatalogItem.defaultUnit,
         isPurchased: Math.random() < 0.3,
@@ -132,7 +135,8 @@ async function createSharedLists(users) {
       status: 'active',
       priority: 1,
       version: 1,
-      lastModified: new Date()
+      lastModified: new Date(),
+      deleted: false
     });
     
     const existingList = await List.findOne({ 
