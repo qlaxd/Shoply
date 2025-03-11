@@ -15,6 +15,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Login
         public LoginViewModel(ApiService apiService)
         {
             _apiService = apiService;
+            _password = new SecureString();
         }
 
         [ObservableProperty]
