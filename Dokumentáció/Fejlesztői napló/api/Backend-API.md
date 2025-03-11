@@ -720,3 +720,150 @@
 - 403 Forbidden - Nincs adminisztrátori jogosultság
 - 404 Not Found - A felhasználó nem található
 - 500 Internal Server Error - Szerver oldali hiba
+
+## Felhasználók
+
+### Saját felhasználói profil lekérése
+**Végpont:** `GET /api/users/me`  
+**Leírás:** A bejelentkezett felhasználó saját profiljának lekérése  
+**Jogosultság:** Autentikáció szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "_id": "67be04f22fe174af05ee6d0d",
+  "username": "teszt_felhasznalo",
+  "email": "teszt@example.com",
+  "role": "user",
+  "lastLogin": "2024-02-03T10:00:00.000Z",
+  "isActive": true,
+  "createdAt": "2024-02-03T09:00:00.000Z",
+  "updatedAt": "2024-02-03T10:00:00.000Z"
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 404 Not Found - Felhasználó nem található
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Felhasználói profil frissítése
+**Végpont:** `PUT /api/users/profile`  
+**Leírás:** A bejelentkezett felhasználó profiljának frissítése  
+**Jogosultság:** Autentikáció szükséges
+
+**Kérés:**
+```json
+{
+  "username": "uj_felhasznalonev",
+  "email": "uj_email@example.com"
+}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "_id": "67be04f22fe174af05ee6d0d",
+  "username": "uj_felhasznalonev",
+  "email": "uj_email@example.com",
+  "role": "user",
+  "lastLogin": "2024-02-03T10:00:00.000Z",
+  "isActive": true,
+  "createdAt": "2024-02-03T09:00:00.000Z",
+  "updatedAt": "2024-02-03T11:00:00.000Z"
+}
+```
+
+**Hibalehetőségek:**
+- 400 Bad Request - Érvénytelen adatok vagy már foglalt felhasználónév/email
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Jelszó módosítása
+**Végpont:** `PUT /api/users/password`  
+**Leírás:** A bejelentkezett felhasználó jelszavának módosítása  
+**Jogosultság:** Autentikáció szükséges
+
+**Kérés:**
+```json
+{
+  "currentPassword": "Regi_Jelszo123!",
+  "newPassword": "Uj_Jelszo456!"
+}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "message": "Jelszó sikeresen módosítva"
+}
+```
+
+**Hibalehetőségek:**
+- 400 Bad Request - Hiányzó adatok
+- 401 Unauthorized - Érvénytelen vagy hiányzó token, vagy a jelenlegi jelszó helytelen
+- 404 Not Found - Felhasználó nem található
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Felhasználó lekérése azonosító alapján
+**Végpont:** `GET /api/users/{felhasználóId}`  
+**Leírás:** Egy konkrét felhasználó adatainak lekérése azonosító alapján  
+**Jogosultság:** Autentikáció szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "_id": "67be04f22fe174af05ee6d10",
+  "username": "user3",
+  "email": "user3@example.com",
+  "role": "user",
+  "isActive": true,
+  "createdAt": "2024-02-01T12:00:00.000Z",
+  "updatedAt": "2024-02-02T10:00:00.000Z"
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 404 Not Found - Felhasználó nem található
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Felhasználók keresése
+**Végpont:** `GET /api/users/search?query={keresőkifejezés}`  
+**Leírás:** Felhasználók keresése felhasználónév vagy email cím alapján  
+**Jogosultság:** Autentikáció szükséges
+
+**Kérés:** Query paraméterként megadott keresőkifejezés (pl. "teszt")
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+[
+  {
+    "_id": "67be04f22fe174af05ee6d0d",
+    "username": "teszt_felhasznalo",
+    "email": "teszt@example.com",
+    "role": "user",
+    "isActive": true,
+    "createdAt": "2024-02-03T09:00:00.000Z",
+    "updatedAt": "2024-02-03T11:00:00.000Z"
+  }
+]
+```
+
+**Hibalehetőségek:**
+- 400 Bad Request - Hiányzó keresési kifejezés
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 500 Internal Server Error - Szerver oldali hiba
