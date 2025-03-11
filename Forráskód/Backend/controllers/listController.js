@@ -258,8 +258,8 @@ exports.unshareList = async (req, res) => {
 // Termék hozzáadása a listához - módosított változat
 exports.addProductToList = async (req, res) => {
   try {
-    const { listId } = req.params;
-    const list = await List.findById(listId);
+    const { id } = req.params;
+    const list = await List.findById(id);
     
     if (!list) {
       return res.status(404).json({ message: 'Lista nem található' });
@@ -298,7 +298,7 @@ exports.addProductToList = async (req, res) => {
     await list.save();
     
     // Populált lista visszaadása
-    const updatedList = await List.findById(listId)
+    const updatedList = await List.findById(list._id)
       .populate({
         path: 'products.catalogItem',
         model: 'ProductCatalog'
