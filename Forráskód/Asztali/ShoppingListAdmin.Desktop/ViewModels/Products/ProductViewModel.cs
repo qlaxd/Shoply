@@ -28,6 +28,10 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Products
             LoadProducts();
         }
 
+        public ProductViewModel()
+        {
+        }
+
         private async void LoadProducts()
         {
             var products = await _productCatalogService.GetAllProductCatalogsAsync();
