@@ -12,12 +12,29 @@ import {
   Slider,
   ListItemIcon,
   Checkbox,
-  ListItemSecondaryAction
+  ListItemSecondaryAction,
+  Avatar,
+  Chip,
+  Tooltip,
+  Divider,
+  CircularProgress,
+  useTheme,
+  useMediaQuery,
+  Fade,
+  Collapse,
+  Zoom,
+  Badge
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
+import EditIcon from '@mui/icons-material/Edit';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
+import TitleIcon from '@mui/icons-material/Title';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useNavigate, useParams } from 'react-router-dom';
 
 // Common komponensek importálása
@@ -29,11 +46,14 @@ import Loader from '../../common/Loader';
 // Services importálása
 import ListService from '../../../services/list.service';
 import ProductCatalogService from '../../../services/productCatalog.service';
+import CategoryService from '../../../services/category.service';
 
 const ListEditor = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isNewList = id === 'new';
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   // Állapotok
   const [listTitle, setListTitle] = useState('');
@@ -41,10 +61,15 @@ const ListEditor = () => {
   const [newProduct, setNewProduct] = useState('');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(!isNewList);
+  const [saving, setSaving] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [showCategoryInfo, setShowCategoryInfo] = useState(false);
+  const [completionPercentage, setCompletionPercentage] = useState(0);
   
   // Felhasználói adatok
   const userId = localStorage.getItem('userId');
@@ -69,7 +94,9 @@ const ListEditor = () => {
               setProducts(listData.products.map(product => ({
                 id: product._id || product.id,
                 name: product.name,
-                addedBy: product.addedBy || 'Ismeretlen'
+                addedBy: product.addedBy || 'Ismeretlen',
+                isPurchased: product.isPurchased || false,
+                category: product.category || null
               })));
             } else {
               setProducts([]);
@@ -86,8 +113,31 @@ const ListEditor = () => {
       }
     };
 
+    // Kategóriák betöltése
+    const fetchCategories = async () => {
+      try {
+        const categoriesData = await CategoryService.getAllCategories();
+        if (Array.isArray(categoriesData)) {
+          setCategories(categoriesData);
+        }
+      } catch (err) {
+        console.error('Hiba a kategóriák betöltésekor:', err);
+      }
+    };
+
     fetchListData();
+    fetchCategories();
   }, [id, isNewList]);
+
+  // Számoljuk a teljesítés százalékát
+  useEffect(() => {
+    if (products.length > 0) {
+      const purchasedCount = products.filter(p => p.isPurchased).length;
+      setCompletionPercentage(Math.round((purchasedCount / products.length) * 100));
+    } else {
+      setCompletionPercentage(0);
+    }
+  }, [products]);
 
   // Termék keresés a katalógusban
   const handleProductSearch = async (query) => {
@@ -101,7 +151,8 @@ const ListEditor = () => {
         if (Array.isArray(results)) {
           setSearchResults(results.map(item => ({
             id: item._id || item.id,
-            name: item.name
+            name: item.name,
+            category: item.category || null
           })));
         } else {
           setSearchResults([]);
@@ -124,7 +175,9 @@ const ListEditor = () => {
         setError(null);
         const newProductObj = {
           name: newProduct,
-          addedBy: username || 'Felhasználó'
+          addedBy: username || 'Felhasználó',
+          isPurchased: false,
+          category: selectedCategory
         };
         
         if (!isNewList) {
@@ -136,7 +189,9 @@ const ListEditor = () => {
             const addedProduct = {
               id: addedProductResponse._id || addedProductResponse.id,
               name: addedProductResponse.name || newProduct,
-              addedBy: addedProductResponse.addedBy || username || 'Felhasználó'
+              addedBy: addedProductResponse.addedBy || username || 'Felhasználó',
+              isPurchased: addedProductResponse.isPurchased || false,
+              category: addedProductResponse.category || selectedCategory
             };
             
             setProducts(prevProducts => [...prevProducts, addedProduct]);
@@ -159,6 +214,7 @@ const ListEditor = () => {
         // Termék hozzáadása után töröljük a beviteli mezőt és keresési eredményeket
         setNewProduct('');
         setSearchResults([]);
+        setSelectedCategory(null);
       } catch (err) {
         console.error('Hiba a termék hozzáadásakor:', err);
         setError('Nem sikerült hozzáadni a terméket: ' + (err.message || 'Ismeretlen hiba'));
@@ -210,13 +266,13 @@ const ListEditor = () => {
   // Lista mentése
   const saveList = async () => {
     try {
-      setLoading(true);
+      setSaving(true);
       setError(null);
       
       // Ellenőrizzük, hogy van-e bejelentkezett felhasználó
       if (!userId) {
         setError('Listát csak bejelentkezett felhasználó hozhat létre vagy módosíthat.');
-        setLoading(false);
+        setSaving(false);
         return;
       }
       
@@ -225,7 +281,9 @@ const ListEditor = () => {
         priority: priority,
         products: products.map(p => ({ 
           name: p.name, 
-          addedBy: p.addedBy || username || 'Felhasználó' 
+          addedBy: p.addedBy || username || 'Felhasználó',
+          isPurchased: p.isPurchased || false,
+          category: p.category
         })),
         owner: userId
       };
@@ -250,7 +308,7 @@ const ListEditor = () => {
         setError(`Nem sikerült ${isNewList ? 'létrehozni' : 'frissíteni'} a listát. Ellenőrizd, hogy be vagy-e jelentkezve.`);
       }
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
@@ -270,6 +328,23 @@ const ListEditor = () => {
     { value: 2, label: 'Közepes' },
     { value: 3, label: 'Alacsony' }
   ];
+
+  // Prioritás színének meghatározása
+  const getPriorityColor = (value) => {
+    switch(value) {
+      case 1: return theme.palette.error.main;
+      case 2: return theme.palette.warning.main;
+      case 3: return theme.palette.info.main;
+      default: return theme.palette.info.main;
+    }
+  };
+
+  // Kategória kiválasztása
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    setShowCategoryInfo(true);
+    setTimeout(() => setShowCategoryInfo(false), 3000);
+  };
 
   // Termék vásárlási állapotának módosítása
   const handleToggleProduct = async (productId) => {
@@ -300,6 +375,28 @@ const ListEditor = () => {
     }
   };
 
+  // Minden termék megvásárlása/visszaállítása
+  const handleToggleAllProducts = (isPurchased) => {
+    try {
+      // Frissítjük a helyi állapotot
+      setProducts(prevProducts => 
+        prevProducts.map(product => ({ ...product, isPurchased }))
+      );
+      
+      // Ha létező lista, akkor küldjük a kérést a backendre minden termékre
+      if (!isNewList) {
+        products.forEach(async (product) => {
+          if (product.isPurchased !== isPurchased && !product.id.toString().startsWith('temp-')) {
+            await ListService.updateProductInList(id, product.id, { isPurchased });
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Hiba a termékek állapotának módosításakor:', err);
+      setError('Nem sikerült módosítani a termékek állapotát: ' + (err.message || 'Ismeretlen hiba'));
+    }
+  };
+
   // Betöltési állapot megjelenítése
   if (loading) {
     return <Loader text="Lista betöltése..." fullPage={true} />;
@@ -308,37 +405,124 @@ const ListEditor = () => {
   return (
     <>
       <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-          <IconButton 
-            onClick={() => navigate('/')} 
-            color="primary" 
-            sx={{ mr: 1 }}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          <Typography variant="h4" component="h1" sx={{ flexGrow: 1 }}>
-            {isNewList ? 'Új bevásárlólista' : listTitle}
-          </Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            startIcon={<SaveIcon />}
-            onClick={handleSave}
-            disabled={loading || !listTitle.trim()}
-          >
-            Mentés
-          </Button>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', sm: 'row' }, 
+          alignItems: { xs: 'flex-start', sm: 'center' }, 
+          mb: 4, 
+          gap: 2 
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: { xs: '100%', sm: 'auto' } }}>
+            <IconButton 
+              onClick={() => navigate('/')} 
+              color="primary" 
+              sx={{ mr: 1 }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography 
+              variant="h4" 
+              component="h1" 
+              sx={{ 
+                flexGrow: 1,
+                fontSize: { xs: '1.5rem', sm: '2rem' },
+                fontWeight: 'bold',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {isNewList ? 'Új bevásárlólista' : listTitle}
+            </Typography>
+          </Box>
+          
+          <Box sx={{ 
+            display: 'flex', 
+            gap: 1, 
+            mt: { xs: 2, sm: 0 },
+            ml: { xs: 0, sm: 'auto' },
+            width: { xs: '100%', sm: 'auto' }
+          }}>
+            {completionPercentage > 0 && (
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mr: 1,
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                px: 1.5,
+                py: 0.5
+              }}>
+                <CircularProgress 
+                  variant="determinate" 
+                  value={completionPercentage} 
+                  size={24} 
+                  sx={{ 
+                    color: completionPercentage === 100 ? 'success.main' : 'primary.main',
+                    mr: 1
+                  }}
+                />
+                <Typography variant="body2" component="div">
+                  {completionPercentage}% kész
+                </Typography>
+              </Box>
+            )}
+            
+            <Button 
+              variant="contained" 
+              color="primary" 
+              startIcon={<SaveIcon />}
+              onClick={handleSave}
+              disabled={loading || saving || !listTitle.trim()}
+              sx={{ 
+                flexGrow: { xs: 1, sm: 0 },
+                borderRadius: 8,
+                boxShadow: 2,
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: 4
+                }
+              }}
+            >
+              {saving ? (
+                <>
+                  <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                  Mentés...
+                </>
+              ) : 'Mentés'}
+            </Button>
+          </Box>
         </Box>
         
         {/* Hibaüzenet megjelenítése */}
         {error && (
-          <Paper sx={{ p: 2, mb: 3, bgcolor: 'error.light' }}>
-            <Typography color="error">{error}</Typography>
-          </Paper>
+          <Fade in={!!error}>
+            <Paper sx={{ p: 2, mb: 3, bgcolor: 'error.light', borderRadius: 2, boxShadow: 2 }}>
+              <Typography color="error">{error}</Typography>
+            </Paper>
+          </Fade>
         )}
 
         {/* Lista adatok szerkesztése */}
-        <Paper sx={{ p: 3, mb: 3 }}>
+        <Paper sx={{ 
+          p: 3, 
+          mb: 3, 
+          borderRadius: 2,
+          boxShadow: 3,
+          transition: 'box-shadow 0.3s ease',
+          '&:hover': {
+            boxShadow: 5
+          }
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <TitleIcon color="primary" sx={{ mr: 1 }} />
+            <Typography variant="h6" component="h2">Lista adatai</Typography>
+          </Box>
+          
+          <Divider sx={{ mb: 3 }} />
+          
           <Input
             fullWidth
             label="Lista Címe"
@@ -346,35 +530,87 @@ const ListEditor = () => {
             value={listTitle}
             onChange={(e) => setListTitle(e.target.value)}
             placeholder="Adj címet a listának (pl. Hétvégi grillparti)"
-            sx={{ mb: 3 }}
+            sx={{ 
+              mb: 3, 
+              '& .MuiInputBase-root': {
+                borderRadius: 2
+              }
+            }}
           />
           
-          <Typography gutterBottom>Prioritás</Typography>
-          <Box sx={{ px: 2, mb: 3 }}>
-            <Slider
-              value={priority}
-              min={1}
-              max={3}
-              step={1}
-              marks={priorityMarks}
-              onChange={(_, newValue) => setPriority(newValue)}
-              valueLabelDisplay="off"
-              sx={{
-                '& .MuiSlider-markLabel': {
-                  fontSize: '0.8rem',
-                }
-              }}
-            />
+          <Box sx={{ mb: 2 }}>
+            <Typography gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+              <PriorityHighIcon sx={{ mr: 1, color: getPriorityColor(priority) }} />
+              Prioritás: {priorityMarks.find(mark => mark.value === priority)?.label}
+            </Typography>
+            <Box sx={{ px: 2, mb: 3 }}>
+              <Slider
+                value={priority}
+                min={1}
+                max={3}
+                step={1}
+                marks={priorityMarks}
+                onChange={(_, newValue) => setPriority(newValue)}
+                valueLabelDisplay="off"
+                sx={{
+                  '& .MuiSlider-markLabel': {
+                    fontSize: '0.8rem',
+                  },
+                  '& .MuiSlider-thumb': {
+                    backgroundColor: getPriorityColor(priority),
+                  },
+                  '& .MuiSlider-track': {
+                    backgroundColor: getPriorityColor(priority),
+                  }
+                }}
+              />
+            </Box>
           </Box>
         </Paper>
 
         {/* Termékek kezelése */}
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Termékek
-          </Typography>
+        <Paper sx={{ 
+          p: 3, 
+          borderRadius: 2,
+          boxShadow: 3,
+          transition: 'box-shadow 0.3s ease',
+          '&:hover': {
+            boxShadow: 5
+          }
+        }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <ShoppingCartIcon color="primary" sx={{ mr: 1 }} />
+              <Typography variant="h6">Termékek</Typography>
+            </Box>
+            
+            {products.length > 0 && (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Tooltip title="Minden termék megvásárolva">
+                  <IconButton 
+                    color="success" 
+                    onClick={() => handleToggleAllProducts(true)}
+                    size="small"
+                  >
+                    <DoneAllIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Minden termék visszaállítása">
+                  <IconButton 
+                    color="warning" 
+                    onClick={() => handleToggleAllProducts(false)}
+                    size="small"
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
+          </Box>
           
-          <Box sx={{ display: 'flex', mb: 3 }}>
+          <Divider sx={{ mb: 3 }} />
+          
+          <Box sx={{ display: 'flex', mb: 3, flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
             <Input
               fullWidth
               variant="outlined"
@@ -385,12 +621,24 @@ const ListEditor = () => {
                 handleProductSearch(e.target.value);
               }}
               onKeyPress={handleKeyPress}
+              sx={{ 
+                '& .MuiInputBase-root': {
+                  borderRadius: 8
+                }
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
                       onClick={handleAddProduct}
                       disabled={!newProduct.trim()}
+                      sx={{ 
+                        color: 'primary.main',
+                        transition: 'transform 0.2s',
+                        '&:hover': {
+                          transform: 'scale(1.1)'
+                        }
+                      }}
                     >
                       <AddIcon />
                     </IconButton>
@@ -398,14 +646,64 @@ const ListEditor = () => {
                 ),
               }}
             />
+            
+            {categories.length > 0 && (
+              <Box sx={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                gap: 1, 
+                width: { xs: '100%', sm: 'auto' },
+                justifyContent: { xs: 'flex-start', sm: 'flex-end' }
+              }}>
+                {categories.slice(0, isMobile ? 3 : 5).map((category) => (
+                  <Chip
+                    key={category._id}
+                    label={category.name}
+                    onClick={() => handleCategorySelect(category)}
+                    color={selectedCategory?._id === category._id ? 'primary' : 'default'}
+                    variant={selectedCategory?._id === category._id ? 'filled' : 'outlined'}
+                    sx={{ 
+                      transition: 'all 0.2s',
+                      transform: selectedCategory?._id === category._id ? 'scale(1.05)' : 'scale(1)'
+                    }}
+                  />
+                ))}
+                
+                {categories.length > (isMobile ? 3 : 5) && (
+                  <Tooltip title="További kategóriák">
+                    <Chip 
+                      icon={<HelpOutlineIcon />} 
+                      label={`+${categories.length - (isMobile ? 3 : 5)}`} 
+                      variant="outlined" 
+                    />
+                  </Tooltip>
+                )}
+              </Box>
+            )}
           </Box>
+          
+          <Collapse in={showCategoryInfo}>
+            <Paper sx={{ mb: 2, p: 1.5, bgcolor: 'info.light', borderRadius: 2 }}>
+              <Typography variant="body2">
+                A termék a következő kategóriába lesz sorolva: <strong>{selectedCategory?.name}</strong>
+              </Typography>
+            </Paper>
+          </Collapse>
           
           {/* Keresési találatok megjelenítése */}
           {searchResults.length > 0 && (
-            <Paper elevation={3} sx={{ mb: 3, maxHeight: 200, overflow: 'auto' }}>
+            <Paper elevation={3} sx={{ 
+              mb: 3, 
+              maxHeight: 200, 
+              overflow: 'auto',
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'divider'
+            }}>
               <List dense>
                 {searching ? (
                   <ListItem>
+                    <CircularProgress size={20} sx={{ mr: 1 }} />
                     <ListItemText primary="Keresés folyamatban..." />
                   </ListItem>
                 ) : (
@@ -415,10 +713,20 @@ const ListEditor = () => {
                       button
                       onClick={() => {
                         setNewProduct(item.name);
+                        setSelectedCategory(item.category);
                         setSearchResults([]);
                       }}
+                      sx={{
+                        transition: 'background-color 0.3s',
+                        '&:hover': {
+                          bgcolor: 'action.hover'
+                        }
+                      }}
                     >
-                      <ListItemText primary={item.name} />
+                      <ListItemText 
+                        primary={item.name} 
+                        secondary={item.category?.name ? `Kategória: ${item.category.name}` : null}
+                      />
                     </ListItem>
                   ))
                 )}
@@ -428,32 +736,155 @@ const ListEditor = () => {
           
           {/* Termékek listája */}
           {products.length > 0 ? (
-            <List>
-              {products.map((product, index) => (
-                <ListItem key={product.id || index} dense>
-                  <ListItemIcon>
-                    <Checkbox
-                      edge="start"
-                      checked={product.isPurchased || false}
-                      onChange={() => handleToggleProduct(product.id)}
-                    />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={product.name}
-                    secondary={`Hozzáadta: ${typeof product.addedBy === 'object' ? product.addedBy.username : product.addedBy || 'Ismeretlen'}`}
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton edge="end" onClick={() => handleDeleteProduct(product.id)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              ))}
-            </List>
+            <>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                mb: 1,
+                pb: 1,
+                borderBottom: '1px solid',
+                borderColor: 'divider'
+              }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Termék neve
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 8 }}>
+                    Hozzáadta
+                  </Typography>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 4 }}>
+                    Műveletek
+                  </Typography>
+                </Box>
+              </Box>
+              
+              <List sx={{ 
+                bgcolor: 'background.paper',
+                borderRadius: 2,
+                overflow: 'hidden'
+              }}>
+                {products.map((product, index) => (
+                  <Fade 
+                    in={true} 
+                    key={product.id || index}
+                    style={{ transitionDelay: `${index * 30}ms` }}
+                  >
+                    <ListItem 
+                      dense
+                      sx={{ 
+                        borderBottom: index < products.length - 1 ? '1px solid' : 'none',
+                        borderColor: 'divider',
+                        transition: 'all 0.2s',
+                        bgcolor: product.isPurchased ? 'action.selected' : 'background.paper',
+                        '&:hover': {
+                          bgcolor: 'action.hover'
+                        }
+                      }}
+                    >
+                      <ListItemIcon>
+                        <Checkbox
+                          edge="start"
+                          checked={product.isPurchased || false}
+                          onChange={() => handleToggleProduct(product.id)}
+                          sx={{ 
+                            color: product.isPurchased ? 'success.main' : 'action.active',
+                            '&.Mui-checked': {
+                              color: 'success.main'
+                            }
+                          }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Typography 
+                              variant="body1"
+                              sx={{ 
+                                textDecoration: product.isPurchased ? 'line-through' : 'none',
+                                color: product.isPurchased ? 'text.disabled' : 'text.primary',
+                                mr: 1
+                              }}
+                            >
+                              {product.name}
+                            </Typography>
+                            {product.category && (
+                              <Chip 
+                                label={product.category.name} 
+                                size="small" 
+                                variant="outlined"
+                                sx={{ height: 20, fontSize: '0.7rem' }}
+                              />
+                            )}
+                          </Box>
+                        }
+                        secondary={
+                          <Typography variant="caption" color="text.secondary">
+                            {typeof product.addedBy === 'object' ? product.addedBy.username : product.addedBy || 'Ismeretlen'}
+                          </Typography>
+                        }
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton 
+                          edge="end" 
+                          onClick={() => handleDeleteProduct(product.id)}
+                          sx={{ 
+                            color: 'error.light',
+                            transition: 'all 0.2s',
+                            '&:hover': {
+                              color: 'error.main',
+                              transform: 'scale(1.1)'
+                            }
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  </Fade>
+                ))}
+              </List>
+              
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'flex-end', 
+                mt: 2 
+              }}>
+                <Badge 
+                  badgeContent={products.length} 
+                  color="primary"
+                  showZero
+                  sx={{ mr: 2 }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Összes termék
+                  </Typography>
+                </Badge>
+                <Badge 
+                  badgeContent={products.filter(p => p.isPurchased).length} 
+                  color="success"
+                  showZero
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Megvásárolva
+                  </Typography>
+                </Badge>
+              </Box>
+            </>
           ) : (
-            <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Box sx={{ 
+              textAlign: 'center', 
+              py: 6,
+              borderRadius: 2,
+              border: '1px dashed',
+              borderColor: 'divider'
+            }}>
+              <ShoppingCartIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
               <Typography variant="body1" color="textSecondary">
                 Adj hozzá termékeket a listához!
+              </Typography>
+              <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                Használd a fenti mezőt termékek hozzáadásához.
               </Typography>
             </Box>
           )}
@@ -471,6 +902,7 @@ const ListEditor = () => {
                 variant="outlined"
                 color="secondary"
                 onClick={() => setSaveDialogOpen(false)}
+                sx={{ borderRadius: 8 }}
               >
                 Mégsem
               </Button>
@@ -479,6 +911,7 @@ const ListEditor = () => {
                 color="primary"
                 onClick={handleDialogSave}
                 disabled={!listTitle.trim()}
+                sx={{ borderRadius: 8 }}
               >
                 Mentés
               </Button>
@@ -492,7 +925,12 @@ const ListEditor = () => {
             onChange={(e) => setListTitle(e.target.value)}
             label="Lista címe"
             placeholder="Pl. Hétvégi grillparti"
-            sx={{ mt: 2 }}
+            sx={{ 
+              mt: 2,
+              '& .MuiInputBase-root': {
+                borderRadius: 2
+              }
+            }}
           />
         </Modal>
       </Container>
