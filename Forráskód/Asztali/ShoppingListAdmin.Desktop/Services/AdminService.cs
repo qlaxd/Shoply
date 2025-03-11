@@ -29,5 +29,10 @@ namespace ShoppingListAdmin.Desktop.Services
         {
             await _httpClient.PostAsJsonAsync($"admin/promote/{userId}", new { });
         }
+
+        public async Task UpdateUserAsync(UserModel user)
+        {
+            await _httpClient.PutAsJsonAsync($"admin/users/{user.Id}", user);
+        }
     }
 }

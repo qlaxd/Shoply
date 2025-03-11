@@ -94,6 +94,25 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
             }
         }
 
+        [RelayCommand]
+        public async Task EditUserAsync(UserModel user)
+        {
+            if (user != null)
+            {
+                try
+                {
+                    await _apiService.UpdateUserAsync(user);
+                    // Frissítjük a felhasználók listáját a változások megjelenítéséhez
+                    LoadUsers();
+                }
+                catch (Exception ex)
+                {
+                    // Hibakezelés
+                    Debug.WriteLine($"Error updating user: {ex.Message}");
+                }
+            }
+        }
+
         // A szűrés alkalmazása
         [RelayCommand]
         public void FilterUsers()

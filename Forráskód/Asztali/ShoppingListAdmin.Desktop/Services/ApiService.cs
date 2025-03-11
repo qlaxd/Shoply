@@ -97,6 +97,11 @@ public class ApiService
     {
         await _httpClient.PostAsJsonAsync($"admin/promote/{userModel.Id}", userModel);
     }
+
+    public async Task UpdateUserAsync(UserModel user)
+    {
+        await _httpClient.PutAsJsonAsync($"admin/users/{user.Id}", user);
+    }
      
 }
 

@@ -1,19 +1,10 @@
 ﻿using ShoppingListAdmin.Desktop.Services;
 using ShoppingListAdmin.Desktop.ViewModels.Users;
+using ShoppingListAdmin.Desktop.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ShoppingListAdmin.Desktop.Views.Users
 {
@@ -25,18 +16,23 @@ namespace ShoppingListAdmin.Desktop.Views.Users
         public UsersView()
         {
             InitializeComponent();
-            
         }
 
         private void DeleteUser_Click(object sender, RoutedEventArgs e)
         {
             // Add new user
-            
         }
 
-        private void EditUser_Click(object sender, RoutedEventArgs e)
+        private async void EditUser_Click(object sender, RoutedEventArgs e)
         {
-            // Edit user
+            if (sender is Button button && button.DataContext is UserModel user)
+            {
+                var viewModel = DataContext as UsersViewModel;
+                if (viewModel != null)
+                {
+                    await viewModel.EditUserAsync(user);
+                }
+            }
         }
 
         private void FilterButton_Click(object sender, RoutedEventArgs e)
