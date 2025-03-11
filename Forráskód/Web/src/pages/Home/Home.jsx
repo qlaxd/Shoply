@@ -10,7 +10,6 @@ import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
 import Loader from '../../components/common/Loader';
-import Header from '../../components/layout/Header/Header';
 
 // Importáljuk a feature komponenseket
 import ShoppingListCard from '../../components/features/lists/ShoppingListCard';

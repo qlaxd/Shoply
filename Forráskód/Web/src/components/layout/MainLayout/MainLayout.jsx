@@ -4,7 +4,6 @@ import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { PageContainer } from '@toolpad/core/PageContainer';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import BarChartIcon from '@mui/icons-material/BarChart';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -13,56 +12,66 @@ import HistoryIcon from '@mui/icons-material/History';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import PeopleIcon from '@mui/icons-material/People';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { createTheme } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-// Navigációs konfiguráció - egyszerűsített változat a kompatibilitás érdekében
+// Navigációs konfiguráció a Toolpad formátumában
 const NAVIGATION = [
   {
-    title: 'Áttekintés',
-    icon: <DashboardIcon />,
-    path: '/'
+    kind: 'header',
+    title: 'Főmenü',
   },
   {
+    segment: 'lists',
     title: 'Bevásárló Listák',
     icon: <ShoppingCartIcon />,
     path: '/'
   },
   {
+    segment: 'products',
     title: 'Termékkatalógus',
     icon: <InventoryIcon />,
     path: '/products'
   },
   {
-    type: 'divider'
+    kind: 'divider',
   },
   {
+    kind: 'header',
+    title: 'Elemzés',
+  },
+  {
+    segment: 'statistics',
     title: 'Statisztikák',
     icon: <TimelineIcon />,
     path: '/statistics'
   },
   {
+    segment: 'history',
     title: 'Vásárlási előzmények',
     icon: <HistoryIcon />,
     path: '/history'
   },
   {
-    type: 'divider'
+    kind: 'divider',
   },
   {
+    segment: 'profile',
     title: 'Profilom',
     icon: <PersonIcon />,
-    path: '/profile',
     children: [
       {
+        segment: 'view-profile',
         title: 'Profil megtekintése',
         path: '/profile'
       },
       {
+        segment: 'change-password',
         title: 'Jelszó módosítása',
         icon: <VpnKeyIcon />,
         path: '/profile/change-password'
       },
       {
+        segment: 'search-users',
         title: 'Felhasználók keresése',
         icon: <PeopleIcon />,
         path: '/users/search'
@@ -70,10 +79,10 @@ const NAVIGATION = [
     ]
   },
   {
+    segment: 'logout',
     title: 'Kijelentkezés',
     icon: <LogoutIcon />,
-    path: '/login',
-    id: 'logout'
+    path: '/login'
   }
 ];
 
@@ -89,11 +98,11 @@ const customTheme = createTheme({
   },
 });
 
-// Router mock az AppProvider-hez
-function useCustomRouter(initialPath) {
+// Router az AppProvider-hez
+function useCustomRouter() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [pathname, setPathname] = React.useState(initialPath || location.pathname);
+  const [pathname, setPathname] = React.useState(location.pathname);
 
   const router = React.useMemo(() => {
     return {
@@ -118,94 +127,66 @@ const MainLayout = ({ children }) => {
   const navigate = useNavigate();
 
   // Navigáció kezelése
-  const handleNavigate = (itemId) => {
-    console.log("Navigation item clicked:", itemId);
-    if (itemId === 'logout') {
+  const handleNavigate = (segment) => {
+    console.log("Navigation segment clicked:", segment);
+    
+    // Találjuk meg a helyes útvonalat a szegmens alapján
+    const findPathBySegment = (items, segment) => {
+      for (const item of items) {
+        if (item.segment === segment) {
+          return item.path;
+        }
+        if (item.children) {
+          const childPath = findPathBySegment(item.children, segment);
+          if (childPath) return childPath;
+        }
+      }
+      return null;
+    };
+
+    const path = findPathBySegment(NAVIGATION, segment);
+    
+    if (segment === 'logout') {
       // Kijelentkezés kezelése
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
       navigate('/login');
+    } else if (path) {
+      navigate(path);
     }
   };
 
+  // User info for the account display
+  const userInfo = {
+    name: 'Felhasználó',
+    email: 'felhasznalo@example.com'
+  };
+
   return (
-    <div style={{ display: 'flex' }}>
-      {/* Bal oldali navigációs sáv */}
-      <div style={{ 
-        width: '250px', 
-        minHeight: '100vh', 
-        backgroundColor: '#f5f5f5',
-        borderRight: '1px solid #e0e0e0',
-        padding: '20px 0'
-      }}>
-        <div style={{ 
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 16px 20px 16px',
-          borderBottom: '1px solid #e0e0e0'
-        }}>
-          <ShoppingCartIcon style={{ marginRight: '10px', color: '#3f51b5' }} />
-          <h1 style={{ 
-            margin: 0, 
-            fontSize: '1.2rem', 
-            fontWeight: 600, 
-            color: '#333'
-          }}>
-            Bevásárlólistáim
-          </h1>
-        </div>
-        
-        <nav>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {NAVIGATION.map((item, index) => {
-              if (item.type === 'divider') {
-                return (
-                  <li key={`divider-${index}`} style={{ 
-                    borderBottom: '1px solid #e0e0e0',
-                    margin: '10px 0' 
-                  }}></li>
-                );
-              }
-              
-              return (
-                <li key={item.path || index}>
-                  <a 
-                    href={item.path} 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (item.id === 'logout') {
-                        handleNavigate('logout');
-                      } else {
-                        navigate(item.path);
-                      }
-                    }}
-                    style={{ 
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '10px 16px',
-                      textDecoration: 'none',
-                      color: router.pathname === item.path ? '#3f51b5' : '#555',
-                      backgroundColor: router.pathname === item.path ? 'rgba(63, 81, 181, 0.08)' : 'transparent',
-                      fontWeight: router.pathname === item.path ? 500 : 'normal'
-                    }}
-                  >
-                    <span style={{ marginRight: '10px' }}>
-                      {item.icon}
-                    </span>
-                    {item.title}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      </div>
-      
-      {/* Fő tartalom */}
-      <div style={{ flexGrow: 1, padding: '20px' }}>
-        {children}
-      </div>
-    </div>
+    <ThemeProvider theme={customTheme}>
+      <AppProvider 
+        navigation={NAVIGATION} 
+        router={router}
+        onNavigate={handleNavigate}
+        branding={{
+          title: 'Bevásárlólistáim',
+          logo: <ShoppingCartIcon style={{ transform: 'translateY(7px)' }} />,
+        }}
+      >
+        <DashboardLayout
+
+          account={{
+            name: userInfo.name,
+            email: userInfo.email,
+            avatar: userInfo.name.charAt(0),
+          }}
+        >
+          <PageContainer>
+            {children}
+          </PageContainer>
+        </DashboardLayout>
+      </AppProvider>
+    </ThemeProvider>
   );
 };
 
