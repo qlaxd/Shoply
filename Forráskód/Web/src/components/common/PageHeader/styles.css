@@ -1,0 +1,5 @@
+
+/* Hide the container that holds both breadcrumbs and title */
+.css-nen11g-MuiStack-root {
+  display: none !important;
+} 

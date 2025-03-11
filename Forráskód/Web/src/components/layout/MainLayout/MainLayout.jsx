@@ -13,6 +13,10 @@ import PeopleIcon from '@mui/icons-material/People';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+// Import custom page header
+import CustomPageHeader from '../../common/PageHeader';
+import '../../common/PageHeader/styles.css';
+
 // Navigációs konfiguráció a Toolpad formátumában
 const NAVIGATION = [
   {
@@ -190,6 +194,7 @@ const MainLayout = ({ children }) => {
           title: 'Bevásárlólistáim',
           logo: <ShoppingCartIcon style={{ transform: 'translateY(7px)' }} />,
         }}
+        breadcrumbs={false}
       >
         <DashboardLayout
           account={{
@@ -197,6 +202,7 @@ const MainLayout = ({ children }) => {
             email: userInfo.email,
             avatar: userInfo.name.charAt(0),
           }}
+          breadcrumbs={false}
         >
           <PageContainer>
             {children}
