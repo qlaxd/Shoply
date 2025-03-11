@@ -81,6 +81,10 @@ public class ApiService
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<List<UserModel>>();
+<<<<<<< HEAD
+=======
+                
+>>>>>>> d4e44774fb917a9e0554f8233e3b524a18954be1
             }
             
             throw new HttpRequestException($"Error: {response.StatusCode}");

@@ -17,6 +17,7 @@
                 <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="*"/>
                 <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="*"/>
                 <DataGridTextColumn Header="Is Available" Binding="{Binding IsAvailable}" Width="*"/>
+                <DataGridTextColumn Header="Default Unit" Binding="{Binding DefaultUnit}" Width="*"/>
                 <DataGridTemplateColumn Header="Actions" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
