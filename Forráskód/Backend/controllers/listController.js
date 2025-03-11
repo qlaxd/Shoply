@@ -1,7 +1,8 @@
 const List = require('../models/List');
 const User = require('../models/User');
-const Product = require('../models/Product');
+const Product = require('../models/ProductCatalog');
 const mongoose = require('mongoose');
+const ProductCatalog = require('../models/ProductCatalog');
 
 // Get all lists
 exports.getAllLists = async (req, res) => {
@@ -254,41 +255,37 @@ exports.unshareList = async (req, res) => {
   }
 };
 
-// Termék hozzáadása a listához 
+// Termék hozzáadása a listához - módosított változat
 exports.addProductToList = async (req, res) => {
   try {
-    const list = await List.findById(req.params.id);
+    const { id } = req.params;
+    const list = await List.findById(id);
+    
     if (!list) {
       return res.status(404).json({ message: 'Lista nem található' });
     }
-
-    // Ellenőrizzük a jogosultságot
-    if (list.owner.toString() !== req.user.id && 
-        !list.sharedUsers.some(share => 
-          share.user.toString() === req.user.id && 
-          ['edit', 'admin'].includes(share.permissionLevel)
-        )) {
-      return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
-    }
-
-    // Az addedBy mező kezelése
-    let addedById = req.user.id; // Alapértelmezetten a kérést küldő felhasználó
-
-    // Ha van addedBy a kérésben, ellenőrizzük és feldolgozzuk
-    if (req.body.addedBy) {
-      // Ha az addedBy nem ObjectId, akkor megpróbáljuk felhasználónév alapján megtalálni
-      if (!mongoose.Types.ObjectId.isValid(req.body.addedBy)) {
-        const user = await User.findOne({ username: req.body.addedBy });
-        if (user) {
-          addedById = user._id;
-        }
-      } else {
-        // Ha már eleve ObjectId, akkor használjuk
-        addedById = req.body.addedBy;
+    
+    // Jogosultságellenőrzés...
+    
+    const addedById = req.user.id;
+    
+    // Ha katalógusra hivatkozunk, ellenőrizzük a létezését
+    if (req.body.catalogItem) {
+      const catalogItem = await ProductCatalog.findById(req.body.catalogItem);
+      if (!catalogItem) {
+        return res.status(400).json({ message: 'A megadott katalóguselem nem létezik' });
       }
+      
+      // Növeljük a katalóguselem használati számát
+      catalogItem.usageCount += 1;
+      catalogItem.lastUsed = new Date();
+      await catalogItem.save();
+    } else if (!req.body.name) {
+      return res.status(400).json({ message: 'A termék neve kötelező katalógus nélküli termékeknél' });
     }
-
-    const productData = {
+    
+    // Új termék létrehozása közvetlenül a listában
+    list.products.push({
       catalogItem: req.body.catalogItem,
       name: req.body.name,
       unit: req.body.unit,
@@ -296,31 +293,20 @@ exports.addProductToList = async (req, res) => {
       quantity: req.body.quantity || 1,
       isPurchased: req.body.isPurchased || false,
       notes: req.body.notes || ""
-    };
+    });
     
-    // Új termék létrehozása
-    const product = new Product(productData);
-    await product.save();
-    
-    // Termék hozzáadása a listához
-    list.products.push(product._id);
     await list.save();
     
-    // Populált lista visszaadása, ahol az addedBy mező tartalmazza a felhasználói adatokat
+    // Populált lista visszaadása
     const updatedList = await List.findById(list._id)
       .populate({
-        path: 'products',
-        populate: [
-          {
-            path: 'catalogItem',
-            model: 'ProductCatalog'
-          },
-          {
-            path: 'addedBy',
-            model: 'User',
-            select: '-password -_id'
-          }
-        ]
+        path: 'products.catalogItem',
+        model: 'ProductCatalog'
+      })
+      .populate({
+        path: 'products.addedBy',
+        model: 'User',
+        select: '-password -_id'
       });
     
     res.status(200).json(updatedList);

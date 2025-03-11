@@ -94,7 +94,7 @@ exports.updateCatalogItem = async (req, res) => {
 exports.deleteCatalogItem = async (req, res) => {
   try {
     // Ellenőrizzük, hogy használatban van-e a katalógus elem
-    const Product = require('../models/Product');
+    const Product = require('../models/ProductCatalog');
     const productCount = await Product.countDocuments({ catalogItem: req.params.id });
     
     if (productCount > 0) {
