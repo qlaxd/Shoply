@@ -12,7 +12,7 @@ namespace ShoppingListAdmin.Desktop.Services
 public class ApiService
 {
     private readonly HttpClient _httpClient;
-    private string? _authToken;
+    private string _authToken;
 
     public ApiService()
     {
@@ -63,7 +63,7 @@ public class ApiService
         }
     }
 
-    public string? GetAuthToken()
+    public string GetAuthToken()
     {
         return _authToken;
     }
@@ -80,8 +80,7 @@ public class ApiService
             var response = await _httpClient.GetAsync("admin/users");
             if (response.IsSuccessStatusCode)
             {
-                var users = await response.Content.ReadFromJsonAsync<List<UserModel>>();
-                return users ?? new List<UserModel>();
+                return await response.Content.ReadFromJsonAsync<List<UserModel>>();
             }
             
             throw new HttpRequestException($"Error: {response.StatusCode}");
