@@ -21,12 +21,14 @@ namespace ShoppingListAdmin.Desktop.Services
 
         public async Task<List<ProductModel>> GetAllProductsAsync()
         {
-            return await _httpClient.GetFromJsonAsync<List<ProductModel>>("products");
+            var products = await _httpClient.GetFromJsonAsync<List<ProductModel>>("products");
+            return products ?? new List<ProductModel>();
         }
 
         public async Task<ProductModel> GetProductByIdAsync(string productId)
         {
-            return await _httpClient.GetFromJsonAsync<ProductModel>($"products/{productId}");
+            var product = await _httpClient.GetFromJsonAsync<ProductModel>($"products/{productId}");
+            return product ?? new ProductModel();
         }
 
         public async Task CreateProductAsync(ProductModel product)
