@@ -53,6 +53,19 @@ const AuthService = {
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
+    localStorage.removeItem('username');
+  },
+
+  getCurrentUser: () => {
+    return {
+      userId: localStorage.getItem('userId'),
+      username: localStorage.getItem('username'),
+      isAuthenticated: !!localStorage.getItem('token')
+    };
+  },
+
+  isAuthenticated: () => {
+    return !!localStorage.getItem('token');
   }
 };
 

@@ -4,7 +4,9 @@ const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const listRoutes = require('./routes/listRoutes');
 const productCatalogRoutes = require('./routes/productCatalogRoutes'); // Import the product catalog routes
+const categoryRoutes = require('./routes/categoryRoutes'); // Import the category routes
 const cors = require('cors');
+const userRoutes = require('./routes/userRoutes'); // Import the user routes
 const connectDB = require('./config/db'); // Importáljuk a connectDB függvényt
 
 dotenv.config(); // .env fájl betöltése, hogy elérhető legyen a process.env objektumon keresztül
@@ -36,6 +38,8 @@ app.use('/api/auth', authRoutes); // Prefix all endpoints defined in authRoutes 
 app.use('/api/admin', adminRoutes); // Prefix all endpoints defined in adminRoutes with /api/admin
 app.use('/api/lists', listRoutes); // Prefix all endpoints defined in listRoutes with /api/lists
 app.use('/api/productCatalogs', productCatalogRoutes); // Prefix all endpoints defined in productCatalogRoutes with /api/productCatalogs
+app.use('/api/categories', categoryRoutes); // Prefix all endpoints defined in categoryRoutes with /api/categories
+app.use('/api/users', userRoutes); // Prefix all endpoints defined in userRoutes with /api/users
 
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
