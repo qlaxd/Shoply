@@ -19,7 +19,6 @@ import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
 import { useNavigate, useParams } from 'react-router-dom';
-import Header from '../../layout/Header/Header';
 
 // Common komponensek importálása
 import Button from '../../common/Button';
@@ -308,161 +307,157 @@ const ListEditor = () => {
 
   return (
     <>
-      <Header />
-      <Container maxWidth="md">
-        <Box sx={{ my: 4 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <IconButton onClick={() => navigate('/')} sx={{ mr: 2 }}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-              {isNewList ? 'Új Bevásárló Lista' : 'Lista Szerkesztése'}
-            </Typography>
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+          <IconButton 
+            onClick={() => navigate('/')} 
+            color="primary" 
+            sx={{ mr: 1 }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h4" component="h1" sx={{ flexGrow: 1 }}>
+            {isNewList ? 'Új bevásárlólista' : listTitle}
+          </Typography>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            startIcon={<SaveIcon />}
+            onClick={handleSave}
+            disabled={loading || !listTitle.trim()}
+          >
+            Mentés
+          </Button>
+        </Box>
+        
+        {/* Hibaüzenet megjelenítése */}
+        {error && (
+          <Paper sx={{ p: 2, mb: 3, bgcolor: 'error.light' }}>
+            <Typography color="error">{error}</Typography>
+          </Paper>
+        )}
+
+        {/* Lista adatok szerkesztése */}
+        <Paper sx={{ p: 3, mb: 3 }}>
+          <Input
+            fullWidth
+            label="Lista Címe"
+            variant="outlined"
+            value={listTitle}
+            onChange={(e) => setListTitle(e.target.value)}
+            placeholder="Adj címet a listának (pl. Hétvégi grillparti)"
+            sx={{ mb: 3 }}
+          />
+          
+          <Typography gutterBottom>Prioritás</Typography>
+          <Box sx={{ px: 2, mb: 3 }}>
+            <Slider
+              value={priority}
+              min={1}
+              max={3}
+              step={1}
+              marks={priorityMarks}
+              onChange={(_, newValue) => setPriority(newValue)}
+              valueLabelDisplay="off"
+              sx={{
+                '& .MuiSlider-markLabel': {
+                  fontSize: '0.8rem',
+                }
+              }}
+            />
           </Box>
+        </Paper>
 
-          {/* Hibaüzenet megjelenítése */}
-          {error && (
-            <Paper sx={{ p: 2, mb: 3, bgcolor: 'error.light' }}>
-              <Typography color="error">{error}</Typography>
-            </Paper>
-          )}
-
-          {/* Lista adatok szerkesztése */}
-          <Paper sx={{ p: 3, mb: 3 }}>
+        {/* Termékek kezelése */}
+        <Paper sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Termékek
+          </Typography>
+          
+          <Box sx={{ display: 'flex', mb: 3 }}>
             <Input
               fullWidth
-              label="Lista Címe"
               variant="outlined"
-              value={listTitle}
-              onChange={(e) => setListTitle(e.target.value)}
-              placeholder="Adj címet a listának (pl. Hétvégi grillparti)"
-              sx={{ mb: 3 }}
+              placeholder="Új termék hozzáadása..."
+              value={newProduct}
+              onChange={(e) => {
+                setNewProduct(e.target.value);
+                handleProductSearch(e.target.value);
+              }}
+              onKeyPress={handleKeyPress}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleAddProduct}
+                      disabled={!newProduct.trim()}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
-            
-            <Typography gutterBottom>Prioritás</Typography>
-            <Box sx={{ px: 2, mb: 3 }}>
-              <Slider
-                value={priority}
-                min={1}
-                max={3}
-                step={1}
-                marks={priorityMarks}
-                onChange={(_, newValue) => setPriority(newValue)}
-                valueLabelDisplay="off"
-                sx={{
-                  '& .MuiSlider-markLabel': {
-                    fontSize: '0.8rem',
-                  }
-                }}
-              />
-            </Box>
-          </Paper>
-
-          {/* Termékek kezelése */}
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Termékek
-            </Typography>
-            
-            <Box sx={{ display: 'flex', mb: 3 }}>
-              <Input
-                fullWidth
-                variant="outlined"
-                placeholder="Új termék hozzáadása..."
-                value={newProduct}
-                onChange={(e) => {
-                  setNewProduct(e.target.value);
-                  handleProductSearch(e.target.value);
-                }}
-                onKeyPress={handleKeyPress}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={handleAddProduct}
-                        disabled={!newProduct.trim()}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Box>
-            
-            {/* Keresési találatok megjelenítése */}
-            {searchResults.length > 0 && (
-              <Paper elevation={3} sx={{ mb: 3, maxHeight: 200, overflow: 'auto' }}>
-                <List dense>
-                  {searching ? (
-                    <ListItem>
-                      <ListItemText primary="Keresés folyamatban..." />
-                    </ListItem>
-                  ) : (
-                    searchResults.map(item => (
-                      <ListItem
-                        key={item.id}
-                        button
-                        onClick={() => {
-                          setNewProduct(item.name);
-                          setSearchResults([]);
-                        }}
-                      >
-                        <ListItemText primary={item.name} />
-                      </ListItem>
-                    ))
-                  )}
-                </List>
-              </Paper>
-            )}
-            
-            {/* Termékek listája */}
-            {products.length > 0 ? (
-              <List>
-                {products.map((product, index) => (
-                  <ListItem key={product.id || index} dense>
-                    <ListItemIcon>
-                      <Checkbox
-                        edge="start"
-                        checked={product.isPurchased || false}
-                        onChange={() => handleToggleProduct(product.id)}
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={product.name}
-                      secondary={`Hozzáadta: ${typeof product.addedBy === 'object' ? product.addedBy.username : product.addedBy || 'Ismeretlen'}`}
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton edge="end" onClick={() => handleDeleteProduct(product.id)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Typography variant="body1" color="textSecondary">
-                  Adj hozzá termékeket a listához!
-                </Typography>
-              </Box>
-            )}
-          </Paper>
-          
-          {/* Mentés gomb */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              size="large"
-              startIcon={<SaveIcon />}
-              onClick={handleSave}
-              disabled={products.length === 0}
-            >
-              Mentés
-            </Button>
           </Box>
-        </Box>
+          
+          {/* Keresési találatok megjelenítése */}
+          {searchResults.length > 0 && (
+            <Paper elevation={3} sx={{ mb: 3, maxHeight: 200, overflow: 'auto' }}>
+              <List dense>
+                {searching ? (
+                  <ListItem>
+                    <ListItemText primary="Keresés folyamatban..." />
+                  </ListItem>
+                ) : (
+                  searchResults.map(item => (
+                    <ListItem
+                      key={item.id}
+                      button
+                      onClick={() => {
+                        setNewProduct(item.name);
+                        setSearchResults([]);
+                      }}
+                    >
+                      <ListItemText primary={item.name} />
+                    </ListItem>
+                  ))
+                )}
+              </List>
+            </Paper>
+          )}
+          
+          {/* Termékek listája */}
+          {products.length > 0 ? (
+            <List>
+              {products.map((product, index) => (
+                <ListItem key={product.id || index} dense>
+                  <ListItemIcon>
+                    <Checkbox
+                      edge="start"
+                      checked={product.isPurchased || false}
+                      onChange={() => handleToggleProduct(product.id)}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={product.name}
+                    secondary={`Hozzáadta: ${typeof product.addedBy === 'object' ? product.addedBy.username : product.addedBy || 'Ismeretlen'}`}
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton edge="end" onClick={() => handleDeleteProduct(product.id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography variant="body1" color="textSecondary">
+                Adj hozzá termékeket a listához!
+              </Typography>
+            </Box>
+          )}
+        </Paper>
         
         {/* Címbekérő modális ablak */}
         <Modal
