@@ -3,7 +3,6 @@ import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { PageContainer } from '@toolpad/core/PageContainer';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -21,7 +20,7 @@ const NAVIGATION = [
     title: 'Főmenü',
   },
   {
-    segment: 'lists',
+    segment: '',  // Empty segment for the root path
     title: 'Bevásárló Listák',
     icon: <ShoppingCartIcon />,
     path: '/'
@@ -109,8 +108,10 @@ function useCustomRouter() {
       pathname,
       searchParams: new URLSearchParams(location.search),
       navigate: (path) => {
-        setPathname(String(path));
-        navigate(path);
+        // Ensure we're not appending to the URL incorrectly
+        const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+        setPathname(normalizedPath);
+        navigate(normalizedPath);
       },
     };
   }, [pathname, navigate, location.search]);
@@ -129,6 +130,12 @@ const MainLayout = ({ children }) => {
   // Navigáció kezelése
   const handleNavigate = (segment) => {
     console.log("Navigation segment clicked:", segment);
+    
+    // Special case for empty segment (home)
+    if (segment === '') {
+      navigate('/');
+      return;
+    }
     
     // Találjuk meg a helyes útvonalat a szegmens alapján
     const findPathBySegment = (items, segment) => {
@@ -152,7 +159,17 @@ const MainLayout = ({ children }) => {
       localStorage.removeItem('userId');
       navigate('/login');
     } else if (path) {
-      navigate(path);
+      // Check if the path is implemented in the application
+      const implementedRoutes = ['/', '/products', '/profile', '/profile/change-password', '/users/search'];
+      
+      if (implementedRoutes.includes(path)) {
+        navigate(path);
+      } else {
+        // For unimplemented routes, show an alert or navigate to a "not implemented" page
+        alert(`A "${path}" útvonal még nem elérhető. Fejlesztés alatt áll.`);
+        // Alternatively, you could navigate to a "feature coming soon" page
+        // navigate('/coming-soon');
+      }
     }
   };
 
@@ -168,13 +185,13 @@ const MainLayout = ({ children }) => {
         navigation={NAVIGATION} 
         router={router}
         onNavigate={handleNavigate}
+        basePath=""  // Set an empty base path
         branding={{
           title: 'Bevásárlólistáim',
           logo: <ShoppingCartIcon style={{ transform: 'translateY(7px)' }} />,
         }}
       >
         <DashboardLayout
-
           account={{
             name: userInfo.name,
             email: userInfo.email,
