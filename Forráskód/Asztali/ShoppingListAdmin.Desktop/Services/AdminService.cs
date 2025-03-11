@@ -21,7 +21,8 @@ namespace ShoppingListAdmin.Desktop.Services
 
         public async Task<List<UserModel>> GetAllUsersAsync()
         {
-            return await _httpClient.GetFromJsonAsync<List<UserModel>>("admin/users");
+            var users = await _httpClient.GetFromJsonAsync<List<UserModel>>("admin/users");
+            return users ?? new List<UserModel>();
         }
 
         public async Task PromoteToAdminAsync(string userId)
