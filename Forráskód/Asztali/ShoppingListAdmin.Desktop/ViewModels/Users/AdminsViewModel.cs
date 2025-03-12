@@ -39,8 +39,6 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
         {
             _apiService = apiService;
             Admins = new ObservableCollection<UserModel>();
-            LoadAdmins(); 
-
             
             WeakReferenceMessenger.Default.Register<AdminUpdatedMessage>(this, (r, m) => 
             {
@@ -55,16 +53,49 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
         
 
         // Adminisztrátorok betöltése (példa, adatbázisból vagy API-ból)
-        private async void LoadAdmins()
+        public async Task LoadAdmins()
         {
-            var users = await _apiService.GetUsersAsync();
-            Admins.Clear();
-            foreach (var user in users)
+            try
             {
-                if (user.Role.ToLower() == "admin")
+                // Add retry logic for loading data
+                const int maxRetries = 3;
+                const int retryDelayMs = 500;
+                
+                for (int attempt = 0; attempt < maxRetries; attempt++)
                 {
-                    Admins.Add(user);
+                    try
+                    {
+                        var users = await _apiService.GetUsersAsync();
+                        Admins.Clear();
+                        foreach (var user in users)
+                        {
+                            if (user.Role.ToLower() == "admin")
+                            {
+                                Admins.Add(user);
+                            }
+                        }
+                        // Successfully loaded data, exit retry loop
+                        return;
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        // If this is not the last attempt, wait before retrying
+                        if (attempt < maxRetries - 1)
+                        {
+                            await Task.Delay(retryDelayMs);
+                        }
+                        else
+                        {
+                            // On last attempt, re-throw the exception
+                            throw;
+                        }
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                // Handle exception (could log it or show a message)
+                Console.WriteLine($"Failed to load admins: {ex.Message}");
             }
         }
 

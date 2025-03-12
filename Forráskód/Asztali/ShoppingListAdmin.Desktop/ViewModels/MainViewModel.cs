@@ -114,11 +114,14 @@ namespace ShoppingListAdmin.Desktop.ViewModels
         }
 
         [RelayCommand]
-        public void ShowAdmins()
+        public async void ShowAdmins()
         {
             Caption = "Adminisztrátorok";
             Icon = IconChar.UserShield;
             CurrentChildView = _adminsViewModel;
+            
+            // Explicitly load admin data when navigating to the view
+            await _adminsViewModel.LoadAdmins();
         }
     }
 }
