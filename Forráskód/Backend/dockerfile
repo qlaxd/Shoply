@@ -1,0 +1,16 @@
+FROM node:20.18.1-alpine
+
+WORKDIR /app
+
+# Másolás és függőségek telepítése
+COPY package*.json ./
+RUN npm install
+
+# Alkalmazás másolása
+COPY . .
+
+# Port nyitása
+EXPOSE 5000
+
+# Alkalmazás indítása
+CMD ["npm", "start"]
