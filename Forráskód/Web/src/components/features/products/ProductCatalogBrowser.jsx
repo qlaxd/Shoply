@@ -29,6 +29,9 @@ import CategoryIcon from '@mui/icons-material/Category';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import AlphabetIcon from '@mui/icons-material/SortByAlpha';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import ScaleIcon from '@mui/icons-material/Scale';
 
 // Importáljuk a közös komponenseket
 import Input from '../../common/Input';
@@ -40,10 +43,64 @@ import ProductCatalogService from '../../../services/productCatalog.service';
 import CategoryService from '../../../services/category.service';
 
 // Termékenkénti kártya komponens
-const ProductCatalogItem = ({ product, onAddToList, index }) => {
+const ProductCatalogItem = ({ product, onAddToList, index, categoryMap, categories }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [isHovered, setIsHovered] = useState(false);
+
+  // Debug logging
+  useEffect(() => {
+    console.log("Product:", product);
+    console.log("Product Category:", product.category);
+    console.log("CategoryMap:", categoryMap);
+  }, [product, categoryMap]);
+
+  // Get category name from map
+  const getCategoryName = (categoryId) => {
+    // If we have a valid category ID and it exists in our map, return the name
+    if (categoryId && categoryMap && categoryMap[categoryId]) {
+      return categoryMap[categoryId];
+    }
+    
+    // Otherwise just return a default label instead of the ID
+    return "Kategória";
+  };
+  
+  // Get category description for a given category ID
+  const getCategoryDescription = (categoryId) => {
+    // Find the category in the original categories array
+    const category = categories.find(cat => cat._id === categoryId);
+    return category?.description || null;
+  };
+  
+  // Find the most appropriate description to display
+  const getDescription = () => {
+    // First try the product description
+    if (product.description) {
+      return product.description;
+    }
+    
+    // If no product description, try to get category description
+    if (product.category) {
+      const catId = Array.isArray(product.category) ? product.category[0] : product.category;
+      const categoryDesc = getCategoryDescription(catId);
+      if (categoryDesc) {
+        return categoryDesc;
+      }
+    }
+    
+    // Fallback to other product fields
+    if (product.details) {
+      return product.details;
+    }
+    
+    if (product.info) {
+      return product.info;
+    }
+    
+    // Final fallback
+    return 'Ez egy termék a katalógusból.';
+  };
 
   return (
     <Grow
@@ -57,31 +114,38 @@ const ProductCatalogItem = ({ product, onAddToList, index }) => {
           subheader={
             <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {product.category && (
-                <Chip 
-                  label={product.category} 
-                  size="small" 
-                  color="primary" 
-                  sx={{ 
-                    transition: 'all 0.2s ease',
-                    '&:hover': { 
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-                    }
-                  }}
-                />
+                <Tooltip title="Kategória">
+                  <Chip 
+                    icon={<CategoryIcon fontSize="small" />}
+                    label={Array.isArray(product.category) 
+                      ? product.category.map(catId => getCategoryName(catId)).join(', ')
+                      : getCategoryName(product.category)} 
+                    size="small" 
+                    color="primary" 
+                    sx={{ 
+                      transition: 'all 0.2s ease',
+                      '&:hover': { 
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                      }
+                    }}
+                  />
+                </Tooltip>
               )}
               {product.tags && product.tags.map(tag => (
-                <Chip 
-                  key={tag} 
-                  label={tag} 
-                  size="small" 
-                  variant="outlined" 
-                  color="default" 
-                  sx={{ 
-                    transition: 'all 0.2s ease',
-                    '&:hover': { transform: 'translateY(-2px)' }
-                  }}
-                />
+                <Tooltip key={tag} title="Címke">
+                  <Chip 
+                    icon={<LocalOfferIcon fontSize="small" />}
+                    label={tag} 
+                    size="small" 
+                    variant="outlined" 
+                    color="secondary" 
+                    sx={{ 
+                      transition: 'all 0.2s ease',
+                      '&:hover': { transform: 'translateY(-2px)' }
+                    }}
+                  />
+                </Tooltip>
               ))}
             </Box>
           }
@@ -119,29 +183,51 @@ const ProductCatalogItem = ({ product, onAddToList, index }) => {
           }}
         >
           <Box sx={{ py: 1 }}>
+            {/* Use the enhanced description logic */}
             <Typography variant="body2" color="text.secondary">
-              {product.description || 'Nincs leírás'}
+              {getDescription()}
             </Typography>
             
             <Box sx={{ 
               display: 'flex', 
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              flexDirection: 'column',
+              gap: 1,
               mt: 1.5 
             }}>
-              <Typography variant="body2">
-                <strong>Mértékegység:</strong> {product.unit || product.defaultUnit || 'db'}
-              </Typography>
-              
-              {product.popularity && (
-                <Tooltip title="Népszerűség">
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Tooltip title="Alapértelmezett mértékegység">
                   <Chip 
-                    label={`${product.popularity}★`}
+                    icon={<ScaleIcon fontSize="small" />}
+                    label={`${product.defaultUnit || 'db'}`}
                     size="small"
-                    color="secondary"
+                    color="info"
                     variant="outlined"
                   />
                 </Tooltip>
+                
+                {product.popularity && (
+                  <Tooltip title="Népszerűség">
+                    <Chip 
+                      icon={<FactCheckIcon fontSize="small" />}
+                      label={`${product.popularity}★`}
+                      size="small"
+                      color="secondary"
+                      variant="outlined"
+                    />
+                  </Tooltip>
+                )}
+              </Box>
+              
+              {product.brand && (
+                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                  <strong>Márka:</strong> {product.brand}
+                </Typography>
+              )}
+              
+              {product.barcode && (
+                <Typography variant="body2" sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
+                  <strong>Vonalkód:</strong> {product.barcode}
+                </Typography>
               )}
             </Box>
           </Box>
@@ -195,18 +281,46 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [categoryMap, setCategoryMap] = useState({});
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   const itemsPerPage = isMobile ? 6 : 9;
 
-  // Kategóriák betöltése
+  // Debug logging for categories
+  useEffect(() => {
+    console.log("Loaded Categories:", categories);
+    console.log("Category Map:", categoryMap);
+  }, [categories, categoryMap]);
+
+  // Enhanced category loading with better error handling
   useEffect(() => {
     const loadCategories = async () => {
       try {
         const categoryData = await CategoryService.getAllCategories();
+        console.log("Raw Category Data:", categoryData);
+        
         setCategories(categoryData);
+        
+        // Create a map of category IDs to category names (not complex objects)
+        const catMap = {};
+        if (Array.isArray(categoryData)) {
+          categoryData.forEach(category => {
+            if (category && category._id) {
+              // Store just the name as before, not an object
+              catMap[category._id] = category.name;
+              
+              // Also add the stringified ID as a key for comparison flexibility
+              const stringId = String(category._id);
+              if (stringId !== category._id) {
+                catMap[stringId] = category.name;
+              }
+            }
+          });
+        }
+        console.log("Created Category Map:", catMap);
+        setCategoryMap(catMap);
       } catch (error) {
         console.error('Hiba a kategóriák betöltésekor:', error);
       }
@@ -277,7 +391,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
     });
   };
 
-  // Termékek betöltése
+  // Enhanced product loading
   const fetchProducts = useCallback(async (query = '') => {
     setLoading(true);
     try {
@@ -292,6 +406,9 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         data = response;
       }
       
+      // Debug log
+      console.log("Loaded Products:", data);
+      
       // Szűrés kategóriák alapján, ha szükséges
       if (selectedCategories.length > 0) {
         data = data.filter(product => 
@@ -304,6 +421,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
       setPage(1); // Visszaállítjuk az első oldalra
       setError(null);
     } catch (err) {
+      console.error("Error loading products:", err);
       setError(`Hiba a termékek betöltésekor: ${err.message}`);
       setProducts([]);
     } finally {
@@ -625,6 +743,8 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
                       product={product} 
                       onAddToList={handleAddToList} 
                       index={index}
+                      categoryMap={categoryMap}
+                      categories={categories}
                     />
                   </Grid>
                 ))}
