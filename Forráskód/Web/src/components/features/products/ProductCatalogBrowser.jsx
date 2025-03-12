@@ -198,7 +198,6 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   const itemsPerPage = isMobile ? 6 : 9;
 
