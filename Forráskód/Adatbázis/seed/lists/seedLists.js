@@ -49,7 +49,7 @@ async function seedLists() {
 async function createListForUser(user, catalogItems, status) {
   // Véletlenszerűen kiválasztunk 2-5 terméket a katalógusból
   const products = [];
-  const numProducts = Math.floor(Math.random() * 4) + 2; // 2-5 közötti szám
+  const numProducts = Math.floor(Math.random() * 5) + 3; // 3-7 közötti termék
   
   for (let i = 0; i < numProducts; i++) {
     const randomCatalogItem = catalogItems[Math.floor(Math.random() * catalogItems.length)];
@@ -105,11 +105,11 @@ async function createSharedLists(users) {
     const user2 = users[1];
     const user3 = users[2];
     
-    const catalogItems = await ProductCatalog.find().limit(10);
+    const catalogItems = await ProductCatalog.find().limit(15); // Több terméket használunk
     const products = [];
     
     // 3-6 termék hozzáadása
-    const numProducts = Math.floor(Math.random() * 4) + 3;
+    const numProducts = Math.floor(Math.random() * 4) + 5; // 5-8 termék
     for (let i = 0; i < numProducts; i++) {
       const randomCatalogItem = catalogItems[Math.floor(Math.random() * catalogItems.length)];
       
@@ -120,7 +120,7 @@ async function createSharedLists(users) {
         unit: randomCatalogItem.defaultUnit,
         isPurchased: Math.random() < 0.3,
         addedBy: Math.random() > 0.5 ? user1._id : user2._id, // Véletlenszerűen az 1. vagy 2. felhasználó adta hozzá
-        notes: ''
+        notes: Math.random() > 0.7 ? 'Ezt mindenképp vegyünk!' : '' // 30% eséllyel megjegyzés
       });
     }
     
@@ -150,6 +150,105 @@ async function createSharedLists(users) {
       console.log('Megosztott lista létrehozva');
     } else {
       console.log('Megosztott lista már létezik');
+    }
+    
+    // Új megosztott lista - Heti nagybevásárlás
+    if (users.length >= 4) {
+      const user4 = users[3];
+      const weeklyProducts = [];
+      
+      // 7-10 termék a heti bevásárláshoz
+      const weeklyNumProducts = Math.floor(Math.random() * 4) + 7;
+      for (let i = 0; i < weeklyNumProducts; i++) {
+        const randomCatalogItem = catalogItems[Math.floor(Math.random() * catalogItems.length)];
+        
+        weeklyProducts.push({
+          catalogItem: randomCatalogItem._id,
+          name: randomCatalogItem.name,
+          quantity: Math.floor(Math.random() * 3) + 2, // 2-4 közötti mennyiség
+          unit: randomCatalogItem.defaultUnit,
+          isPurchased: Math.random() < 0.2, // 20% esély, hogy már megvették
+          addedBy: [user1._id, user2._id, user3._id, user4._id][Math.floor(Math.random() * 4)], // Véletlenszerű felhasználó adta hozzá
+          notes: Math.random() > 0.8 ? 'Akciós, mindenképp vegyünk!' : '' // 20% eséllyel megjegyzés
+        });
+      }
+      
+      const weeklySharedList = new List({
+        title: 'Heti nagybevásárlás',
+        owner: user2._id, // A 2. felhasználó a tulajdonos
+        sharedUsers: [
+          { user: user1._id, permissionLevel: 'edit' },
+          { user: user3._id, permissionLevel: 'edit' },
+          { user: user4._id, permissionLevel: 'view' }
+        ],
+        products: weeklyProducts,
+        status: 'active',
+        priority: 2, // Magasabb prioritás
+        version: 1,
+        lastModified: new Date(),
+        deleted: false
+      });
+      
+      const existingWeeklyList = await List.findOne({ 
+        title: 'Heti nagybevásárlás', 
+        owner: user2._id
+      });
+      
+      if (!existingWeeklyList) {
+        await weeklySharedList.save();
+        console.log('Heti nagybevásárlás lista létrehozva');
+      } else {
+        console.log('Heti nagybevásárlás lista már létezik');
+      }
+    }
+    
+    // Új megosztott lista - Nyaralásra való lista
+    if (users.length >= 5) {
+      const user5 = users[4];
+      const vacationProducts = [];
+      
+      // 6-9 termék a nyaraláshoz
+      const vacationNumProducts = Math.floor(Math.random() * 4) + 6;
+      for (let i = 0; i < vacationNumProducts; i++) {
+        const randomCatalogItem = catalogItems[Math.floor(Math.random() * catalogItems.length)];
+        
+        vacationProducts.push({
+          catalogItem: randomCatalogItem._id,
+          name: randomCatalogItem.name,
+          quantity: Math.floor(Math.random() * 2) + 1, // 1-2 közötti mennyiség
+          unit: randomCatalogItem.defaultUnit,
+          isPurchased: Math.random() < 0.1, // 10% esély, hogy már megvették
+          addedBy: [user3._id, user5._id][Math.floor(Math.random() * 2)], // 3. vagy 5. felhasználó adta hozzá
+          notes: Math.random() > 0.6 ? 'A nyaraláshoz feltétlenül szükséges!' : '' // 40% eséllyel megjegyzés
+        });
+      }
+      
+      const vacationSharedList = new List({
+        title: 'Nyaralásra beszerzendő',
+        owner: user3._id, // A 3. felhasználó a tulajdonos
+        sharedUsers: [
+          { user: user5._id, permissionLevel: 'edit' },
+          { user: user1._id, permissionLevel: 'view' }
+        ],
+        products: vacationProducts,
+        status: 'active',
+        priority: 1,
+        version: 1,
+        lastModified: new Date(),
+        deleted: false
+      });
+      
+      const existingVacationList = await List.findOne({ 
+        title: 'Nyaralásra beszerzendő', 
+        owner: user3._id
+      });
+      
+      if (!existingVacationList) {
+        await vacationSharedList.save();
+        console.log('Nyaralásra beszerzendő lista létrehozva');
+      } else {
+        console.log('Nyaralásra beszerzendő lista már létezik');
+      }
     }
   }
 }

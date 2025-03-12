@@ -187,7 +187,7 @@ async function seedProductCatalogs() {
         usageCount: Math.floor(Math.random() * 100),
         lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
-      {
+      { 
         name: 'Paradicsom',
         category: findCategoryByName('Zöldségek és gyümölcsök')._id,
         defaultUnit: 'kg',
@@ -207,7 +207,7 @@ async function seedProductCatalogs() {
       },
       {
         name: 'Paprika',
-        category: findCategoryByName('Zöldségek és gyümölcsök')._id,
+        category: findCategoryByName('Zöldségek és gyümölcsök')._id, 
         defaultUnit: 'kg',
         createdBy: admin._id,
         barcode: '5900000000013',
@@ -492,6 +492,211 @@ async function seedProductCatalogs() {
         barcode: '5900000000044',
         usageCount: Math.floor(Math.random() * 100),
         lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
+      },
+      // Új termékek - Háztartási elektronika
+      {
+        name: 'Mikrohullámú sütő',
+        category: findCategoryByName('Háztartási elektronika')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000045',
+        usageCount: Math.floor(Math.random() * 20),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 180 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Kávéfőző',
+        category: findCategoryByName('Háztartási elektronika')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000046',
+        usageCount: Math.floor(Math.random() * 30),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 90 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Vízforraló',
+        category: findCategoryByName('Háztartási elektronika')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000047',
+        usageCount: Math.floor(Math.random() * 25),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 60 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Robotporszívó',
+        category: findCategoryByName('Háztartási elektronika')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000048',
+        usageCount: Math.floor(Math.random() * 15),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 120 * 24 * 60 * 60 * 1000))
+      },
+      // Új termékek - Szórakoztató elektronika
+      {
+        name: 'Okostelevízió',
+        category: findCategoryByName('Szórakoztató elektronika')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000049',
+        usageCount: Math.floor(Math.random() * 10),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 240 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Bluetooth hangszóró',
+        category: findCategoryByName('Szórakoztató elektronika')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000050',
+        usageCount: Math.floor(Math.random() * 40),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 45 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Fejhallgató',
+        category: findCategoryByName('Szórakoztató elektronika')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000051',
+        usageCount: Math.floor(Math.random() * 60),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
+      },
+      // Új termékek - Pékáruk
+      {
+        name: 'Bagett',
+        category: findCategoryByName('Pékáruk')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000052',
+        usageCount: Math.floor(Math.random() * 90),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 10 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Kalács',
+        category: findCategoryByName('Pékáruk')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000053',
+        usageCount: Math.floor(Math.random() * 70),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 15 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Croissant',
+        category: findCategoryByName('Pékáruk')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000054',
+        usageCount: Math.floor(Math.random() * 80),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000))
+      },
+      // Új termékek - Tejtermékek
+      {
+        name: 'Túró',
+        category: findCategoryByName('Tejtermékek')._id,
+        defaultUnit: 'kg',
+        createdBy: admin._id,
+        barcode: '5900000000055',
+        usageCount: Math.floor(Math.random() * 85),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 14 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Tejföl',
+        category: findCategoryByName('Tejtermékek')._id,
+        defaultUnit: 'dl',
+        createdBy: admin._id,
+        barcode: '5900000000056',
+        usageCount: Math.floor(Math.random() * 95),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 5 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Kefir',
+        category: findCategoryByName('Tejtermékek')._id,
+        defaultUnit: 'l',
+        createdBy: admin._id,
+        barcode: '5900000000057',
+        usageCount: Math.floor(Math.random() * 65),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 20 * 24 * 60 * 60 * 1000))
+      },
+      // Új termékek - Zöldségek és gyümölcsök
+      {
+        name: 'Eper',
+        category: findCategoryByName('Zöldségek és gyümölcsök')._id,
+        defaultUnit: 'kg',
+        createdBy: admin._id,
+        barcode: '5900000000058',
+        usageCount: Math.floor(Math.random() * 75),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 25 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Málna',
+        category: findCategoryByName('Zöldségek és gyümölcsök')._id,
+        defaultUnit: 'kg',
+        createdBy: admin._id,
+        barcode: '5900000000059',
+        usageCount: Math.floor(Math.random() * 55),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 35 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Brokkoli',
+        category: findCategoryByName('Zöldségek és gyümölcsök')._id,
+        defaultUnit: 'kg',
+        createdBy: admin._id,
+        barcode: '5900000000060',
+        usageCount: Math.floor(Math.random() * 60),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 18 * 24 * 60 * 60 * 1000))
+      },
+      // Új termékek - Tisztítószerek
+      {
+        name: 'Ablaktisztító',
+        category: findCategoryByName('Tisztítószerek')._id,
+        defaultUnit: 'l',
+        createdBy: admin._id,
+        barcode: '5900000000061',
+        usageCount: Math.floor(Math.random() * 50),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 40 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'WC tisztító',
+        category: findCategoryByName('Tisztítószerek')._id,
+        defaultUnit: 'l',
+        createdBy: admin._id,
+        barcode: '5900000000062',
+        usageCount: Math.floor(Math.random() * 70),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 22 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Fertőtlenítő spray',
+        category: findCategoryByName('Tisztítószerek')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000063',
+        usageCount: Math.floor(Math.random() * 80),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 12 * 24 * 60 * 60 * 1000))
+      },
+      // Új termékek - Számítástechnika
+      {
+        name: 'Pendrive',
+        category: findCategoryByName('Számítástechnika')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000064',
+        usageCount: Math.floor(Math.random() * 45),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 50 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Egérpad',
+        category: findCategoryByName('Számítástechnika')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000065',
+        usageCount: Math.floor(Math.random() * 30),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 60 * 24 * 60 * 60 * 1000))
+      },
+      {
+        name: 'Webkamera',
+        category: findCategoryByName('Számítástechnika')._id,
+        defaultUnit: 'db',
+        createdBy: admin._id,
+        barcode: '5900000000066',
+        usageCount: Math.floor(Math.random() * 25),
+        lastUsed: new Date(Date.now() - Math.floor(Math.random() * 70 * 24 * 60 * 60 * 1000))
       }
     ];
 

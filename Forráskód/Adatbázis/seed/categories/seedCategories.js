@@ -140,6 +140,70 @@ async function seedCategories() {
         parentCategory: createdMainCategories['Elektronika'],
         level: 1,
         isActive: true
+      },
+      // Új alkategóriák
+      {
+        name: 'Szórakoztató elektronika',
+        description: 'TV, hifi és egyéb szórakoztató elektronikai eszközök',
+        parentCategory: createdMainCategories['Elektronika'],
+        level: 1,
+        isActive: true
+      },
+      {
+        name: 'Játék konzolok',
+        description: 'Videojáték konzolok és kiegészítők',
+        parentCategory: createdMainCategories['Elektronika'],
+        level: 1,
+        isActive: true
+      },
+      {
+        name: 'Sportszerek',
+        description: 'Sportoláshoz szükséges eszközök és felszerelések',
+        parentCategory: createdMainCategories['Egyéb'],
+        level: 1,
+        isActive: true
+      },
+      {
+        name: 'Babatermékek',
+        description: 'Babaápolási termékek és kellékek',
+        parentCategory: createdMainCategories['Egyéb'],
+        level: 1,
+        isActive: true
+      },
+      {
+        name: 'Fűszerek',
+        description: 'Különféle fűszerek főzéshez',
+        parentCategory: createdMainCategories['Élelmiszerek'],
+        level: 1,
+        isActive: true
+      },
+      {
+        name: 'Édességek',
+        description: 'Édességek és csokoládék',
+        parentCategory: createdMainCategories['Élelmiszerek'],
+        level: 1,
+        isActive: true
+      },
+      {
+        name: 'Konzervek',
+        description: 'Konzervek és tartós élelmiszerek',
+        parentCategory: createdMainCategories['Élelmiszerek'],
+        level: 1,
+        isActive: true
+      },
+      {
+        name: 'Italok',
+        description: 'Üdítők, alkoholmentes és alkoholos italok',
+        parentCategory: createdMainCategories['Élelmiszerek'],
+        level: 1,
+        isActive: true
+      },
+      {
+        name: 'Szezonális termékek',
+        description: 'Szezonális élelmiszerek, ünnepek termékei',
+        parentCategory: createdMainCategories['Élelmiszerek'],
+        level: 1,
+        isActive: true
       }
     ];
 
@@ -177,6 +241,70 @@ async function seedCategories() {
         name: 'Perifériák',
         description: 'Billentyűzetek, egerek, monitorok',
         parentCategory: createdSubCategories['Számítástechnika'],
+        level: 2,
+        isActive: true
+      },
+      // Új harmadik szintű kategóriák
+      {
+        name: 'Okostelefonok',
+        description: 'Okostelefonok és kiegészítők',
+        parentCategory: createdSubCategories['Mobil eszközök'],
+        level: 2,
+        isActive: true
+      },
+      {
+        name: 'Tabletek',
+        description: 'Tabletek és kiegészítők',
+        parentCategory: createdSubCategories['Mobil eszközök'],
+        level: 2,
+        isActive: true
+      },
+      {
+        name: 'Hűtőgépek',
+        description: 'Hűtőszekrények és fagyasztók',
+        parentCategory: createdSubCategories['Háztartási elektronika'],
+        level: 2,
+        isActive: true
+      },
+      {
+        name: 'Mosógépek',
+        description: 'Mosó- és szárítógépek',
+        parentCategory: createdSubCategories['Háztartási elektronika'],
+        level: 2,
+        isActive: true
+      },
+      {
+        name: 'Mikrosütők',
+        description: 'Mikrohullámú sütők és tűzhelyek',
+        parentCategory: createdSubCategories['Háztartási elektronika'],
+        level: 2,
+        isActive: true
+      },
+      {
+        name: 'Televíziók',
+        description: 'TV készülékek és kiegészítők',
+        parentCategory: createdSubCategories['Szórakoztató elektronika'],
+        level: 2,
+        isActive: true
+      },
+      {
+        name: 'Hangrendszerek',
+        description: 'Hifi berendezések és hangszórók',
+        parentCategory: createdSubCategories['Szórakoztató elektronika'],
+        level: 2,
+        isActive: true
+      },
+      {
+        name: 'Friss péksütemények',
+        description: 'Friss kenyerek, péksütemények',
+        parentCategory: createdSubCategories['Pékáruk'],
+        level: 2,
+        isActive: true
+      },
+      {
+        name: 'Csomagolt pékáruk',
+        description: 'Előrecsomagolt, tartós pékáruk',
+        parentCategory: createdSubCategories['Pékáruk'],
         level: 2,
         isActive: true
       }
