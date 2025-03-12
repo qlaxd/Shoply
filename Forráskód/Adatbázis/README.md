@@ -8,7 +8,7 @@ node seed/users/seedUsers.js
 node seed/categories/seedCategories.js
 node seed/productCatalogs/seedProductCatalogs.js
 node seed/lists/seedLists.js
-node seed/products/seedProducts.js
+node seed/auditLogs/seedAuditlogs.js
 ```
 
 2. Ellenőrizd a MongoDB-ben, hogy a felhasználók létre lettek-e hozva.

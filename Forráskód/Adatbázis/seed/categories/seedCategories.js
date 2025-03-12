@@ -42,7 +42,7 @@ async function seedCategories() {
         description: 'Egyéb kategória',
         level: 0,
         isActive: true
-      }
+      },
     ];
 
     // Fő kategóriák létrehozása
@@ -86,6 +86,13 @@ async function seedCategories() {
       {
         name: 'Zöldségek és gyümölcsök',
         description: 'Friss zöldségek és gyümölcsök',
+        parentCategory: createdMainCategories['Élelmiszerek'],
+        level: 1,
+        isActive: true
+      },
+      {
+        name: 'Kávé',
+        description: 'Kávéfélék és kávéitalok',
         parentCategory: createdMainCategories['Élelmiszerek'],
         level: 1,
         isActive: true
