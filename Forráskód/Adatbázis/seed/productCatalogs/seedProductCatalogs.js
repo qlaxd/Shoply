@@ -493,7 +493,6 @@ async function seedProductCatalogs() {
         usageCount: Math.floor(Math.random() * 100),
         lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
-      // Új termékek - Háztartási elektronika
       {
         name: 'Mikrohullámú sütő',
         category: findCategoryByName('Háztartási elektronika')._id,
@@ -530,7 +529,6 @@ async function seedProductCatalogs() {
         usageCount: Math.floor(Math.random() * 15),
         lastUsed: new Date(Date.now() - Math.floor(Math.random() * 120 * 24 * 60 * 60 * 1000))
       },
-      // Új termékek - Szórakoztató elektronika
       {
         name: 'Okostelevízió',
         category: findCategoryByName('Szórakoztató elektronika')._id,
@@ -558,7 +556,6 @@ async function seedProductCatalogs() {
         usageCount: Math.floor(Math.random() * 60),
         lastUsed: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       },
-      // Új termékek - Pékáruk
       {
         name: 'Bagett',
         category: findCategoryByName('Pékáruk')._id,
@@ -586,7 +583,6 @@ async function seedProductCatalogs() {
         usageCount: Math.floor(Math.random() * 80),
         lastUsed: new Date(Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000))
       },
-      // Új termékek - Tejtermékek
       {
         name: 'Túró',
         category: findCategoryByName('Tejtermékek')._id,
@@ -614,7 +610,6 @@ async function seedProductCatalogs() {
         usageCount: Math.floor(Math.random() * 65),
         lastUsed: new Date(Date.now() - Math.floor(Math.random() * 20 * 24 * 60 * 60 * 1000))
       },
-      // Új termékek - Zöldségek és gyümölcsök
       {
         name: 'Eper',
         category: findCategoryByName('Zöldségek és gyümölcsök')._id,
@@ -642,7 +637,6 @@ async function seedProductCatalogs() {
         usageCount: Math.floor(Math.random() * 60),
         lastUsed: new Date(Date.now() - Math.floor(Math.random() * 18 * 24 * 60 * 60 * 1000))
       },
-      // Új termékek - Tisztítószerek
       {
         name: 'Ablaktisztító',
         category: findCategoryByName('Tisztítószerek')._id,
@@ -670,7 +664,6 @@ async function seedProductCatalogs() {
         usageCount: Math.floor(Math.random() * 80),
         lastUsed: new Date(Date.now() - Math.floor(Math.random() * 12 * 24 * 60 * 60 * 1000))
       },
-      // Új termékek - Számítástechnika
       {
         name: 'Pendrive',
         category: findCategoryByName('Számítástechnika')._id,

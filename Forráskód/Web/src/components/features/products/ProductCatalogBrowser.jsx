@@ -301,6 +301,11 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         const categoryData = await CategoryService.getAllCategories();
         console.log("Raw Category Data:", categoryData);
         
+        if (!Array.isArray(categoryData)) {
+          console.error('Category data is not an array:', categoryData);
+          return;
+        }
+        
         setCategories(categoryData);
         
         // Create a map of category IDs to category names (not complex objects)
@@ -316,6 +321,8 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
               if (stringId !== category._id) {
                 catMap[stringId] = category.name;
               }
+            } else {
+              console.warn('Invalid category object:', category);
             }
           });
         }
@@ -340,6 +347,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
 
   // Define sortProducts before it's used in handleSortChange
   const sortProducts = useCallback((productList, method) => {
+    console.log("Sorting products, method:", method, "product count:", productList.length);
     const sorted = [...productList];
     
     switch(method) {
@@ -353,7 +361,16 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         sorted.sort((a, b) => {
           if (!a.category) return 1;
           if (!b.category) return -1;
-          return a.category.localeCompare(b.category);
+          
+          // Get category names for comparison
+          const aName = Array.isArray(a.category) 
+            ? categoryMap[a.category[0]] || '' 
+            : categoryMap[a.category] || '';
+          const bName = Array.isArray(b.category) 
+            ? categoryMap[b.category[0]] || '' 
+            : categoryMap[b.category] || '';
+            
+          return aName.localeCompare(bName);
         });
         break;
       case 'popularity':
@@ -363,8 +380,9 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         break;
     }
     
+    console.log("Sorted products:", sorted.length);
     setProducts(sorted);
-  }, []);
+  }, [categoryMap]);
 
   const handleSortChange = useCallback((sortValue) => {
     setSortMethod(sortValue);
@@ -411,9 +429,17 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
       
       // Szűrés kategóriák alapján, ha szükséges
       if (selectedCategories.length > 0) {
-        data = data.filter(product => 
-          product.category && selectedCategories.includes(product.category)
-        );
+        data = data.filter(product => {
+          if (!product.category) return false;
+          
+          // Ha a termék kategóriája egy tömb
+          if (Array.isArray(product.category)) {
+            return product.category.some(catId => selectedCategories.includes(catId));
+          }
+          
+          // Ha a termék kategóriája egyetlen érték
+          return selectedCategories.includes(product.category);
+        });
       }
       
       // Rendezés
@@ -632,13 +658,13 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         <Divider />
         {categories.map(category => (
           <MenuItem 
-            key={category.id}
-            onClick={() => handleFilterChange(category.id)}
-            selected={selectedCategories.includes(category.id)}
+            key={category._id}
+            onClick={() => handleFilterChange(category._id)}
+            selected={selectedCategories.includes(category._id)}
             sx={{ display: 'flex', justifyContent: 'space-between' }}
           >
             <ListItemText>{category.name}</ListItemText>
-            {selectedCategories.includes(category.id) && (
+            {selectedCategories.includes(category._id) && (
               <Chip 
                 size="small" 
                 color="primary" 
@@ -676,7 +702,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
             Aktív szűrők:
           </Typography>
           {selectedCategories.map(categoryId => {
-            const categoryName = categories.find(c => c.id === categoryId)?.name || categoryId;
+            const categoryName = categories.find(c => c._id === categoryId)?.name || categoryId;
             return (
               <Chip
                 key={categoryId}
