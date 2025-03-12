@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Box, 
   Grid, 
   Typography, 
   CircularProgress, 
   Chip,
-  IconButton, 
   Divider,
   Alert,
   Snackbar,
   useTheme,
   Pagination,
-  InputAdornment,
   useMediaQuery,
   Fade,
   Grow,
@@ -223,17 +221,12 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
     setSortAnchorEl(event.currentTarget);
   };
 
-  const handleSortClose = () => {
+  const handleSortClose = useCallback(() => {
     setSortAnchorEl(null);
-  };
+  }, []);
 
-  const handleSortChange = (sortValue) => {
-    setSortMethod(sortValue);
-    handleSortClose();
-    sortProducts(products, sortValue);
-  };
-
-  const sortProducts = (productList, method) => {
+  // Define sortProducts before it's used in handleSortChange
+  const sortProducts = useCallback((productList, method) => {
     const sorted = [...productList];
     
     switch(method) {
@@ -258,7 +251,13 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
     }
     
     setProducts(sorted);
-  };
+  }, []);
+
+  const handleSortChange = useCallback((sortValue) => {
+    setSortMethod(sortValue);
+    handleSortClose();
+    sortProducts(products, sortValue);
+  }, [products, sortProducts, handleSortClose]);
 
   // Szűrés menü
   const handleFilterClick = (event) => {
@@ -280,7 +279,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
   };
 
   // Termékek betöltése
-  const fetchProducts = async (query = '') => {
+  const fetchProducts = useCallback(async (query = '') => {
     setLoading(true);
     try {
       let data;
@@ -312,19 +311,19 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
       setLoading(false);
       setInitialLoading(false);
     }
-  };
+  }, [selectedCategories, sortMethod, sortProducts]);
 
   // Termékek betöltése az oldal betöltésekor és a szűrés változásakor
   useEffect(() => {
     fetchProducts(searchQuery);
-  }, [selectedCategories]);
+  }, [selectedCategories, fetchProducts, searchQuery]);
 
   // Termékek betöltése az oldal első betöltésekor
   useEffect(() => {
     setTimeout(() => {
       fetchProducts();
     }, 500); // Kis késleltetés a vizuális hatás miatt
-  }, []);
+  }, [fetchProducts]);
 
   // Keresés kezelése debounce-olással
   const handleSearchChange = (e) => {
@@ -393,9 +392,9 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
       <Box 
         sx={{ 
           display: 'flex', 
-          alignItems: 'center', 
+          flexDirection: 'column',
           mb: 3,
-          flexDirection: { xs: 'column', sm: 'row' },
+          width: '100%',
           gap: 2
         }}
       >
@@ -405,14 +404,14 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
           onChange={handleSearchChange}
           startIcon={<SearchIcon />}
           fullWidth
-          sx={{ flexGrow: 1, minWidth: '100%' }}
         />
         
         <Box sx={{ 
           display: 'flex', 
-          width: { xs: '100%', sm: 'auto' },
-          justifyContent: { xs: 'space-between', sm: 'flex-start' },
-          gap: 1
+          width: '100%',
+          justifyContent: 'space-between',
+          gap: 1,
+          flexWrap: 'nowrap'
         }}>
           <Button
             variant={activeFiltersCount > 0 ? "contained" : "outlined"}
@@ -420,7 +419,10 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
             startIcon={<FilterListIcon />}
             onClick={handleFilterClick}
             sx={{ 
-              minWidth: isSmallMobile ? '48%' : 'auto',
+              flex: '1 1 50%',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
               transition: 'all 0.2s ease'
             }}
           >
@@ -433,7 +435,10 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
             startIcon={<SortIcon />}
             onClick={handleSortClick}
             sx={{ 
-              minWidth: isSmallMobile ? '48%' : 'auto',
+              flex: '1 1 50%',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
               transition: 'all 0.2s ease'
             }}
           >
