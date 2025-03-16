@@ -148,11 +148,19 @@
                                Foreground="DarkGray"
                                FontSize="12"
                                FontWeight="Medium"
-                            
+                               FontFamily="Montserrat"
                                Margin="0,35,0,0"/>
                         <TextBox x:Name="txtUser"
                                  Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource textBoxStyle}"/>
+                                 Style="{StaticResource textBoxStyle}"
+                                 >
+                            <TextBox.Background>
+                                <ImageBrush ImageSource="/ShoppingListAdmin.Desktop;component/Images/user-icon.png"
+                    Stretch="None"
+                    AlignmentX="Left"/>
+                            </TextBox.Background>
+                        </TextBox>
+
                         <TextBlock Text="Password:"
                                    Foreground="DarkGray"
                                    FontSize="12"
