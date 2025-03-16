@@ -7,6 +7,8 @@ using System;
 using System.Windows;
 using ShoppingListAdmin.Desktop.ViewModels.Login;
 using ShoppingListAdmin.Desktop.Services;
+using ShoppingListAdmin.Desktop.ViewModels.Categories;
+using ShoppingListAdmin.Desktop.ViewModels;
 
 namespace ShoppingListAdmin.Desktop
 {
@@ -30,6 +32,7 @@ namespace ShoppingListAdmin.Desktop
                     
                     services.AddSingleton<ProductService>();
                     services.AddSingleton<AdminService>();
+                    services.AddSingleton<CategoryViewModel>();
                 })
                 .Build();
         }

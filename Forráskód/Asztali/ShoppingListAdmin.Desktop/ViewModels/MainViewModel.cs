@@ -8,6 +8,7 @@ using ShoppingListAdmin.Desktop.ViewModels.Lists;
 using ShoppingListAdmin.Desktop.ViewModels.Statistics;
 using ShoppingListAdmin.Desktop.ViewModels.Settings;
 using ShoppingListAdmin.Desktop.ViewModels.Products;
+using ShoppingListAdmin.Desktop.ViewModels.Categories;
 using ShoppingListAdmin.Desktop.Services;
 
 namespace ShoppingListAdmin.Desktop.ViewModels
@@ -21,6 +22,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
         private readonly ProductViewModel _productViewModel;
         private readonly StatisticsViewModel _statisticsViewModel;
         private readonly SettingsViewModel _settingsViewModel;
+        private readonly CategoryViewModel _categoriesViewModel;
 
         public MainViewModel()
         {
@@ -32,6 +34,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             _statisticsViewModel = new StatisticsViewModel();
             _settingsViewModel = new SettingsViewModel();
             _adminsViewModel = new AdminsViewModel(apiService); // Initialize _adminsViewModel
+            _categoriesViewModel = new CategoryViewModel();
             _currentChildView = _controlPanelViewModel;
         }
 
@@ -42,6 +45,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             ProductViewModel productViewModel,
             StatisticsViewModel statisticsViewModel,
             SettingsViewModel settingsViewModel,
+            CategoryViewModel categoriesViewModel,
             AdminsViewModel adminsViewModel)
         {
             _controlPanelViewModel = controlPanelViewModel;
@@ -50,6 +54,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             _productViewModel = productViewModel;
             _statisticsViewModel = statisticsViewModel;
             _settingsViewModel = settingsViewModel;
+            _categoriesViewModel = categoriesViewModel;
             _adminsViewModel = adminsViewModel;
 
             CurrentChildView = _controlPanelViewModel;
@@ -103,6 +108,14 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             Caption = "Statisztikák";
             Icon = IconChar.ChartBar;
             CurrentChildView = _statisticsViewModel;
+        }
+
+                [RelayCommand]
+        public void ShowCategories()
+        {
+            Caption = "Kategóriák";
+            Icon = IconChar.Box;
+            CurrentChildView = _categoriesViewModel;
         }
 
         [RelayCommand]

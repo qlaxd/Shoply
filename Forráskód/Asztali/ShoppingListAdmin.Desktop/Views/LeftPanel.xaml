@@ -71,6 +71,15 @@
 
                 <RadioButton Style="{StaticResource menuButton}"
                             Tag="{StaticResource colorMidleGreen}"
+                            Command="{Binding ShowCategoriesCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:IconImage Icon="Tags" Style="{StaticResource menuButtonIcon}"/>
+                        <TextBlock Text="Kategóriák" Style="{StaticResource menuButtonText}"/>
+                    </StackPanel>
+                </RadioButton>
+
+                <RadioButton Style="{StaticResource menuButton}"
+                            Tag="{StaticResource colorMidleGreen}"
                             Command="{Binding ShowStatisticsCommand}">
                     <StackPanel Orientation="Horizontal">
                         <fa:IconImage Icon="ChartLine" Style="{StaticResource menuButtonIcon}"/>

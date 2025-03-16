@@ -28,6 +28,10 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Categories
             LoadCategories();
         }
 
+        public CategoryViewModel()
+        {
+        }
+
         private async void LoadCategories()
         {
             var categories = await _categoryService.GetAllCategoriesAsync();
