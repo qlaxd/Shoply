@@ -30,6 +30,12 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
             Users = new ObservableCollection<UserModel>();
             LoadUsers(); // Felhasználók betöltése
             _filter = "user"; // Alapértelmezett szűrés
+
+            WeakReferenceMessenger.Default.Register<AdminUpdatedMessage>(this, (r, m) =>
+            {
+            LoadUsers();
+            });
+
         }
 
         private async void LoadUsers()
@@ -78,6 +84,30 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
                 {
                     // Hibakezelés
                     Debug.WriteLine($"Error promoting user to admin: {ex.Message}");
+                }
+            }
+        }
+
+        [RelayCommand]
+        public async Task DemoteToUserAsync(UserModel admin)
+        {
+            if (admin != null)
+            {
+                try
+                {
+                    // Update the user's role in the backend
+                    admin.Role = "user";
+                    await _apiService.UpdateUserAsync(admin);
+
+                    // Reload the list
+                    LoadUsers();
+
+                    // Notify the UsersViewModel to reload its list
+                    WeakReferenceMessenger.Default.Send(new AdminUpdatedMessage(true));
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error demoting admin to user: {ex.Message}");
                 }
             }
         }
