@@ -46,6 +46,11 @@ const API_ROUTES = {
     BY_ID: (id) => `/categories/${id}`,
     SEARCH: '/categories/search',
   },
+  
+  // Statisztika végpontok
+  STATISTICS: {
+    USER_PERSONAL: '/statistics/personal',
+  },
 };
 
 export default API_ROUTES; 

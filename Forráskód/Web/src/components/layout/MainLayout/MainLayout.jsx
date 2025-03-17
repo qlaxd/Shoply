@@ -163,7 +163,7 @@ const MainLayout = ({ children }) => {
       navigate('/login');
     } else if (path) {
       // Check if the path is implemented in the application
-      const implementedRoutes = ['/', '/products', '/profile', '/profile/change-password', '/users/search'];
+      const implementedRoutes = ['/', '/products', '/profile', '/profile/change-password', '/users/search', '/statistics'];
       
       if (implementedRoutes.includes(path)) {
         navigate(path);
