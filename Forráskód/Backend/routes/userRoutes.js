@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const authMiddleware = require('../middleware/authMiddleware');
-const adminPrivilegeMiddleware = require('../middleware/adminPrivilegeMiddleware');
 
 // Protected routes - current user
 router.get('/me', authMiddleware, userController.getCurrentUser);

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const statisticsController = require('../controllers/statisticsController');
-const { authMiddleware } = require('../middleware/authMiddleware');
-const { adminPrivilegeMiddleware } = require('../middleware/adminPrivilegeMiddleware');
+const authMiddleware = require('../middleware/authMiddleware');
+const adminPrivilegeMiddleware = require('../middleware/adminPrivilegeMiddleware');
 
-// All statistics routes should be protected with isAuth middleware
-// Additionally, statistics routes should be protected with isAdmin middleware
+// All statistics routes should be protected with authMiddleware
+// Additionally, statistics routes should be protected with adminPrivilegeMiddleware
 // since these are admin-specific endpoints
 
 // Get all statistics
@@ -22,5 +22,9 @@ router.get('/lists', authMiddleware, adminPrivilegeMiddleware, statisticsControl
 
 // Get product statistics
 router.get('/products', authMiddleware, adminPrivilegeMiddleware, statisticsController.getProductStats);
+
+// Felhasználó saját statisztikáinak lekérése
+// Csak authentikáció szükséges hozzá, admin jogosultság nem
+router.get('/personal', authMiddleware, statisticsController.getUserPersonalStats);
 
 module.exports = router;

@@ -279,3 +279,80 @@ exports.getProductStats = async (req, res) => {
     res.status(500).json({ message: 'Error retrieving product statistics', error: err.message });
   }
 };
+
+/**
+ * Get user's personal statistics
+ */
+exports.getUserPersonalStats = async (req, res) => {
+  try {
+    const userId = req.user.id; // A bejelentkezett felhasználó azonosítója
+    
+    // Felhasználó tevékenysége
+    const userLists = await List.find({ owner: userId });
+    const userSharedLists = await List.find({ 'sharedUsers.user': userId });
+    
+    // Alapvető számítások
+    const totalOwnedLists = userLists.length;
+    const totalSharedLists = userSharedLists.length;
+    const activeLists = userLists.filter(list => list.status === 'active').length;
+    const completedLists = userLists.filter(list => list.status === 'completed').length;
+    
+    // Termék statisztikák
+    let totalProducts = 0;
+    let totalPurchasedProducts = 0;
+    let productCounts = {};
+    
+    // Saját listák termékei
+    for (const list of userLists) {
+      if (!list.products) continue;
+      
+      totalProducts += list.products.length;
+      totalPurchasedProducts += list.products.filter(p => p.isPurchased).length;
+      
+      for (const product of list.products) {
+        if (!productCounts[product.name]) {
+          productCounts[product.name] = 0;
+        }
+        productCounts[product.name]++;
+      }
+    }
+    
+    // Top 5 leggyakrabban használt termék
+    const mostAddedProducts = Object.entries(productCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([productName, count]) => ({ productName, count }));
+    
+    // A felhasználó aktivitása az utolsó 30 napban
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentLists = userLists.filter(list => 
+      new Date(list.createdAt) >= thirtyDaysAgo
+    ).length;
+    
+    // Eredmény összeállítása
+    const personalStats = {
+      totalOwnedLists,
+      totalSharedLists,
+      activeLists,
+      completedLists,
+      totalProducts,
+      totalPurchasedProducts,
+      productCompletionRate: totalProducts > 0 ? 
+        (totalPurchasedProducts / totalProducts) * 100 : 0,
+      mostAddedProducts,
+      recentActivity: {
+        listsCreatedLast30Days: recentLists
+      },
+      lastUpdated: new Date()
+    };
+    
+    res.status(200).json(personalStats);
+  } catch (err) {
+    console.error('Error in getUserPersonalStats:', err);
+    res.status(500).json({ 
+      message: 'Error retrieving personal statistics', 
+      error: err.message 
+    });
+  }
+};

@@ -1060,3 +1060,208 @@
 - 400 Bad Request - Hiányzó keresési kifejezés
 - 401 Unauthorized - Érvénytelen vagy hiányzó token
 - 500 Internal Server Error - Szerver oldali hiba
+
+## Statisztikák
+
+### Összes statisztika lekérése
+**Végpont:** `GET /api/statistics`  
+**Leírás:** Az alkalmazás összes statisztikájának lekérése  
+**Jogosultság:** Autentikáció és admin jogosultság szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "totalUsers": 150,
+  "activeUsers": 85,
+  "newUsersThisMonth": 12,
+  "totalLists": 342,
+  "activeLists": 208,
+  "completedLists": 134,
+  "averageListsPerUser": 2.28,
+  "totalProducts": 1560,
+  "averageProductsPerList": 4.56,
+  "mostAddedProducts": [
+    { "productName": "Tej", "count": 120 },
+    { "productName": "Kenyér", "count": 95 }
+  ],
+  "mostPurchasedProducts": [
+    { "productName": "Tej", "count": 110 },
+    { "productName": "Kenyér", "count": 88 }
+  ],
+  "averageContributorsPerList": 1.7,
+  "collaborativeListsPercentage": 42.5,
+  "dailyActiveUsers": [
+    { "date": "2024-06-01T00:00:00.000Z", "count": 45 }
+  ],
+  "weeklyActiveUsers": [
+    { "weekStart": "2024-05-26T00:00:00.000Z", "count": 72 }
+  ],
+  "monthlyActiveUsers": [
+    { "monthStart": "2024-06-01T00:00:00.000Z", "count": 85 }
+  ],
+  "lastUpdated": "2024-06-02T15:30:45.000Z",
+  "createdAt": "2024-05-01T10:00:00.000Z",
+  "updatedAt": "2024-06-02T15:30:45.000Z"
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 403 Forbidden - Nincs adminisztrátori jogosultság
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Statisztikák frissítése
+**Végpont:** `POST /api/statistics/update`  
+**Leírás:** Az összes statisztika manuális frissítése (erőforrás-igényes művelet)  
+**Jogosultság:** Autentikáció és admin jogosultság szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "message": "Statistics updated successfully",
+  "statistics": {
+    // Az összes frissített statisztikai adat
+  }
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 403 Forbidden - Nincs adminisztrátori jogosultság
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Felhasználói növekedés statisztikák lekérése
+**Végpont:** `GET /api/statistics/users`  
+**Leírás:** Felhasználói növekedéssel kapcsolatos statisztikák lekérése  
+**Jogosultság:** Autentikáció és admin jogosultság szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "totalUsers": 150,
+  "activeUsers": 85,
+  "newUsersThisMonth": 12,
+  "monthlyActiveUsers": [
+    { "monthStart": "2024-06-01T00:00:00.000Z", "count": 85 },
+    { "monthStart": "2024-05-01T00:00:00.000Z", "count": 78 }
+  ]
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 403 Forbidden - Nincs adminisztrátori jogosultság
+- 404 Not Found - Nincs elérhető statisztika
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Lista aktivitás statisztikák lekérése
+**Végpont:** `GET /api/statistics/lists`  
+**Leírás:** Bevásárlólisták használatával kapcsolatos statisztikák lekérése  
+**Jogosultság:** Autentikáció és admin jogosultság szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "totalLists": 342,
+  "activeLists": 208,
+  "completedLists": 134,
+  "averageListsPerUser": 2.28,
+  "collaborativeListsPercentage": 42.5
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 403 Forbidden - Nincs adminisztrátori jogosultság
+- 404 Not Found - Nincs elérhető statisztika
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Termék statisztikák lekérése
+**Végpont:** `GET /api/statistics/products`  
+**Leírás:** Termékek használatával kapcsolatos statisztikák lekérése
+**Jogosultság:** Autentikáció és admin jogosultság szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "totalProducts": 1560,
+  "averageProductsPerList": 4.56,
+  "mostAddedProducts": [
+    { "productName": "Tej", "count": 120 },
+    { "productName": "Kenyér", "count": 95 },
+    { "productName": "Tojás", "count": 82 }
+  ],
+  "mostPurchasedProducts": [
+    { "productName": "Tej", "count": 110 },
+    { "productName": "Kenyér", "count": 88 },
+    { "productName": "Tojás", "count": 75 }
+  ]
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 403 Forbidden - Nincs adminisztrátori jogosultság
+- 404 Not Found - Nincs elérhető statisztika
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Felhasználó saját statisztikáinak lekérése
+**Végpont:** `GET /api/statistics/personal`  
+**Leírás:** A bejelentkezett felhasználó saját aktivitásával kapcsolatos statisztikák lekérése  
+**Jogosultság:** Autentikáció szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "totalOwnedLists": 12,
+  "totalSharedLists": 5,
+  "activeLists": 4,
+  "completedLists": 8,
+  "totalProducts": 78,
+  "totalPurchasedProducts": 65,
+  "productCompletionRate": 83.33,
+  "mostAddedProducts": [
+    { "productName": "Tej", "count": 8 },
+    { "productName": "Kenyér", "count": 6 },
+    { "productName": "Sajt", "count": 5 }
+  ],
+  "recentActivity": {
+    "listsCreatedLast30Days": 3
+  },
+  "lastUpdated": "2024-06-10T15:30:45.000Z"
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 500 Internal Server Error - Szerver oldali hiba
