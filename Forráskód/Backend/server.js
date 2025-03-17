@@ -40,7 +40,7 @@ app.use('/api/lists', listRoutes); // Prefix all endpoints defined in listRoutes
 app.use('/api/productCatalogs', productCatalogRoutes); // Prefix all endpoints defined in productCatalogRoutes with /api/productCatalogs
 app.use('/api/categories', categoryRoutes); // Prefix all endpoints defined in categoryRoutes with /api/categories
 app.use('/api/users', userRoutes); // Prefix all endpoints defined in userRoutes with /api/users
-
+app.use('/api/statistics', statisticsRoutes); // Prefix all endpoints defined in statisticsRoutes with /api/statistics
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
 
