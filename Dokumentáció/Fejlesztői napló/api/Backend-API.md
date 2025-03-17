@@ -630,6 +630,153 @@
 - 404 Not Found - A katalóguselem nem található
 - 500 Internal Server Error - Szerver oldali hiba
 
+## Kategóriák
+
+### Összes kategória lekérése
+**Végpont:** `GET /api/categories`  
+**Leírás:** Az összes kategória lekérése  
+**Jogosultság:** Autentikáció szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+[
+  {
+    "_id": "67be5f355b7d4a909f52b129",
+    "name": "Élelmiszerek",
+    "createdAt": "2024-02-03T12:00:00.000Z",
+    "updatedAt": "2024-02-03T12:00:00.000Z"
+  }
+]
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Kategória lekérése azonosító alapján
+**Végpont:** `GET /api/categories/{kategóriaId}`  
+**Leírás:** Egy konkrét kategória részleteinek lekérése  
+**Jogosultság:** Autentikáció szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "_id": "67be5f355b7d4a909f52b129",
+  "name": "Élelmiszerek",
+  "createdAt": "2024-02-03T12:00:00.000Z",
+  "updatedAt": "2024-02-03T12:00:00.000Z"
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 404 Not Found - A kategória nem található
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Új kategória létrehozása
+**Végpont:** `POST /api/categories`  
+**Leírás:** Új kategória létrehozása  
+**Jogosultság:** Autentikáció szükséges, adminisztrátor jogosultság szükséges
+
+**Kérés:**
+```json
+{
+  "name": "Tejtermékek"
+}
+```
+
+**Sikeres válasz (201 Created):**
+```json
+{
+  "_id": "67be5f355b7d4a909f52b130",
+  "name": "Tejtermékek",
+  "createdAt": "2024-02-03T12:00:00.000Z",
+  "updatedAt": "2024-02-03T12:00:00.000Z"
+}
+```
+
+**Hibalehetőségek:**
+- 400 Bad Request - A kategória már létezik vagy hiányzó adatok
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 403 Forbidden - Nincs adminisztrátori jogosultság
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Kategória frissítése
+**Végpont:** `PUT /api/categories/{kategóriaId}`  
+**Leírás:** Kategória adatainak frissítése  
+**Jogosultság:** Autentikáció szükséges, adminisztrátor jogosultság szükséges
+
+**Kérés:**
+```json
+{
+  "name": "Frissített kategória név"
+}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "_id": "67be5f355b7d4a909f52b129",
+  "name": "Frissített kategória név",
+  "createdAt": "2024-02-03T12:00:00.000Z",
+  "updatedAt": "2024-02-03T13:00:00.000Z"
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 403 Forbidden - Nincs adminisztrátori jogosultság
+- 404 Not Found - A kategória nem található
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Kategória törlése
+**Végpont:** `DELETE /api/categories/{kategóriaId}`  
+**Leírás:** Kategória törlése  
+**Jogosultság:** Autentikáció szükséges, adminisztrátor jogosultság szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+
+**Sikeres válasz (204 No Content)**
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 403 Forbidden - Nincs adminisztrátori jogosultság
+- 404 Not Found - A kategória nem található
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Kategóriák keresése
+**Végpont:** `GET /api/categories/search?search={keresőkifejezés}`  
+**Leírás:** Kategóriák keresése név alapján  
+**Jogosultság:** Autentikáció szükséges
+
+**Kérés:** Query paraméterként megadott keresőkifejezés
+
+**Sikeres válasz (200 OK):**
+```json
+[
+  {
+    "_id": "67be5f355b7d4a909f52b129",
+    "name": "Élelmiszerek",
+    "createdAt": "2024-02-03T12:00:00.000Z",
+    "updatedAt": "2024-02-03T12:00:00.000Z"
+  }
+]
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 500 Internal Server Error - Szerver oldali hiba
+
 ## Termékek
 
 ### Összes termék lekérése
@@ -712,6 +859,52 @@
 ```json
 {
   "message": "Felhasználó adminná téve."
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 403 Forbidden - Nincs adminisztrátori jogosultság
+- 404 Not Found - A felhasználó nem található
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Felhasználó visszaminősítése normál felhasználóvá
+**Végpont:** `POST /api/admin/demote/{felhasználóId}`  
+**Leírás:** Egy admin felhasználó visszaminősítése normál felhasználóvá  
+**Jogosultság:** Autentikáció szükséges, adminisztrátor jogosultság szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "message": "Felhasználó jogosultsága visszavonva"
+}
+```
+
+**Hibalehetőségek:**
+- 401 Unauthorized - Érvénytelen vagy hiányzó token
+- 403 Forbidden - Nincs adminisztrátori jogosultság
+- 404 Not Found - A felhasználó nem található
+- 500 Internal Server Error - Szerver oldali hiba
+
+### Felhasználó törlése
+**Végpont:** `DELETE /api/admin/users/{felhasználóId}`  
+**Leírás:** Felhasználó törlése a rendszerből  
+**Jogosultság:** Autentikáció szükséges, adminisztrátor jogosultság szükséges
+
+**Kérés:** Nincs szükség kérés törzsre
+```json
+{}
+```
+
+**Sikeres válasz (200 OK):**
+```json
+{
+  "message": "Felhasználó sikeresen törölve"
 }
 ```
 
