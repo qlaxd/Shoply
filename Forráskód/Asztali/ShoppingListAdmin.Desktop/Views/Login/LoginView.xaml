@@ -25,10 +25,14 @@
     </Window.Visibility>
     <Border CornerRadius="12">
         <Border.Background>
-            <ImageBrush ImageSource="/Images/back-image.jpg" />
+            <LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+                <GradientStop Color="{StaticResource backgroundSecondaryColor3}" Offset="0"/>
+                <GradientStop Color="{StaticResource backgroundPrimaryColor3}" Offset="0.5"/>
+                <GradientStop Color="{StaticResource backgroundPrimaryColor2}" Offset="0.9"/>
+            </LinearGradientBrush>
         </Border.Background>
         <Border CornerRadius="10"                
-                Background="{StaticResource backgroundPrimaryColor}"
+                
                 BorderThickness="5"
                 Opacity="0.95">
             <Border.BorderBrush>
