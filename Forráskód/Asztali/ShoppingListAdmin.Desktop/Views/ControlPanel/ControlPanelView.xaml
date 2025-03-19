@@ -30,24 +30,10 @@
         <StackPanel>
             <!-- Menügombok -->
             <StackPanel Margin="15,30">
-                <RadioButton Style="{StaticResource menuButton}"
-                            Tag="{StaticResource colorMidleGreen}"
-                            Command="{Binding ShowUsersCommand}">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:IconImage Icon="Users" Style="{StaticResource menuButtonIcon}"/>
-                        <TextBlock Text="Felhasználók" Style="{StaticResource menuButtonText}"/>
-                    </StackPanel>
-                </RadioButton>
 
-                <RadioButton Style="{StaticResource menuButton}"
-                            Tag="{StaticResource colorMidleGreen}">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:IconImage Icon="List" Style="{StaticResource menuButtonIcon}"/>
-                        <TextBlock Text="Listák" Style="{StaticResource menuButtonText}"/>
-                    </StackPanel>
-                </RadioButton>
+                <TextBlock Text="ADMINISZTRÁTORI KEZELŐFELÜLET" Style="{StaticResource menuButtonText}"/>
+                <TextBlock Text="CSAK ADMINISZTRÁTORI HOZZÁFÉRÉSSEL!" Style="{StaticResource menuButtonText}"/>
 
-                <!-- További menügombok hasonló módon -->
             </StackPanel>
         </StackPanel>
     </Border>
