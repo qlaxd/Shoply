@@ -96,7 +96,7 @@
                     </StackPanel>
                 </RadioButton>
 
-                <RadioButton     
+                <RadioButton   
                             Style="{StaticResource menuButton}"
                             Command="{Binding LogoutCommand}">
                     <StackPanel Orientation="Horizontal">

@@ -10,6 +10,13 @@ using ShoppingListAdmin.Desktop.ViewModels.Settings;
 using ShoppingListAdmin.Desktop.ViewModels.Products;
 using ShoppingListAdmin.Desktop.ViewModels.Categories;
 using ShoppingListAdmin.Desktop.Services;
+using System.Windows;
+using ShoppingListAdmin.Desktop.Views.Login;
+using ShoppingListAdmin.Desktop.ViewModels.Login;
+using System.Linq;
+using ShoppingListAdmin.Desktop.Views;
+using System;
+using System.Diagnostics;
 
 namespace ShoppingListAdmin.Desktop.ViewModels
 {
@@ -136,5 +143,35 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             // Explicitly load admin data when navigating to the view
             await _adminsViewModel.LoadAdmins();
         }
+
+        
+            [RelayCommand]
+            public async void Logout()
+            {
+                try
+                {
+                    // Close the MainView
+                    var mainWindow = Application.Current.Windows
+                        .OfType<Window>()
+                        .FirstOrDefault(w => w is MainView);
+
+                    if (mainWindow != null)
+                    {
+                        mainWindow.Close();
+                    }
+
+                    // Relaunch the LoginView
+                    var loginView = new LoginView
+                    {
+                        DataContext = new LoginViewModel() // Ensure LoginViewModel is properly initialized
+                    };
+                    loginView.Show();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error during logout: {ex.Message}");
+                }
+            }
+
     }
 }

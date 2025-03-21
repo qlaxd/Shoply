@@ -18,6 +18,10 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Login
             _password = new SecureString();
         }
 
+        public LoginViewModel()
+        {
+        }
+
         [ObservableProperty]
         private string _email = string.Empty;
 

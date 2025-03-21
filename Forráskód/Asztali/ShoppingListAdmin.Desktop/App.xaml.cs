@@ -27,6 +27,11 @@ namespace ShoppingListAdmin.Desktop
                     services.AddSingleton<ApiService>();
                     services.AddSingleton<LoginViewModel>();
                     services.AddSingleton<LoginView>();
+                    services.AddSingleton<MainViewModel>();
+                    services.AddSingleton<MainView>(s => new MainView
+                    {
+                        DataContext = s.GetRequiredService<MainViewModel>()
+                    });
                     services.ConfigureViewViewModels();
 
                     
