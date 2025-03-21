@@ -95,6 +95,15 @@
                         <TextBlock Text="Beállítások" Style="{StaticResource menuButtonText}"/>
                     </StackPanel>
                 </RadioButton>
+
+                <RadioButton     
+                            Style="{StaticResource menuButton}"
+                            Command="{Binding LogoutCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:IconImage Icon="SignOutAlt" Style="{StaticResource menuButtonIcon}"/>
+                        <TextBlock Text="Kijelentkezés" Style="{StaticResource menuButtonText}"/>
+                    </StackPanel>
+                </RadioButton>
             </StackPanel>
         </StackPanel>
     </Border>
