@@ -9,6 +9,8 @@ using ShoppingListAdmin.Desktop.ViewModels.Login;
 using ShoppingListAdmin.Desktop.Services;
 using ShoppingListAdmin.Desktop.ViewModels.Categories;
 using ShoppingListAdmin.Desktop.ViewModels;
+using ShoppingListAdmin.Desktop.ViewModels.Lists;
+
 
 namespace ShoppingListAdmin.Desktop
 {
@@ -24,6 +26,7 @@ namespace ShoppingListAdmin.Desktop
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices(services =>
                 {
+                    
                     services.AddSingleton<ApiService>();
                     services.AddSingleton<LoginViewModel>();
                     services.AddSingleton<LoginView>();
@@ -37,7 +40,11 @@ namespace ShoppingListAdmin.Desktop
                     
                     services.AddSingleton<ProductService>();
                     services.AddSingleton<AdminService>();
+                    
                     services.AddSingleton<CategoryViewModel>();
+                    services.AddSingleton<CategoryService>();
+                    services.AddSingleton<ListsViewModel>();
+                    services.AddSingleton<ProductCatalogService>();
                 })
                 .Build();
         }

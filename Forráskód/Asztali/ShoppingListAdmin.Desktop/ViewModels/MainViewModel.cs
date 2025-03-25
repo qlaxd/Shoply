@@ -99,6 +99,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             Caption = "Listák";
             Icon = IconChar.List;
             CurrentChildView = _listsViewModel;
+            
         }
 
         [RelayCommand]
