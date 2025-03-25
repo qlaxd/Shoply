@@ -155,9 +155,8 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Users
             {
                 try
                 {
-                    // Update the user's role in the backend
-                    admin.Role = "user";
-                    await _apiService.UpdateUserAsync(admin);
+                    // Call the backend to demote the user
+                    await _apiService.DemoteToUserAsync(admin.Id);
 
                     // Reload the list of admins
                     await LoadAdmins();

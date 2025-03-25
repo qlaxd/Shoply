@@ -107,6 +107,19 @@ public class ApiService
     {
         await _httpClient.PutAsJsonAsync($"admin/users/{user.Id}", user);
     }
+
+    
+
+    public async Task DemoteToUserAsync(string userId)
+    {
+    
+
+    var response = await _httpClient.PostAsync($"admin/demote/{userId}", null);
+    if (!response.IsSuccessStatusCode)
+    {
+        throw new HttpRequestException($"Failed to demote user. Status code: {response.StatusCode}");
+    }
+    }
 }
 
     public class LoginResponse
