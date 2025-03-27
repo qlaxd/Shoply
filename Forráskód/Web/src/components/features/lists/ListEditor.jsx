@@ -23,7 +23,13 @@ import {
   Fade,
   Collapse,
   Zoom,
-  Badge
+  Badge,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -35,6 +41,9 @@ import DoneAllIcon from '@mui/icons-material/DoneAll';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import TitleIcon from '@mui/icons-material/Title';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import CommentIcon from '@mui/icons-material/Comment';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useNavigate, useParams } from 'react-router-dom';
 
 // Common komponensek importálása
@@ -59,6 +68,8 @@ const ListEditor = () => {
   const [listTitle, setListTitle] = useState('');
   const [priority, setPriority] = useState(3);
   const [newProduct, setNewProduct] = useState('');
+  const [newProductQuantity, setNewProductQuantity] = useState(1);
+  const [newProductNotes, setNewProductNotes] = useState('');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(!isNewList);
   const [saving, setSaving] = useState(false);
@@ -70,6 +81,8 @@ const ListEditor = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showCategoryInfo, setShowCategoryInfo] = useState(false);
   const [completionPercentage, setCompletionPercentage] = useState(0);
+  const [expandedProductId, setExpandedProductId] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
   
   // Felhasználói adatok
   const userId = localStorage.getItem('userId');
@@ -177,7 +190,9 @@ const ListEditor = () => {
           name: newProduct,
           addedBy: username || 'Felhasználó',
           isPurchased: false,
-          category: selectedCategory
+          category: selectedCategory,
+          quantity: newProductQuantity,
+          notes: newProductNotes
         };
         
         if (!isNewList) {
@@ -191,7 +206,9 @@ const ListEditor = () => {
               name: addedProductResponse.name || newProduct,
               addedBy: addedProductResponse.addedBy || username || 'Felhasználó',
               isPurchased: addedProductResponse.isPurchased || false,
-              category: addedProductResponse.category || selectedCategory
+              category: addedProductResponse.category || selectedCategory,
+              quantity: addedProductResponse.quantity || newProductQuantity,
+              notes: addedProductResponse.notes || newProductNotes
             };
             
             setProducts(prevProducts => [...prevProducts, addedProduct]);
@@ -211,8 +228,10 @@ const ListEditor = () => {
           }]);
         }
         
-        // Termék hozzáadása után töröljük a beviteli mezőt és keresési eredményeket
+        // Termék hozzáadása után töröljük a beviteli mezőket és keresési eredményeket
         setNewProduct('');
+        setNewProductQuantity(1);
+        setNewProductNotes('');
         setSearchResults([]);
         setSelectedCategory(null);
       } catch (err) {
@@ -240,12 +259,47 @@ const ListEditor = () => {
     }
   };
 
-  // Enter billentyű kezelése az új termék hozzáadásánál
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && newProduct.trim()) {
-      e.preventDefault();
-      handleAddProduct();
+  // Termék adatainak módosítása
+  const handleUpdateProduct = async (productId) => {
+    try {
+      if (!editingProduct) return;
+      
+      const updatedProductData = {
+        quantity: editingProduct.quantity,
+        notes: editingProduct.notes
+      };
+      
+      if (!isNewList) {
+        await ListService.updateProductInList(id, productId, updatedProductData);
+      }
+      
+      setProducts(prevProducts => 
+        prevProducts.map(p => 
+          p.id === productId 
+            ? { ...p, ...updatedProductData } 
+            : p
+        )
+      );
+      
+      setEditingProduct(null);
+    } catch (err) {
+      console.error('Hiba a termék módosításakor:', err);
+      setError('Nem sikerült módosítani a terméket: ' + (err.message || 'Ismeretlen hiba'));
     }
+  };
+
+  // Termék szerkesztés megnyitása
+  const handleEditProduct = (product) => {
+    setEditingProduct({
+      ...product,
+      quantity: product.quantity || 1,
+      notes: product.notes || ''
+    });
+  };
+
+  // Termék részletek megjelenítésének váltása
+  const toggleProductDetails = (productId) => {
+    setExpandedProductId(expandedProductId === productId ? null : productId);
   };
 
   // Lista mentés előtti ellenőrzés
@@ -283,7 +337,9 @@ const ListEditor = () => {
           name: p.name, 
           addedBy: p.addedBy || username || 'Felhasználó',
           isPurchased: p.isPurchased || false,
-          category: p.category
+          category: p.category,
+          quantity: p.quantity || 1,
+          notes: p.notes || ''
         })),
         owner: userId
       };
@@ -610,77 +666,112 @@ const ListEditor = () => {
           
           <Divider sx={{ mb: 3 }} />
           
-          <Box sx={{ display: 'flex', mb: 3, flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
-            <Input
-              fullWidth
-              variant="outlined"
-              placeholder="Új termék hozzáadása..."
-              value={newProduct}
-              onChange={(e) => {
-                setNewProduct(e.target.value);
-                handleProductSearch(e.target.value);
-              }}
-              onKeyPress={handleKeyPress}
-              sx={{ 
-                '& .MuiInputBase-root': {
-                  borderRadius: 8
-                }
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleAddProduct}
-                      disabled={!newProduct.trim()}
-                      sx={{ 
-                        color: 'primary.main',
-                        transition: 'transform 0.2s',
-                        '&:hover': {
-                          transform: 'scale(1.1)'
-                        }
-                      }}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            
-            {categories.length > 0 && (
-              <Box sx={{ 
-                display: 'flex', 
-                flexWrap: 'wrap', 
-                gap: 1, 
-                width: { xs: '100%', sm: 'auto' },
-                justifyContent: { xs: 'flex-start', sm: 'flex-end' }
-              }}>
-                {categories.slice(0, isMobile ? 3 : 5).map((category) => (
-                  <Chip
-                    key={category._id}
-                    label={category.name}
-                    onClick={() => handleCategorySelect(category)}
-                    color={selectedCategory?._id === category._id ? 'primary' : 'default'}
-                    variant={selectedCategory?._id === category._id ? 'filled' : 'outlined'}
-                    sx={{ 
-                      transition: 'all 0.2s',
-                      transform: selectedCategory?._id === category._id ? 'scale(1.05)' : 'scale(1)'
-                    }}
-                  />
-                ))}
-                
-                {categories.length > (isMobile ? 3 : 5) && (
-                  <Tooltip title="További kategóriák">
-                    <Chip 
-                      icon={<HelpOutlineIcon />} 
-                      label={`+${categories.length - (isMobile ? 3 : 5)}`} 
-                      variant="outlined" 
-                    />
-                  </Tooltip>
-                )}
-              </Box>
-            )}
+          <Box sx={{ mb: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Input
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Új termék hozzáadása..."
+                  value={newProduct}
+                  onChange={(e) => {
+                    setNewProduct(e.target.value);
+                    handleProductSearch(e.target.value);
+                  }}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && newProduct.trim()) {
+                      e.preventDefault();
+                      handleAddProduct();
+                    }
+                  }}
+                  sx={{ 
+                    '& .MuiInputBase-root': {
+                      borderRadius: 8
+                    }
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6} sm={2}>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Mennyiség"
+                  type="number"
+                  InputProps={{ inputProps: { min: 1 } }}
+                  value={newProductQuantity}
+                  onChange={(e) => setNewProductQuantity(parseInt(e.target.value) || 1)}
+                  sx={{ 
+                    '& .MuiInputBase-root': {
+                      borderRadius: 8
+                    }
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Megjegyzés"
+                  value={newProductNotes}
+                  onChange={(e) => setNewProductNotes(e.target.value)}
+                  sx={{ 
+                    '& .MuiInputBase-root': {
+                      borderRadius: 8
+                    }
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={1} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <IconButton
+                  onClick={handleAddProduct}
+                  disabled={!newProduct.trim()}
+                  sx={{ 
+                    color: 'primary.main',
+                    transition: 'transform 0.2s',
+                    '&:hover': {
+                      transform: 'scale(1.1)'
+                    }
+                  }}
+                >
+                  <AddIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
           </Box>
+          
+          {categories.length > 0 && (
+            <Box sx={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              gap: 1, 
+              width: '100%',
+              mb: 3
+            }}>
+              {categories.slice(0, isMobile ? 3 : 5).map((category) => (
+                <Chip
+                  key={category._id}
+                  label={category.name}
+                  onClick={() => handleCategorySelect(category)}
+                  color={selectedCategory?._id === category._id ? 'primary' : 'default'}
+                  variant={selectedCategory?._id === category._id ? 'filled' : 'outlined'}
+                  sx={{ 
+                    transition: 'all 0.2s',
+                    transform: selectedCategory?._id === category._id ? 'scale(1.05)' : 'scale(1)'
+                  }}
+                />
+              ))}
+              
+              {categories.length > (isMobile ? 3 : 5) && (
+                <Tooltip title="További kategóriák">
+                  <Chip 
+                    icon={<HelpOutlineIcon />} 
+                    label={`+${categories.length - (isMobile ? 3 : 5)}`} 
+                    variant="outlined" 
+                  />
+                </Tooltip>
+              )}
+            </Box>
+          )}
           
           <Collapse in={showCategoryInfo}>
             <Paper sx={{ mb: 2, p: 1.5, bgcolor: 'info.light', borderRadius: 2 }}>
@@ -750,6 +841,9 @@ const ListEditor = () => {
                   Termék neve
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 4 }}>
+                    Mennyiség
+                  </Typography>
                   <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 8 }}>
                     Hozzáadta
                   </Typography>
@@ -765,83 +859,189 @@ const ListEditor = () => {
                 overflow: 'hidden'
               }}>
                 {products.map((product, index) => (
-                  <Fade 
-                    in={true} 
-                    key={product.id || index}
-                    style={{ transitionDelay: `${index * 30}ms` }}
-                  >
-                    <ListItem 
-                      dense
-                      sx={{ 
-                        borderBottom: index < products.length - 1 ? '1px solid' : 'none',
-                        borderColor: 'divider',
-                        transition: 'all 0.2s',
-                        bgcolor: product.isPurchased ? 'action.selected' : 'background.paper',
-                        '&:hover': {
-                          bgcolor: 'action.hover'
-                        }
-                      }}
+                  <React.Fragment key={product.id || index}>
+                    <Fade 
+                      in={true} 
+                      style={{ transitionDelay: `${index * 30}ms` }}
                     >
-                      <ListItemIcon>
-                        <Checkbox
-                          edge="start"
-                          checked={product.isPurchased || false}
-                          onChange={() => handleToggleProduct(product.id)}
-                          sx={{ 
-                            color: product.isPurchased ? 'success.main' : 'action.active',
-                            '&.Mui-checked': {
-                              color: 'success.main'
-                            }
-                          }}
+                      <ListItem 
+                        dense
+                        sx={{ 
+                          borderBottom: index < products.length - 1 ? '1px solid' : 'none',
+                          borderColor: 'divider',
+                          transition: 'all 0.2s',
+                          bgcolor: product.isPurchased ? 'action.selected' : 'background.paper',
+                          '&:hover': {
+                            bgcolor: 'action.hover'
+                          }
+                        }}
+                      >
+                        <ListItemIcon>
+                          <Checkbox
+                            edge="start"
+                            checked={product.isPurchased || false}
+                            onChange={() => handleToggleProduct(product.id)}
+                            sx={{ 
+                              color: product.isPurchased ? 'success.main' : 'action.active',
+                              '&.Mui-checked': {
+                                color: 'success.main'
+                              }
+                            }}
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Typography 
+                                variant="body1"
+                                sx={{ 
+                                  textDecoration: product.isPurchased ? 'line-through' : 'none',
+                                  color: product.isPurchased ? 'text.disabled' : 'text.primary',
+                                  mr: 1
+                                }}
+                              >
+                                {product.name}
+                              </Typography>
+                              {product.category && (
+                                <Chip 
+                                  label={product.category.name} 
+                                  size="small" 
+                                  variant="outlined"
+                                  sx={{ height: 20, fontSize: '0.7rem' }}
+                                />
+                              )}
+                              {product.notes && (
+                                <Tooltip title={product.notes}>
+                                  <CommentIcon fontSize="small" sx={{ ml: 1, color: 'text.secondary' }} />
+                                </Tooltip>
+                              )}
+                            </Box>
+                          }
+                          secondary={
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Typography variant="caption" color="text.secondary" sx={{ mr: 2 }}>
+                                {product.quantity || 1} db
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {typeof product.addedBy === 'object' ? product.addedBy.username : product.addedBy || 'Ismeretlen'}
+                              </Typography>
+                            </Box>
+                          }
                         />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Typography 
-                              variant="body1"
+                        <ListItemSecondaryAction>
+                          <Box sx={{ display: 'flex' }}>
+                            <IconButton 
+                              edge="end" 
+                              onClick={() => toggleProductDetails(product.id)}
+                              sx={{ mr: 1 }}
+                            >
+                              {expandedProductId === product.id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                            </IconButton>
+                            <IconButton 
+                              edge="end" 
+                              onClick={() => handleDeleteProduct(product.id)}
                               sx={{ 
-                                textDecoration: product.isPurchased ? 'line-through' : 'none',
-                                color: product.isPurchased ? 'text.disabled' : 'text.primary',
-                                mr: 1
+                                color: 'error.light',
+                                transition: 'all 0.2s',
+                                '&:hover': {
+                                  color: 'error.main',
+                                  transform: 'scale(1.1)'
+                                }
                               }}
                             >
-                              {product.name}
-                            </Typography>
-                            {product.category && (
-                              <Chip 
-                                label={product.category.name} 
-                                size="small" 
-                                variant="outlined"
-                                sx={{ height: 20, fontSize: '0.7rem' }}
-                              />
-                            )}
+                              <DeleteIcon />
+                            </IconButton>
                           </Box>
-                        }
-                        secondary={
-                          <Typography variant="caption" color="text.secondary">
-                            {typeof product.addedBy === 'object' ? product.addedBy.username : product.addedBy || 'Ismeretlen'}
-                          </Typography>
-                        }
-                      />
-                      <ListItemSecondaryAction>
-                        <IconButton 
-                          edge="end" 
-                          onClick={() => handleDeleteProduct(product.id)}
-                          sx={{ 
-                            color: 'error.light',
-                            transition: 'all 0.2s',
-                            '&:hover': {
-                              color: 'error.main',
-                              transform: 'scale(1.1)'
-                            }
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  </Fade>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    </Fade>
+
+                    <Collapse in={expandedProductId === product.id}>
+                      <Box sx={{ 
+                        p: 2, 
+                        pl: 9, 
+                        bgcolor: 'action.hover',
+                        borderBottom: index < products.length - 1 ? '1px solid' : 'none',
+                        borderColor: 'divider'
+                      }}>
+                        {editingProduct && editingProduct.id === product.id ? (
+                          <Grid container spacing={2}>
+                            <Grid item xs={12} sm={4}>
+                              <TextField
+                                fullWidth
+                                variant="outlined"
+                                label="Mennyiség"
+                                type="number"
+                                InputProps={{ inputProps: { min: 1 } }}
+                                value={editingProduct.quantity}
+                                onChange={(e) => setEditingProduct({
+                                  ...editingProduct,
+                                  quantity: parseInt(e.target.value) || 1
+                                })}
+                                size="small"
+                              />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <TextField
+                                fullWidth
+                                variant="outlined"
+                                label="Megjegyzések"
+                                value={editingProduct.notes}
+                                onChange={(e) => setEditingProduct({
+                                  ...editingProduct,
+                                  notes: e.target.value
+                                })}
+                                size="small"
+                                multiline
+                                rows={2}
+                              />
+                            </Grid>
+                            <Grid item xs={12} sm={2} sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                onClick={() => handleUpdateProduct(product.id)}
+                                sx={{ mr: 1 }}
+                              >
+                                Mentés
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                color="secondary"
+                                size="small"
+                                onClick={() => setEditingProduct(null)}
+                              >
+                                Mégsem
+                              </Button>
+                            </Grid>
+                          </Grid>
+                        ) : (
+                          <Grid container spacing={2}>
+                            <Grid item xs={12} sm={4}>
+                              <Typography variant="subtitle2">Mennyiség:</Typography>
+                              <Typography>{product.quantity || 1} db</Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <Typography variant="subtitle2">Megjegyzések:</Typography>
+                              <Typography>{product.notes || 'Nincs megjegyzés'}</Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={2} sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                size="small"
+                                onClick={() => handleEditProduct(product)}
+                                startIcon={<EditIcon />}
+                              >
+                                Szerkesztés
+                              </Button>
+                            </Grid>
+                          </Grid>
+                        )}
+                      </Box>
+                    </Collapse>
+                  </React.Fragment>
                 ))}
               </List>
               

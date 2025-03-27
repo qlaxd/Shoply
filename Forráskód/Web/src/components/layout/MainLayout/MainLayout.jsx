@@ -10,6 +10,7 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import HistoryIcon from '@mui/icons-material/History';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import PeopleIcon from '@mui/icons-material/People';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -62,8 +63,8 @@ const NAVIGATION = [
     icon: <PersonIcon />,
     children: [
       {
-        segment: 'view-profile',
         title: 'Profil megtekintése',
+        icon: <AccountCircleIcon/>,
         path: '/profile'
       },
       {
@@ -71,14 +72,14 @@ const NAVIGATION = [
         title: 'Jelszó módosítása',
         icon: <VpnKeyIcon />,
         path: '/profile/change-password'
-      },
-      {
-        segment: 'search-users',
-        title: 'Felhasználók keresése',
-        icon: <PeopleIcon />,
-        path: '/users/search'
       }
     ]
+  },
+  {
+    segment: 'users/search',
+    title: 'Felhasználók keresése',
+    icon: <PeopleIcon />,
+    path: '/users/search'
   },
   {
     segment: 'login',
@@ -137,6 +138,18 @@ const MainLayout = ({ children }) => {
     // Special case for empty segment (home)
     if (segment === '') {
       navigate('/');
+      return;
+    }
+    
+    // Directly handle specific segments
+    const directNavigationPaths = {
+      'profile': '/profile',
+      'change-password': '/profile/change-password',
+      'users/search': '/users/search'
+    };
+    
+    if (directNavigationPaths[segment]) {
+      navigate(directNavigationPaths[segment]);
       return;
     }
     
