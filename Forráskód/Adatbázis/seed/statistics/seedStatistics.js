@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+const mongoose = require('../../../Backend/node_modules/mongoose');
+const dotenv = require('../../../Backend/node_modules/dotenv');
 const path = require('path');
 
 // Load environment variables from the backend .env file
-dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../../Backend/.env') });
 
 const connectDB = require('../../../Backend/config/db'); // Adjust path as needed
 const statisticsController = require('../../../Backend/controllers/statisticsController'); // Adjust path as needed
