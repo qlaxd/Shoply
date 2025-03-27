@@ -47,8 +47,4 @@
     <Folder Include="Views\Settings\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="Services\ListService.cs" />
-  </ItemGroup>
-
 </Project>
