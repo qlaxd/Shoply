@@ -69,6 +69,7 @@ const ListEditor = () => {
   const [priority, setPriority] = useState(3);
   const [newProduct, setNewProduct] = useState('');
   const [newProductQuantity, setNewProductQuantity] = useState(1);
+  const [newProductUnit, setNewProductUnit] = useState('db');
   const [newProductNotes, setNewProductNotes] = useState('');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(!isNewList);
@@ -109,7 +110,10 @@ const ListEditor = () => {
                 name: product.name,
                 addedBy: product.addedBy || 'Ismeretlen',
                 isPurchased: product.isPurchased || false,
-                category: product.category || null
+                category: product.category || null,
+                quantity: product.quantity,
+                unit: product.unit || 'db',
+                notes: product.notes
               })));
             } else {
               setProducts([]);
@@ -192,6 +196,7 @@ const ListEditor = () => {
           isPurchased: false,
           category: selectedCategory,
           quantity: newProductQuantity,
+          unit: newProductUnit,
           notes: newProductNotes
         };
         
@@ -208,6 +213,7 @@ const ListEditor = () => {
               isPurchased: addedProductResponse.isPurchased || false,
               category: addedProductResponse.category || selectedCategory,
               quantity: addedProductResponse.quantity || newProductQuantity,
+              unit: addedProductResponse.unit || newProductUnit,
               notes: addedProductResponse.notes || newProductNotes
             };
             
@@ -231,6 +237,7 @@ const ListEditor = () => {
         // Termék hozzáadása után töröljük a beviteli mezőket és keresési eredményeket
         setNewProduct('');
         setNewProductQuantity(1);
+        setNewProductUnit('db');
         setNewProductNotes('');
         setSearchResults([]);
         setSelectedCategory(null);
@@ -266,6 +273,7 @@ const ListEditor = () => {
       
       const updatedProductData = {
         quantity: editingProduct.quantity,
+        unit: editingProduct.unit || 'db',
         notes: editingProduct.notes
       };
       
@@ -293,6 +301,7 @@ const ListEditor = () => {
     setEditingProduct({
       ...product,
       quantity: product.quantity || 1,
+      unit: product.unit || 'db',
       notes: product.notes || ''
     });
   };
@@ -338,8 +347,9 @@ const ListEditor = () => {
           addedBy: p.addedBy || username || 'Felhasználó',
           isPurchased: p.isPurchased || false,
           category: p.category,
-          quantity: p.quantity || 1,
-          notes: p.notes || ''
+          quantity: p.quantity,
+          unit: p.unit || 'db',
+          notes: p.notes
         })),
         owner: userId
       };
@@ -691,15 +701,29 @@ const ListEditor = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={6} sm={2}>
+              <Grid item xs={4} sm={1}>
                 <TextField
                   fullWidth
                   variant="outlined"
-                  label="Mennyiség"
+                  label="Menny."
                   type="number"
                   InputProps={{ inputProps: { min: 1 } }}
                   value={newProductQuantity}
                   onChange={(e) => setNewProductQuantity(parseInt(e.target.value) || 1)}
+                  sx={{ 
+                    '& .MuiInputBase-root': {
+                      borderRadius: 8
+                    }
+                  }}
+                />
+              </Grid>
+              <Grid item xs={2} sm={1}>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Egys."
+                  value={newProductUnit}
+                  onChange={(e) => setNewProductUnit(e.target.value)}
                   sx={{ 
                     '& .MuiInputBase-root': {
                       borderRadius: 8
@@ -902,6 +926,13 @@ const ListEditor = () => {
                               >
                                 {product.name}
                               </Typography>
+                              <Chip 
+                                label={`${product.quantity || 1} ${product.unit || 'db'}`} 
+                                size="small" 
+                                color="primary"
+                                variant="outlined"
+                                sx={{ mr: 1, height: 24, fontSize: '0.75rem' }}
+                              />
                               {product.category && (
                                 <Chip 
                                   label={product.category.name} 
@@ -912,16 +943,35 @@ const ListEditor = () => {
                               )}
                               {product.notes && (
                                 <Tooltip title={product.notes}>
-                                  <CommentIcon fontSize="small" sx={{ ml: 1, color: 'text.secondary' }} />
+                                  <Box sx={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    ml: 1, 
+                                    borderLeft: '1px solid',
+                                    borderColor: 'divider',
+                                    pl: 1
+                                  }}>
+                                    <CommentIcon fontSize="small" sx={{ color: 'text.secondary', mr: 0.5 }} />
+                                    <Typography 
+                                      variant="caption" 
+                                      color="text.secondary"
+                                      sx={{
+                                        maxWidth: '120px',
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        display: 'inline-block'
+                                      }}
+                                    >
+                                      {product.notes}
+                                    </Typography>
+                                  </Box>
                                 </Tooltip>
                               )}
                             </Box>
                           }
                           secondary={
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Typography variant="caption" color="text.secondary" sx={{ mr: 2 }}>
-                                {product.quantity || 1} db
-                              </Typography>
                               <Typography variant="caption" color="text.secondary">
                                 {typeof product.addedBy === 'object' ? product.addedBy.username : product.addedBy || 'Ismeretlen'}
                               </Typography>
@@ -966,7 +1016,7 @@ const ListEditor = () => {
                       }}>
                         {editingProduct && editingProduct.id === product.id ? (
                           <Grid container spacing={2}>
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={3}>
                               <TextField
                                 fullWidth
                                 variant="outlined"
@@ -981,7 +1031,20 @@ const ListEditor = () => {
                                 size="small"
                               />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} sm={3}>
+                              <TextField
+                                fullWidth
+                                variant="outlined"
+                                label="Egység"
+                                value={editingProduct.unit}
+                                onChange={(e) => setEditingProduct({
+                                  ...editingProduct,
+                                  unit: e.target.value
+                                })}
+                                size="small"
+                              />
+                            </Grid>
+                            <Grid item xs={12} sm={4}>
                               <TextField
                                 fullWidth
                                 variant="outlined"
@@ -1019,12 +1082,31 @@ const ListEditor = () => {
                         ) : (
                           <Grid container spacing={2}>
                             <Grid item xs={12} sm={4}>
-                              <Typography variant="subtitle2">Mennyiség:</Typography>
-                              <Typography>{product.quantity || 1} db</Typography>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>Mennyiség:</Typography>
+                              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                                <Typography variant="body1" sx={{ fontSize: '1.1rem', fontWeight: '500' }}>
+                                  {product.quantity || 1}
+                                </Typography>
+                                <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
+                                  {product.unit || 'db'}
+                                </Typography>
+                              </Box>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                              <Typography variant="subtitle2">Megjegyzések:</Typography>
-                              <Typography>{product.notes || 'Nincs megjegyzés'}</Typography>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>Megjegyzések:</Typography>
+                              <Paper sx={{ 
+                                mt: 1, 
+                                p: 1.5, 
+                                bgcolor: 'background.paper',
+                                border: '1px solid',
+                                borderColor: product.notes ? 'divider' : 'transparent',
+                                borderRadius: 1,
+                                minHeight: '40px'
+                              }}>
+                                <Typography>
+                                  {product.notes || 'Nincs megjegyzés'}
+                                </Typography>
+                              </Paper>
                             </Grid>
                             <Grid item xs={12} sm={2} sx={{ display: 'flex', alignItems: 'center' }}>
                               <Button

@@ -40,6 +40,7 @@ import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import CommentIcon from '@mui/icons-material/Comment';
 
 // Common komponensek importálása
 import Card from '../../common/Card';
@@ -451,16 +452,35 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
                 {getAvatarLetter(addedByName)}
               </Avatar>
               <ListItemText 
-                primary={product.name} 
+                primary={
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ 
+                        textDecoration: product.isPurchased ? 'line-through' : 'none',
+                        color: product.isPurchased ? 'text.disabled' : 'text.primary'
+                      }}
+                    >
+                      {product.name}
+                    </Typography>
+                    <Chip 
+                      label={`${product.quantity || 1} ${product.unit || 'db'}`}
+                      size="small" 
+                      variant="outlined"
+                      sx={{ ml: 1, height: 20, fontSize: '0.7rem' }}
+                    />
+                    {product.notes && (
+                      <Tooltip title={product.notes}>
+                        <CommentIcon fontSize="small" sx={{ ml: 1, color: 'text.secondary', fontSize: '0.9rem' }} />
+                      </Tooltip>
+                    )}
+                  </Box>
+                }
                 secondary={`Hozzáadta: ${typeof product.addedBy === 'object' && product.addedBy !== null
                   ? product.addedBy.username || 'Ismeretlen'
                   : product.addedBy || 'Ismeretlen'}`}
                 primaryTypographyProps={{ 
-                  variant: 'body2',
-                  sx: { 
-                    textDecoration: product.isPurchased ? 'line-through' : 'none',
-                    color: product.isPurchased ? 'text.disabled' : 'text.primary'
-                  }
+                  variant: 'body2'
                 }}
                 secondaryTypographyProps={{ variant: 'caption' }}
               />
