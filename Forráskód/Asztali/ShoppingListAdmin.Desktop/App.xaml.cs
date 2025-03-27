@@ -42,9 +42,9 @@ namespace ShoppingListAdmin.Desktop
                     services.AddSingleton<AdminService>();
                     
                     services.AddSingleton<CategoryViewModel>();
-                    services.AddSingleton<CategoryService>();
+                    //services.AddSingleton<CategoryService>(); TODO: bugfix or remove
                     services.AddSingleton<ListsViewModel>();
-                    services.AddSingleton<ProductCatalogService>();
+                    //services.AddSingleton<ProductCatalogService>(); TODO: bugfix or remove
                 })
                 .Build();
         }
