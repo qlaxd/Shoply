@@ -19,22 +19,22 @@ namespace ShoppingListAdmin.Desktop.Services
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
         }
 
-        public async Task<List<ListModel>> GetAllListsAsync()
+        public async Task<List<ProductListModel>> GetAllListsAsync()
         {
-            return await _httpClient.GetFromJsonAsync<List<ListModel>>("lists");
+            return await _httpClient.GetFromJsonAsync<List<ProductListModel>>("lists");
         }
 
-        public async Task<ListModel> GetListByIdAsync(string listId)
+        public async Task<ProductListModel> GetListByIdAsync(string listId)
         {
-            return await _httpClient.GetFromJsonAsync<ListModel>($"lists/{listId}");
+            return await _httpClient.GetFromJsonAsync<ProductListModel>($"lists/{listId}");
         }
 
-        public async Task CreateListAsync(ListModel list)
+        public async Task CreateListAsync(ProductListModel list)
         {
             await _httpClient.PostAsJsonAsync("lists", list);
         }
 
-        public async Task UpdateListAsync(string listId, ListModel list)
+        public async Task UpdateListAsync(string listId, ProductListModel list)
         {
             await _httpClient.PutAsJsonAsync($"lists/{listId}", list);
         }
