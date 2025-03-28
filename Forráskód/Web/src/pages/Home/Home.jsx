@@ -522,11 +522,24 @@ const Home = () => {
         renderSkeletonLoaders()
       ) : filteredAndSortedLists.length > 0 ? (
         <Fade in={!loading} timeout={500}>
-          <Grid2 container spacing={3}>
+          <Grid2 container spacing={3} sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
             {filteredAndSortedLists.map((list, index) => (
-              <Grid2 xs={12} sm={6} md={4} lg={3} key={list._id}>
+              <Grid2 
+                xs={12} 
+                sm={6} 
+                md={4} 
+                lg={3} 
+                key={list._id}
+                sx={{ 
+                  width: { xs: '100%' },
+                  maxWidth: { xs: '360px', sm: 'none' }
+                }}
+              >
                 <Zoom in={true} style={{ transitionDelay: `${index * 50}ms` }}>
-                  <Box>
+                  <Box sx={{ 
+                    height: '100%',
+                    width: '100%'
+                  }}>
                     <ShoppingListCard 
                       list={list} 
                       onEdit={handleEditList} 
