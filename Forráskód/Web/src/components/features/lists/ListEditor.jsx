@@ -750,10 +750,10 @@ const ListEditor = () => {
             alignItems: 'center'
           }}>
             <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-              <Typography variant="body2" color="text.secondary">Haladás:</Typography>
+              <Typography variant="body2" color="text.secondary" component="div">Haladás:</Typography>
               <Typography variant="body2" fontWeight="bold" color={
                 completionPercentage === 100 ? 'success.main' : 'primary.main'
-              }>
+              } component="div">
                 {completionPercentage}%
               </Typography>
             </Box>
@@ -785,7 +785,7 @@ const ListEditor = () => {
               boxShadow: 2,
               mx: { xs: 1, sm: 0 }
             }}>
-              <Typography variant="body2" color="error" sx={{ fontWeight: 'medium' }}>{error}</Typography>
+              <Typography variant="body2" color="error" component="div" sx={{ fontWeight: 'medium' }}>{error}</Typography>
             </Paper>
           </Fade>
         )}
@@ -1072,7 +1072,7 @@ const ListEditor = () => {
           
           <Collapse in={showCategoryInfo}>
             <Paper sx={{ mb: 2, p: 1.5, bgcolor: 'info.light', borderRadius: 2 }}>
-              <Typography variant="body2">
+              <Typography variant="body2" component="div">
                 A termék a következő kategóriába lesz sorolva: <strong>{selectedCategory?.name}</strong>
               </Typography>
             </Paper>
@@ -1080,70 +1080,43 @@ const ListEditor = () => {
           
           {/* Keresési találatok megjelenítése */}
           {searchResults.length > 0 && (
-            <Paper elevation={3} sx={{ 
-              mb: 3, 
-              maxHeight: 200, 
-              overflow: 'auto',
-              borderRadius: 2,
-              border: '1px solid',
-              borderColor: 'divider'
-            }}>
-              <List dense>
-                {searching ? (
-                  <ListItem>
-                    <CircularProgress size={20} sx={{ mr: 1 }} />
-                    <ListItemText primary="Keresés folyamatban..." />
-                  </ListItem>
-                ) : (
-                  searchResults.map(item => (
-                    <ListItem
-                      key={item.id}
-                      button
-                      onClick={() => {
-                        setNewProduct(item.name);
-                        // The category should already be matched to a full category object from the loaded categories
-                        setSelectedCategory(item.category);
-                        setNewProductUnit(item.unit || 'db');
-                        setSearchResults([]);
-                      }}
-                      sx={{
-                        transition: 'background-color 0.3s',
-                        '&:hover': {
-                          bgcolor: 'action.hover'
-                        }
-                      }}
-                    >
-                      <ListItemText 
-                        primary={
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Typography>{item.name}</Typography>
-                            <Chip 
-                              label={item.unit || 'db'} 
-                              size="small" 
-                              color="primary"
-                              variant="outlined"
-                              sx={{ ml: 1, height: 24, fontSize: '0.75rem' }}
-                            />
-                          </Box>
-                        }
-                        secondary={
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            {item.category?.name && (
-                              <Chip 
-                                label={item.category.name} 
-                                size="small" 
-                                variant="outlined"
-                                sx={{ height: 20, fontSize: '0.7rem', mt: 0.5 }}
-                              />
-                            )}
-                          </Box>
-                        }
-                      />
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="subtitle2" color="text.secondary" component="div" sx={{ mb: 1 }}>
+                Találatok:
+              </Typography>
+              <Paper elevation={0} variant="outlined" sx={{ 
+                maxHeight: 200, 
+                overflow: 'auto',
+                borderRadius: 2
+              }}>
+                <List dense>
+                  {searching ? (
+                    <ListItem>
+                      <CircularProgress size={20} sx={{ mr: 1 }} />
+                      <ListItemText primary="Keresés folyamatban..." />
                     </ListItem>
-                  ))
-                )}
-              </List>
-            </Paper>
+                  ) : (
+                    searchResults.map(item => (
+                      <ListItem
+                        key={item.id}
+                        button
+                        onClick={() => {
+                          setNewProduct(item.name);
+                          setSelectedCategory(item.category);
+                          setNewProductUnit(item.unit || 'db');
+                          setSearchResults([]);
+                        }}
+                      >
+                        <ListItemText 
+                          primary={<Typography component="span">{item.name}</Typography>}
+                          secondary={`${item.unit || 'db'}`}
+                        />
+                      </ListItem>
+                    ))
+                  )}
+                </List>
+              </Paper>
+            </Box>
           )}
           
           {/* Termékek listája */}
@@ -1159,17 +1132,17 @@ const ListEditor = () => {
                   borderBottom: '1px solid',
                   borderColor: 'divider'
                 }}>
-                  <Typography variant="subtitle2" color="text.secondary">
+                  <Typography variant="subtitle2" color="text.secondary" component="div">
                     Termék neve
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 4 }}>
+                    <Typography variant="subtitle2" color="text.secondary" component="div" sx={{ mr: 4 }}>
                       Mennyiség
                     </Typography>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 8 }}>
+                    <Typography variant="subtitle2" color="text.secondary" component="div" sx={{ mr: 8 }}>
                       Hozzáadta
                     </Typography>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 4 }}>
+                    <Typography variant="subtitle2" color="text.secondary" component="div" sx={{ mr: 4 }}>
                       Műveletek
                     </Typography>
                   </Box>
@@ -1228,6 +1201,7 @@ const ListEditor = () => {
                             }}>
                               <Typography 
                                 variant="body1"
+                                component="span"
                                 sx={{ 
                                   textDecoration: product.isPurchased ? 'line-through' : 'none',
                                   color: product.isPurchased ? 'text.disabled' : 'text.primary',
@@ -1283,6 +1257,7 @@ const ListEditor = () => {
                                     <Typography 
                                       variant="caption" 
                                       color="text.secondary"
+                                      component="span"
                                       sx={{
                                         maxWidth: { xs: '60px', sm: '120px' },
                                         whiteSpace: 'nowrap',
@@ -1299,7 +1274,7 @@ const ListEditor = () => {
                             </Box>
                           }
                           secondary={
-                            <Box sx={{ 
+                            <Box component="div" sx={{ 
                               display: 'flex', 
                               alignItems: 'center', 
                               mt: isMobile ? 0.5 : 0,
@@ -1323,6 +1298,7 @@ const ListEditor = () => {
                               <Typography 
                                 variant="caption" 
                                 color="text.secondary"
+                                component="span"
                                 sx={{ 
                                   display: 'flex', 
                                   alignItems: 'center',
@@ -1341,6 +1317,7 @@ const ListEditor = () => {
                               )}
                             </Box>
                           }
+                          secondaryTypographyProps={{ component: 'div' }}
                         />
                         <ListItemSecondaryAction>
                           <Box sx={{ display: 'flex' }}>
@@ -1480,7 +1457,7 @@ const ListEditor = () => {
                                 }}>
                                   {product.quantity || 1}
                                 </Typography>
-                                <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
+                                <Typography variant="body2" component="span" sx={{ ml: 1, color: 'text.secondary' }}>
                                   {product.unit || 'db'}
                                 </Typography>
                               </Box>
@@ -1506,7 +1483,7 @@ const ListEditor = () => {
                                 minHeight: '40px',
                                 wordBreak: 'break-word'
                               }}>
-                                <Typography sx={{ fontSize: { xs: '0.85rem', sm: 'inherit' } }}>
+                                <Typography component="div" sx={{ fontSize: { xs: '0.85rem', sm: 'inherit' } }}>
                                   {product.notes || 'Nincs megjegyzés'}
                                 </Typography>
                               </Paper>
@@ -1795,7 +1772,7 @@ const ListEditor = () => {
                             }}
                           >
                             <ListItemText 
-                              primary={item.name}
+                              primary={<Typography component="span">{item.name}</Typography>}
                               secondary={`${item.unit || 'db'}`}
                             />
                           </ListItem>
