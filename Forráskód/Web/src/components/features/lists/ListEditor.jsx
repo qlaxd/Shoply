@@ -84,10 +84,14 @@ const ListEditor = () => {
   const [completionPercentage, setCompletionPercentage] = useState(0);
   const [expandedProductId, setExpandedProductId] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [userPermission, setUserPermission] = useState('edit'); // Default to edit permission
   
   // Felhasználói adatok
   const userId = localStorage.getItem('userId');
   const username = localStorage.getItem('username');
+
+  // Ellenőrizzük, hogy a felhasználónak van-e szerkesztési joga
+  const canEdit = userPermission !== 'view';
 
   // Létező lista adatainak betöltése
   useEffect(() => {
@@ -102,6 +106,19 @@ const ListEditor = () => {
           if (listData && listData._id) {
             setListTitle(listData.title || '');
             setPriority(listData.priority || 3);
+            
+            // A felhasználó jogosultságának beállítása
+            if (listData.userPermission) {
+              setUserPermission(listData.userPermission);
+            } else if (listData.owner && listData.owner === userId) {
+              setUserPermission('owner');
+            } else if (listData.sharedUsers && Array.isArray(listData.sharedUsers)) {
+              // Ellenőrizzük a megosztási jogosultságot
+              const userShare = listData.sharedUsers.find(share => share.userId === userId);
+              if (userShare) {
+                setUserPermission(userShare.permission || 'view');
+              }
+            }
             
             // Ha a products egy tömb objektumokkal
             if (Array.isArray(listData.products)) {
@@ -211,6 +228,11 @@ const ListEditor = () => {
 
   // Termék hozzáadása
   const handleAddProduct = async () => {
+    if (!canEdit) {
+      setError('Nincs jogosultságod termék hozzáadásához.');
+      return;
+    }
+    
     if (newProduct.trim()) {
       try {
         setError(null);
@@ -280,6 +302,11 @@ const ListEditor = () => {
 
   // Termék törlése
   const handleDeleteProduct = async (productId) => {
+    if (!canEdit) {
+      setError('Nincs jogosultságod termék törléséhez.');
+      return;
+    }
+    
     try {
       setError(null);
       
@@ -298,6 +325,11 @@ const ListEditor = () => {
 
   // Termék adatainak módosítása
   const handleUpdateProduct = async (productId) => {
+    if (!canEdit) {
+      setError('Nincs jogosultságod termék módosításához.');
+      return;
+    }
+    
     try {
       if (!editingProduct) return;
       
@@ -328,6 +360,11 @@ const ListEditor = () => {
 
   // Termék szerkesztés megnyitása
   const handleEditProduct = (product) => {
+    if (!canEdit) {
+      setError('Nincs jogosultságod termék szerkesztéséhez.');
+      return;
+    }
+    
     setEditingProduct({
       ...product,
       quantity: product.quantity || 1,
@@ -343,6 +380,11 @@ const ListEditor = () => {
 
   // Lista mentés előtti ellenőrzés
   const handleSave = () => {
+    if (!canEdit) {
+      setError('Nincs jogosultságod a lista módosításához.');
+      return;
+    }
+    
     if (products.length === 0) {
       setError('Legalább egy terméket hozzá kell adni a listához');
       return;
@@ -457,6 +499,11 @@ const ListEditor = () => {
 
   // Termék vásárlási állapotának módosítása
   const handleToggleProduct = async (productId) => {
+    if (!canEdit) {
+      setError('Nincs jogosultságod a termék állapotának módosításához.');
+      return;
+    }
+    
     try {
       // Keressük meg a terméket az aktuális termékek között
       const product = products.find(p => p.id === productId);
@@ -486,6 +533,11 @@ const ListEditor = () => {
 
   // Minden termék megvásárlása/visszaállítása
   const handleToggleAllProducts = (isPurchased) => {
+    if (!canEdit) {
+      setError('Nincs jogosultságod a termékek állapotának módosításához.');
+      return;
+    }
+    
     try {
       // Frissítjük a helyi állapotot
       setProducts(prevProducts => 
@@ -542,6 +594,14 @@ const ListEditor = () => {
               }}
             >
               {isNewList ? 'Új bevásárlólista' : listTitle}
+              {!canEdit && !isNewList && (
+                <Chip 
+                  label="Csak megtekintés" 
+                  size="small" 
+                  color="secondary" 
+                  sx={{ ml: 2, fontSize: '0.7rem' }}
+                />
+              )}
             </Typography>
           </Box>
           
@@ -578,30 +638,32 @@ const ListEditor = () => {
               </Box>
             )}
             
-            <Button 
-              variant="contained" 
-              color="primary" 
-              startIcon={<SaveIcon />}
-              onClick={handleSave}
-              disabled={loading || saving || !listTitle.trim()}
-              sx={{ 
-                flexGrow: { xs: 1, sm: 0 },
-                borderRadius: 8,
-                boxShadow: 2,
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                  transform: 'translateY(-2px)',
-                  boxShadow: 4
-                }
-              }}
-            >
-              {saving ? (
-                <>
-                  <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
-                  Mentés...
-                </>
-              ) : 'Mentés'}
-            </Button>
+            {canEdit && (
+              <Button 
+                variant="contained" 
+                color="primary" 
+                startIcon={<SaveIcon />}
+                onClick={handleSave}
+                disabled={loading || saving || !listTitle.trim()}
+                sx={{ 
+                  flexGrow: { xs: 1, sm: 0 },
+                  borderRadius: 8,
+                  boxShadow: 2,
+                  transition: 'all 0.2s ease-in-out',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: 4
+                  }
+                }}
+              >
+                {saving ? (
+                  <>
+                    <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                    Mentés...
+                  </>
+                ) : 'Mentés'}
+              </Button>
+            )}
           </Box>
         </Box>
         
@@ -639,6 +701,7 @@ const ListEditor = () => {
             value={listTitle}
             onChange={(e) => setListTitle(e.target.value)}
             placeholder="Adj címet a listának (pl. Hétvégi grillparti)"
+            disabled={!canEdit}
             sx={{ 
               mb: 3, 
               '& .MuiInputBase-root': {
@@ -661,6 +724,7 @@ const ListEditor = () => {
                 marks={priorityMarks}
                 onChange={(_, newValue) => setPriority(newValue)}
                 valueLabelDisplay="off"
+                disabled={!canEdit}
                 sx={{
                   '& .MuiSlider-markLabel': {
                     fontSize: '0.8rem',
@@ -693,7 +757,7 @@ const ListEditor = () => {
               <Typography variant="h6">Termékek</Typography>
             </Box>
             
-            {products.length > 0 && (
+            {products.length > 0 && canEdit && (
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Tooltip title="Minden termék megvásárolva">
                   <IconButton 
@@ -719,92 +783,94 @@ const ListEditor = () => {
           
           <Divider sx={{ mb: 3 }} />
           
-          <Box sx={{ mb: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Input
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Új termék hozzáadása..."
-                  value={newProduct}
-                  onChange={(e) => {
-                    setNewProduct(e.target.value);
-                    handleProductSearch(e.target.value);
-                  }}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && newProduct.trim()) {
-                      e.preventDefault();
-                      handleAddProduct();
-                    }
-                  }}
-                  sx={{ 
-                    '& .MuiInputBase-root': {
-                      borderRadius: 8
-                    }
-                  }}
-                />
+          {canEdit && (
+            <Box sx={{ mb: 3 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Input
+                    fullWidth
+                    variant="outlined"
+                    placeholder="Új termék hozzáadása..."
+                    value={newProduct}
+                    onChange={(e) => {
+                      setNewProduct(e.target.value);
+                      handleProductSearch(e.target.value);
+                    }}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && newProduct.trim()) {
+                        e.preventDefault();
+                        handleAddProduct();
+                      }
+                    }}
+                    sx={{ 
+                      '& .MuiInputBase-root': {
+                        borderRadius: 8
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={4} sm={1}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Menny."
+                    type="number"
+                    InputProps={{ inputProps: { min: 1 } }}
+                    value={newProductQuantity}
+                    onChange={(e) => setNewProductQuantity(parseInt(e.target.value) || 1)}
+                    sx={{ 
+                      '& .MuiInputBase-root': {
+                        borderRadius: 8
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={2} sm={1}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Egys."
+                    value={newProductUnit}
+                    onChange={(e) => setNewProductUnit(e.target.value)}
+                    sx={{ 
+                      '& .MuiInputBase-root': {
+                        borderRadius: 8
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Megjegyzés"
+                    value={newProductNotes}
+                    onChange={(e) => setNewProductNotes(e.target.value)}
+                    sx={{ 
+                      '& .MuiInputBase-root': {
+                        borderRadius: 8
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={1} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <IconButton
+                    onClick={handleAddProduct}
+                    disabled={!newProduct.trim()}
+                    sx={{ 
+                      color: 'primary.main',
+                      transition: 'transform 0.2s',
+                      '&:hover': {
+                        transform: 'scale(1.1)'
+                      }
+                    }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Grid>
               </Grid>
-              <Grid item xs={4} sm={1}>
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  label="Menny."
-                  type="number"
-                  InputProps={{ inputProps: { min: 1 } }}
-                  value={newProductQuantity}
-                  onChange={(e) => setNewProductQuantity(parseInt(e.target.value) || 1)}
-                  sx={{ 
-                    '& .MuiInputBase-root': {
-                      borderRadius: 8
-                    }
-                  }}
-                />
-              </Grid>
-              <Grid item xs={2} sm={1}>
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  label="Egys."
-                  value={newProductUnit}
-                  onChange={(e) => setNewProductUnit(e.target.value)}
-                  sx={{ 
-                    '& .MuiInputBase-root': {
-                      borderRadius: 8
-                    }
-                  }}
-                />
-              </Grid>
-              <Grid item xs={6} sm={3}>
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  label="Megjegyzés"
-                  value={newProductNotes}
-                  onChange={(e) => setNewProductNotes(e.target.value)}
-                  sx={{ 
-                    '& .MuiInputBase-root': {
-                      borderRadius: 8
-                    }
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={1} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <IconButton
-                  onClick={handleAddProduct}
-                  disabled={!newProduct.trim()}
-                  sx={{ 
-                    color: 'primary.main',
-                    transition: 'transform 0.2s',
-                    '&:hover': {
-                      transform: 'scale(1.1)'
-                    }
-                  }}
-                >
-                  <AddIcon />
-                </IconButton>
-              </Grid>
-            </Grid>
-          </Box>
+            </Box>
+          )}
           
           {categories.length > 0 && (
             <Box sx={{ 
@@ -1054,20 +1120,22 @@ const ListEditor = () => {
                             >
                               {expandedProductId === product.id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                             </IconButton>
-                            <IconButton 
-                              edge="end" 
-                              onClick={() => handleDeleteProduct(product.id)}
-                              sx={{ 
-                                color: 'error.light',
-                                transition: 'all 0.2s',
-                                '&:hover': {
-                                  color: 'error.main',
-                                  transform: 'scale(1.1)'
-                                }
-                              }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
+                            {canEdit && (
+                              <IconButton 
+                                edge="end" 
+                                onClick={() => handleDeleteProduct(product.id)}
+                                sx={{ 
+                                  color: 'error.light',
+                                  transition: 'all 0.2s',
+                                  '&:hover': {
+                                    color: 'error.main',
+                                    transform: 'scale(1.1)'
+                                  }
+                                }}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            )}
                           </Box>
                         </ListItemSecondaryAction>
                       </ListItem>
@@ -1176,15 +1244,17 @@ const ListEditor = () => {
                               </Paper>
                             </Grid>
                             <Grid item xs={12} sm={2} sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Button
-                                variant="outlined"
-                                color="primary"
-                                size="small"
-                                onClick={() => handleEditProduct(product)}
-                                startIcon={<EditIcon />}
-                              >
-                                Szerkesztés
-                              </Button>
+                              {canEdit && (
+                                <Button
+                                  variant="outlined"
+                                  color="primary"
+                                  size="small"
+                                  onClick={() => handleEditProduct(product)}
+                                  startIcon={<EditIcon />}
+                                >
+                                  Szerkesztés
+                                </Button>
+                              )}
                             </Grid>
                           </Grid>
                         )}
