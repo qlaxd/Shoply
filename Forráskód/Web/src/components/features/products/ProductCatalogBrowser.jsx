@@ -34,9 +34,9 @@ import FactCheckIcon from '@mui/icons-material/FactCheck';
 import ScaleIcon from '@mui/icons-material/Scale';
 
 // Importáljuk a közös komponenseket
-import Input from '../../common/Input';
-import Button from '../../common/Button';
-import Card from '../../common/Card';
+import Input from '../../common/Input/index';
+import Button from '../../common/Button/index';
+import Card from '../../common/Card/index';
 
 // Importáljuk a szolgáltatásokat
 import ProductCatalogService from '../../../services/productCatalog.service';
@@ -178,59 +178,58 @@ const ProductCatalogItem = ({ product, onAddToList, index, categoryMap, categori
           }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          contentProps={{
-            sx: { flexGrow: 1 }
-          }}
-        >
-          <Box sx={{ py: 1 }}>
-            {/* Use the enhanced description logic */}
-            <Typography variant="body2" color="text.secondary">
-              {getDescription()}
-            </Typography>
-            
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column',
-              gap: 1,
-              mt: 1.5 
-            }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Tooltip title="Alapértelmezett mértékegység">
-                  <Chip 
-                    icon={<ScaleIcon fontSize="small" />}
-                    label={`${product.defaultUnit || 'db'}`}
-                    size="small"
-                    color="info"
-                    variant="outlined"
-                  />
-                </Tooltip>
-                
-                {product.popularity && (
-                  <Tooltip title="Népszerűség">
+          content={
+            <Box sx={{ py: 1, flexGrow: 1 }}>
+              {/* Use the enhanced description logic */}
+              <Typography variant="body2" color="text.secondary">
+                {getDescription()}
+              </Typography>
+              
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column',
+                gap: 1,
+                mt: 1.5 
+              }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Tooltip title="Alapértelmezett mértékegység">
                     <Chip 
-                      icon={<FactCheckIcon fontSize="small" />}
-                      label={`${product.popularity}★`}
+                      icon={<ScaleIcon fontSize="small" />}
+                      label={`${product.defaultUnit || 'db'}`}
                       size="small"
-                      color="secondary"
+                      color="info"
                       variant="outlined"
                     />
                   </Tooltip>
+                  
+                  {product.popularity && (
+                    <Tooltip title="Népszerűség">
+                      <Chip 
+                        icon={<FactCheckIcon fontSize="small" />}
+                        label={`${product.popularity}★`}
+                        size="small"
+                        color="secondary"
+                        variant="outlined"
+                      />
+                    </Tooltip>
+                  )}
+                </Box>
+                
+                {product.brand && (
+                  <Typography variant="body2" sx={{ mt: 0.5 }}>
+                    <strong>Márka:</strong> {product.brand}
+                  </Typography>
+                )}
+                
+                {product.barcode && (
+                  <Typography variant="body2" sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
+                    <strong>Vonalkód:</strong> {product.barcode}
+                  </Typography>
                 )}
               </Box>
-              
-              {product.brand && (
-                <Typography variant="body2" sx={{ mt: 0.5 }}>
-                  <strong>Márka:</strong> {product.brand}
-                </Typography>
-              )}
-              
-              {product.barcode && (
-                <Typography variant="body2" sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
-                  <strong>Vonalkód:</strong> {product.barcode}
-                </Typography>
-              )}
             </Box>
-          </Box>
+          }
+        >
         </Card>
       </div>
     </Grow>

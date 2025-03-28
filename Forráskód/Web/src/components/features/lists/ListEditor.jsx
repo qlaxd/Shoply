@@ -29,7 +29,17 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Grid
+  Grid,
+  SwipeableDrawer,
+  Fab,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
+  LinearProgress,
+  Card,
+  CardContent,
+  ButtonGroup,
+  Button
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -44,10 +54,14 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CommentIcon from '@mui/icons-material/Comment';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CategoryIcon from '@mui/icons-material/Category';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import SortIcon from '@mui/icons-material/Sort';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import { useNavigate, useParams } from 'react-router-dom';
 
 // Common komponensek importálása
-import Button from '../../common/Button';
 import Input from '../../common/Input';
 import Modal from '../../common/Modal';
 import Loader from '../../common/Loader';
@@ -63,6 +77,7 @@ const ListEditor = () => {
   const isNewList = id === 'new';
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down('xs'));
   
   // Állapotok
   const [listTitle, setListTitle] = useState('');
@@ -85,6 +100,12 @@ const ListEditor = () => {
   const [expandedProductId, setExpandedProductId] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
   const [userPermission, setUserPermission] = useState('edit'); // Default to edit permission
+  
+  // Mobile-specific states
+  const [addProductDrawerOpen, setAddProductDrawerOpen] = useState(false);
+  const [actionMenuOpen, setActionMenuOpen] = useState(false);
+  const [showCompletedProducts, setShowCompletedProducts] = useState(true);
+  const [mobileProductFilter, setMobileProductFilter] = useState('all'); // 'all', 'pending', 'completed'
   
   // Felhasználói adatok
   const userId = localStorage.getItem('userId');
@@ -497,6 +518,20 @@ const ListEditor = () => {
     setTimeout(() => setShowCategoryInfo(false), 3000);
   };
 
+  // Add mobile drawer handlers
+  const toggleAddProductDrawer = () => {
+    setAddProductDrawerOpen(!addProductDrawerOpen);
+  };
+
+  const toggleActionMenu = () => {
+    setActionMenuOpen(!actionMenuOpen);
+  };
+
+  // Mobile filter products
+  const handleFilterProducts = (filterType) => {
+    setMobileProductFilter(filterType);
+  };
+
   // Termék vásárlási állapotának módosítása
   const handleToggleProduct = async (productId) => {
     if (!canEdit) {
@@ -558,6 +593,13 @@ const ListEditor = () => {
     }
   };
 
+  // Get filtered products
+  const filteredProducts = mobileProductFilter === 'all' 
+    ? products 
+    : mobileProductFilter === 'pending' 
+      ? products.filter(p => !p.isPurchased) 
+      : products.filter(p => p.isPurchased);
+
   // Betöltési állapot megjelenítése
   if (loading) {
     return <Loader text="Lista betöltése..." fullPage={true} />;
@@ -565,123 +607,195 @@ const ListEditor = () => {
 
   return (
     <>
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          mt: 2, 
+          mb: { xs: 10, sm: 8 }, // Add bottom margin on mobile for FAB
+          px: { xs: 1, sm: 2, md: 3 } // Reduce padding on mobile
+        }}
+      >
         <Box sx={{ 
           display: 'flex', 
           flexDirection: { xs: 'column', sm: 'row' }, 
           alignItems: { xs: 'flex-start', sm: 'center' }, 
-          mb: 4, 
-          gap: 2 
+          mb: { xs: 2, sm: 4 }, 
+          gap: 1
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', width: { xs: '100%', sm: 'auto' } }}>
-            <IconButton 
-              onClick={() => navigate('/')} 
-              color="primary" 
-              sx={{ mr: 1 }}
-            >
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography 
-              variant="h4" 
-              component="h1" 
-              sx={{ 
-                flexGrow: 1,
-                fontSize: { xs: '1.5rem', sm: '2rem' },
-                fontWeight: 'bold',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {isNewList ? 'Új bevásárlólista' : listTitle}
-              {!canEdit && !isNewList && (
-                <Chip 
-                  label="Csak megtekintés" 
-                  size="small" 
-                  color="secondary" 
-                  sx={{ ml: 2, fontSize: '0.7rem' }}
-                />
-              )}
-            </Typography>
-          </Box>
-          
           <Box sx={{ 
             display: 'flex', 
-            gap: 1, 
-            mt: { xs: 2, sm: 0 },
-            ml: { xs: 0, sm: 'auto' },
-            width: { xs: '100%', sm: 'auto' }
+            alignItems: 'center', 
+            width: '100%', 
+            justifyContent: 'space-between'
           }}>
-            {completionPercentage > 0 && (
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                mr: 1,
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                px: 1.5,
-                py: 0.5
-              }}>
-                <CircularProgress 
-                  variant="determinate" 
-                  value={completionPercentage} 
-                  size={24} 
-                  sx={{ 
-                    color: completionPercentage === 100 ? 'success.main' : 'primary.main',
-                    mr: 1
-                  }}
-                />
-                <Typography variant="body2" component="div">
-                  {completionPercentage}% kész
-                </Typography>
-              </Box>
-            )}
-            
-            {canEdit && (
-              <Button 
-                variant="contained" 
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <IconButton 
+                onClick={() => navigate('/')} 
                 color="primary" 
-                startIcon={<SaveIcon />}
-                onClick={handleSave}
-                disabled={loading || saving || !listTitle.trim()}
+                sx={{ mr: 1 }}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+              <Typography 
+                variant="h4" 
+                component="h1" 
                 sx={{ 
-                  flexGrow: { xs: 1, sm: 0 },
-                  borderRadius: 8,
-                  boxShadow: 2,
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: 4
-                  }
+                  fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2rem' },
+                  fontWeight: 'bold',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  background: isMobile ? `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})` : 'none',
+                  backgroundClip: isMobile ? 'text' : 'unset',
+                  WebkitBackgroundClip: isMobile ? 'text' : 'unset',
+                  WebkitTextFillColor: isMobile ? 'transparent' : 'unset',
                 }}
               >
-                {saving ? (
-                  <>
-                    <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
-                    Mentés...
-                  </>
-                ) : 'Mentés'}
-              </Button>
+                {isNewList ? 'Új bevásárlólista' : listTitle}
+              </Typography>
+            </Box>
+            
+            {!canEdit && !isNewList && (
+              <Chip 
+                label="Csak megtekintés" 
+                size="small" 
+                color="secondary" 
+                sx={{ ml: 1, fontSize: '0.7rem' }}
+              />
+            )}
+            
+            {isMobile && (
+              <IconButton
+                aria-label="További műveletek"
+                onClick={() => setActionMenuOpen(!actionMenuOpen)}
+                color="primary"
+              >
+                <MoreVertIcon />
+              </IconButton>
             )}
           </Box>
+          
+          {!isMobile && (
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 1, 
+              mt: { xs: 2, sm: 0 },
+              ml: { xs: 0, sm: 'auto' },
+            }}>
+              {completionPercentage > 0 && (
+                <Paper 
+                  elevation={1}
+                  sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    mr: 1,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 2,
+                    px: 1.5,
+                    py: 0.5
+                  }}
+                >
+                  <CircularProgress 
+                    variant="determinate" 
+                    value={completionPercentage} 
+                    size={24} 
+                    sx={{ 
+                      color: completionPercentage === 100 ? 'success.main' : 'primary.main',
+                      mr: 1
+                    }}
+                  />
+                  <Typography variant="body2" component="div">
+                    {completionPercentage}% kész
+                  </Typography>
+                </Paper>
+              )}
+              
+              {canEdit && (
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  startIcon={<SaveIcon />}
+                  onClick={handleSave}
+                  disabled={loading || saving || !listTitle.trim() || products.length === 0}
+                  sx={{ 
+                    borderRadius: 8,
+                    boxShadow: 2,
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: 4
+                    }
+                  }}
+                >
+                  {saving ? (
+                    <>
+                      <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                      Mentés...
+                    </>
+                  ) : 'Mentés'}
+                </Button>
+              )}
+            </Box>
+          )}
         </Box>
+        
+        {/* Progress bar on mobile */}
+        {isMobile && completionPercentage > 0 && (
+          <Box sx={{ 
+            mb: 3, 
+            px: 1, 
+            display: 'flex', 
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}>
+            <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+              <Typography variant="body2" color="text.secondary">Haladás:</Typography>
+              <Typography variant="body2" fontWeight="bold" color={
+                completionPercentage === 100 ? 'success.main' : 'primary.main'
+              }>
+                {completionPercentage}%
+              </Typography>
+            </Box>
+            <LinearProgress 
+              variant="determinate" 
+              value={completionPercentage} 
+              sx={{ 
+                width: '100%', 
+                height: 8, 
+                borderRadius: 4,
+                bgcolor: theme.palette.grey[200],
+                '& .MuiLinearProgress-bar': {
+                  bgcolor: completionPercentage === 100 ? 'success.main' : 'primary.main',
+                  borderRadius: 4
+                }
+              }} 
+            />
+          </Box>
+        )}
         
         {/* Hibaüzenet megjelenítése */}
         {error && (
           <Fade in={!!error}>
-            <Paper sx={{ p: 2, mb: 3, bgcolor: 'error.light', borderRadius: 2, boxShadow: 2 }}>
-              <Typography color="error">{error}</Typography>
+            <Paper sx={{ 
+              p: { xs: 1.5, sm: 2 }, 
+              mb: 3, 
+              bgcolor: 'error.light', 
+              borderRadius: { xs: 3, sm: 2 }, 
+              boxShadow: 2,
+              mx: { xs: 1, sm: 0 }
+            }}>
+              <Typography variant="body2" color="error" sx={{ fontWeight: 'medium' }}>{error}</Typography>
             </Paper>
           </Fade>
         )}
 
         {/* Lista adatok szerkesztése */}
         <Paper sx={{ 
-          p: 3, 
+          p: { xs: 2, sm: 3 }, 
           mb: 3, 
-          borderRadius: 2,
-          boxShadow: 3,
+          borderRadius: { xs: 3, sm: 2 },
+          boxShadow: { xs: 1, sm: 3 },
           transition: 'box-shadow 0.3s ease',
           '&:hover': {
             boxShadow: 5
@@ -689,7 +803,9 @@ const ListEditor = () => {
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <TitleIcon color="primary" sx={{ mr: 1 }} />
-            <Typography variant="h6" component="h2">Lista adatai</Typography>
+            <Typography variant="h6" component="h2" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
+              Lista adatai
+            </Typography>
           </Box>
           
           <Divider sx={{ mb: 3 }} />
@@ -705,15 +821,25 @@ const ListEditor = () => {
             sx={{ 
               mb: 3, 
               '& .MuiInputBase-root': {
-                borderRadius: 2
+                borderRadius: { xs: 4, sm: 2 },
+                fontSize: { xs: '0.95rem', sm: '1rem' }
               }
             }}
           />
           
           <Box sx={{ mb: 2 }}>
-            <Typography gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography 
+              gutterBottom 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                fontSize: { xs: '0.9rem', sm: '1rem' }
+              }}
+            >
               <PriorityHighIcon sx={{ mr: 1, color: getPriorityColor(priority) }} />
-              Prioritás: {priorityMarks.find(mark => mark.value === priority)?.label}
+              Prioritás: <Box component="span" sx={{ fontWeight: 'bold', ml: 0.5 }}>
+                {priorityMarks.find(mark => mark.value === priority)?.label}
+              </Box>
             </Typography>
             <Box sx={{ px: 2, mb: 3 }}>
               <Slider
@@ -727,13 +853,19 @@ const ListEditor = () => {
                 disabled={!canEdit}
                 sx={{
                   '& .MuiSlider-markLabel': {
-                    fontSize: '0.8rem',
+                    fontSize: { xs: '0.7rem', sm: '0.8rem' },
                   },
                   '& .MuiSlider-thumb': {
                     backgroundColor: getPriorityColor(priority),
+                    width: { xs: 16, sm: 20 },
+                    height: { xs: 16, sm: 20 },
                   },
                   '& .MuiSlider-track': {
                     backgroundColor: getPriorityColor(priority),
+                    height: { xs: 6, sm: 4 }
+                  },
+                  '& .MuiSlider-rail': {
+                    height: { xs: 6, sm: 4 }
                   }
                 }}
               />
@@ -743,21 +875,81 @@ const ListEditor = () => {
 
         {/* Termékek kezelése */}
         <Paper sx={{ 
-          p: 3, 
-          borderRadius: 2,
-          boxShadow: 3,
+          p: { xs: 2, sm: 3 }, 
+          borderRadius: { xs: 3, sm: 2 },
+          boxShadow: { xs: 1, sm: 3 },
           transition: 'box-shadow 0.3s ease',
           '&:hover': {
             boxShadow: 5
           }
         }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            mb: 2, 
+            flexWrap: { xs: 'wrap', sm: 'nowrap' } 
+          }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              width: { xs: '100%', sm: 'auto' },
+              mb: { xs: 1, sm: 0 }
+            }}>
               <ShoppingCartIcon color="primary" sx={{ mr: 1 }} />
-              <Typography variant="h6">Termékek</Typography>
+              <Typography 
+                variant="h6" 
+                sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}
+              >
+                Termékek {isMobile && `(${filteredProducts.length})`}
+              </Typography>
             </Box>
             
-            {products.length > 0 && canEdit && (
+            {isMobile && products.length > 0 && (
+              <Box sx={{ width: '100%', mb: 1 }}>
+                <ButtonGroup 
+                  variant="outlined" 
+                  size="small" 
+                  sx={{ width: '100%' }}
+                >
+                  <Button 
+                    onClick={() => setMobileProductFilter('all')}
+                    sx={{ 
+                      flex: 1, 
+                      color: mobileProductFilter === 'all' ? 'primary.main' : 'text.secondary',
+                      borderColor: mobileProductFilter === 'all' ? 'primary.main' : 'divider',
+                      bgcolor: mobileProductFilter === 'all' ? 'primary.lighter' : 'transparent',
+                    }}
+                  >
+                    Összes
+                  </Button>
+                  <Button 
+                    onClick={() => setMobileProductFilter('pending')}
+                    sx={{ 
+                      flex: 1,
+                      color: mobileProductFilter === 'pending' ? 'warning.main' : 'text.secondary',
+                      borderColor: mobileProductFilter === 'pending' ? 'warning.main' : 'divider',
+                      bgcolor: mobileProductFilter === 'pending' ? 'warning.lighter' : 'transparent',
+                    }}
+                  >
+                    Teendő
+                  </Button>
+                  <Button 
+                    onClick={() => setMobileProductFilter('completed')}
+                    sx={{ 
+                      flex: 1,
+                      color: mobileProductFilter === 'completed' ? 'success.main' : 'text.secondary',
+                      borderColor: mobileProductFilter === 'completed' ? 'success.main' : 'divider',
+                      bgcolor: mobileProductFilter === 'completed' ? 'success.lighter' : 'transparent',
+                    }}
+                  >
+                    Kész
+                  </Button>
+                </ButtonGroup>
+              </Box>
+            )}
+            
+            {products.length > 0 && canEdit && !isMobile && (
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Tooltip title="Minden termék megvásárolva">
                   <IconButton 
@@ -783,10 +975,10 @@ const ListEditor = () => {
           
           <Divider sx={{ mb: 3 }} />
           
-          {canEdit && (
+          {canEdit && !isMobile && (
             <Box sx={{ mb: 3 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+              <Grid container spacing={2} direction="column">
+                <Grid item xs={12}>
                   <Input
                     fullWidth
                     variant="outlined"
@@ -809,11 +1001,11 @@ const ListEditor = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={4} sm={1}>
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
                     variant="outlined"
-                    label="Menny."
+                    label="Mennyiség"
                     type="number"
                     InputProps={{ inputProps: { min: 1 } }}
                     value={newProductQuantity}
@@ -825,11 +1017,11 @@ const ListEditor = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={2} sm={1}>
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
                     variant="outlined"
-                    label="Egys."
+                    label="Egység"
                     value={newProductUnit}
                     onChange={(e) => setNewProductUnit(e.target.value)}
                     sx={{ 
@@ -839,7 +1031,7 @@ const ListEditor = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={6} sm={3}>
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
                     variant="outlined"
@@ -853,58 +1045,30 @@ const ListEditor = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={1} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <IconButton
+                <Grid item xs={12} sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center' 
+                }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
                     onClick={handleAddProduct}
                     disabled={!newProduct.trim()}
+                    startIcon={<AddIcon />}
                     sx={{ 
-                      color: 'primary.main',
-                      transition: 'transform 0.2s',
-                      '&:hover': {
-                        transform: 'scale(1.1)'
-                      }
+                      borderRadius: 8,
+                      px: 3
                     }}
                   >
-                    <AddIcon />
-                  </IconButton>
+                    Termék hozzáadása
+                  </Button>
                 </Grid>
               </Grid>
             </Box>
           )}
           
-          {categories.length > 0 && (
-            <Box sx={{ 
-              display: 'flex', 
-              flexWrap: 'wrap', 
-              gap: 1, 
-              width: '100%',
-              mb: 3
-            }}>
-              {categories.slice(0, isMobile ? 3 : 5).map((category) => (
-                <Chip
-                  key={category._id}
-                  label={category.name}
-                  onClick={() => handleCategorySelect(category)}
-                  color={selectedCategory?._id === category._id ? 'primary' : 'default'}
-                  variant={selectedCategory?._id === category._id ? 'filled' : 'outlined'}
-                  sx={{ 
-                    transition: 'all 0.2s',
-                    transform: selectedCategory?._id === category._id ? 'scale(1.05)' : 'scale(1)'
-                  }}
-                />
-              ))}
-              
-              {categories.length > (isMobile ? 3 : 5) && (
-                <Tooltip title="További kategóriák">
-                  <Chip 
-                    icon={<HelpOutlineIcon />} 
-                    label={`+${categories.length - (isMobile ? 3 : 5)}`} 
-                    variant="outlined" 
-                  />
-                </Tooltip>
-              )}
-            </Box>
-          )}
+          {/* Mobilon a kategória választó egyszerűbben jelenik meg */}
           
           <Collapse in={showCategoryInfo}>
             <Paper sx={{ mb: 2, p: 1.5, bgcolor: 'info.light', borderRadius: 2 }}>
@@ -985,37 +1149,39 @@ const ListEditor = () => {
           {/* Termékek listája */}
           {products.length > 0 ? (
             <>
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                mb: 1,
-                pb: 1,
-                borderBottom: '1px solid',
-                borderColor: 'divider'
-              }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Termék neve
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 4 }}>
-                    Mennyiség
+              {!isMobile && (
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  mb: 1,
+                  pb: 1,
+                  borderBottom: '1px solid',
+                  borderColor: 'divider'
+                }}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Termék neve
                   </Typography>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 8 }}>
-                    Hozzáadta
-                  </Typography>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 4 }}>
-                    Műveletek
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 4 }}>
+                      Mennyiség
+                    </Typography>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 8 }}>
+                      Hozzáadta
+                    </Typography>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mr: 4 }}>
+                      Műveletek
+                    </Typography>
+                  </Box>
                 </Box>
-              </Box>
+              )}
               
               <List sx={{ 
                 bgcolor: 'background.paper',
                 borderRadius: 2,
                 overflow: 'hidden'
               }}>
-                {products.map((product, index) => (
+                {filteredProducts.map((product, index) => (
                   <React.Fragment key={product.id || index}>
                     <Fade 
                       in={true} 
@@ -1024,13 +1190,18 @@ const ListEditor = () => {
                       <ListItem 
                         dense
                         sx={{ 
-                          borderBottom: index < products.length - 1 ? '1px solid' : 'none',
+                          borderBottom: index < filteredProducts.length - 1 ? '1px solid' : 'none',
                           borderColor: 'divider',
                           transition: 'all 0.2s',
-                          bgcolor: product.isPurchased ? 'action.selected' : 'background.paper',
+                          bgcolor: product.isPurchased 
+                            ? 'action.selected' 
+                            : 'background.paper',
+                          borderRadius: isMobile && index === 0 ? '8px 8px 0 0' : 
+                                        isMobile && index === filteredProducts.length - 1 ? '0 0 8px 8px' : 0,
                           '&:hover': {
                             bgcolor: 'action.hover'
-                          }
+                          },
+                          py: isMobile ? 1.5 : 1
                         }}
                       >
                         <ListItemIcon>
@@ -1048,13 +1219,24 @@ const ListEditor = () => {
                         </ListItemIcon>
                         <ListItemText
                           primary={
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Box sx={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              flexWrap: 'wrap',
+                              width: '100%',
+                              maxWidth: { xs: '80%', sm: '100%' }
+                            }}>
                               <Typography 
                                 variant="body1"
                                 sx={{ 
                                   textDecoration: product.isPurchased ? 'line-through' : 'none',
                                   color: product.isPurchased ? 'text.disabled' : 'text.primary',
-                                  mr: 1
+                                  mr: 1,
+                                  fontWeight: isMobile ? 'medium' : 'regular',
+                                  fontSize: isMobile ? '0.95rem' : 'inherit',
+                                  display: 'inline-block',
+                                  wordBreak: 'break-word',
+                                  overflowWrap: 'break-word'
                                 }}
                               >
                                 {product.name}
@@ -1062,19 +1244,31 @@ const ListEditor = () => {
                               <Chip 
                                 label={`${product.quantity || 1} ${product.unit || 'db'}`} 
                                 size="small" 
-                                color="primary"
-                                variant="outlined"
-                                sx={{ mr: 1, height: 24, fontSize: '0.75rem' }}
+                                color={product.isPurchased ? "success" : "primary"}
+                                variant={isMobile ? "filled" : "outlined"}
+                                sx={{ 
+                                  mr: 1, 
+                                  height: 24, 
+                                  fontSize: '0.75rem',
+                                  opacity: product.isPurchased ? 0.7 : 1,
+                                  my: 0.5
+                                }}
                               />
-                              {product.category && (
+                              {product.category && !isMobile && (
                                 <Chip 
                                   label={product.category.name} 
                                   size="small" 
                                   variant="outlined"
-                                  sx={{ height: 20, fontSize: '0.7rem' }}
+                                  sx={{ 
+                                    height: 20, 
+                                    fontSize: '0.7rem',
+                                    opacity: product.isPurchased ? 0.7 : 1,
+                                    maxWidth: '100%',
+                                    my: 0.5
+                                  }}
                                 />
                               )}
-                              {product.notes && (
+                              {product.notes && !isMobile && (
                                 <Tooltip title={product.notes}>
                                   <Box sx={{ 
                                     display: 'flex', 
@@ -1082,14 +1276,15 @@ const ListEditor = () => {
                                     ml: 1, 
                                     borderLeft: '1px solid',
                                     borderColor: 'divider',
-                                    pl: 1
+                                    pl: 1,
+                                    my: 0.5
                                   }}>
                                     <CommentIcon fontSize="small" sx={{ color: 'text.secondary', mr: 0.5 }} />
                                     <Typography 
                                       variant="caption" 
                                       color="text.secondary"
                                       sx={{
-                                        maxWidth: '120px',
+                                        maxWidth: { xs: '60px', sm: '120px' },
                                         whiteSpace: 'nowrap',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
@@ -1104,10 +1299,46 @@ const ListEditor = () => {
                             </Box>
                           }
                           secondary={
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Typography variant="caption" color="text.secondary">
+                            <Box sx={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              mt: isMobile ? 0.5 : 0,
+                              flexWrap: 'wrap' 
+                            }}>
+                              {isMobile && product.category && (
+                                <Chip 
+                                  label={product.category.name} 
+                                  size="small" 
+                                  variant="outlined"
+                                  sx={{ 
+                                    height: 20, 
+                                    fontSize: '0.7rem', 
+                                    mr: 1,
+                                    opacity: product.isPurchased ? 0.7 : 1,
+                                    maxWidth: '100%',
+                                    my: 0.5
+                                  }}
+                                />
+                              )}
+                              <Typography 
+                                variant="caption" 
+                                color="text.secondary"
+                                sx={{ 
+                                  display: 'flex', 
+                                  alignItems: 'center',
+                                  fontSize: isMobile ? '0.7rem' : '0.75rem',
+                                  wordBreak: 'break-word'
+                                }}
+                              >
                                 {typeof product.addedBy === 'object' ? product.addedBy.username : product.addedBy || 'Ismeretlen'}
                               </Typography>
+                              {isMobile && product.notes && (
+                                <Tooltip title={product.notes}>
+                                  <IconButton size="small" sx={{ ml: 0.5, p: 0 }}>
+                                    <CommentIcon fontSize="small" sx={{ fontSize: '0.85rem', color: 'text.secondary' }} />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
                             </Box>
                           }
                         />
@@ -1117,6 +1348,7 @@ const ListEditor = () => {
                               edge="end" 
                               onClick={() => toggleProductDetails(product.id)}
                               sx={{ mr: 1 }}
+                              size={isMobile ? "small" : "medium"}
                             >
                               {expandedProductId === product.id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                             </IconButton>
@@ -1132,6 +1364,7 @@ const ListEditor = () => {
                                     transform: 'scale(1.1)'
                                   }
                                 }}
+                                size={isMobile ? "small" : "medium"}
                               >
                                 <DeleteIcon />
                               </IconButton>
@@ -1140,18 +1373,17 @@ const ListEditor = () => {
                         </ListItemSecondaryAction>
                       </ListItem>
                     </Fade>
-
                     <Collapse in={expandedProductId === product.id}>
                       <Box sx={{ 
-                        p: 2, 
-                        pl: 9, 
+                        p: { xs: 2, sm: 2 }, 
+                        pl: { xs: 3, sm: 9 }, 
                         bgcolor: 'action.hover',
-                        borderBottom: index < products.length - 1 ? '1px solid' : 'none',
+                        borderBottom: index < filteredProducts.length - 1 ? '1px solid' : 'none',
                         borderColor: 'divider'
                       }}>
                         {editingProduct && editingProduct.id === product.id ? (
                           <Grid container spacing={2}>
-                            <Grid item xs={12} sm={3}>
+                            <Grid item xs={6} sm={3}>
                               <TextField
                                 fullWidth
                                 variant="outlined"
@@ -1166,7 +1398,7 @@ const ListEditor = () => {
                                 size="small"
                               />
                             </Grid>
-                            <Grid item xs={12} sm={3}>
+                            <Grid item xs={6} sm={3}>
                               <TextField
                                 fullWidth
                                 variant="outlined"
@@ -1191,10 +1423,15 @@ const ListEditor = () => {
                                 })}
                                 size="small"
                                 multiline
-                                rows={2}
+                                rows={isMobile ? 3 : 2}
                               />
                             </Grid>
-                            <Grid item xs={12} sm={2} sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Grid item xs={12} sm={2} sx={{ 
+                              display: 'flex', 
+                              alignItems: 'center',
+                              justifyContent: { xs: 'flex-end', sm: 'flex-start' },
+                              mt: { xs: 1, sm: 0 }
+                            }}>
                               <Button
                                 variant="contained"
                                 color="primary"
@@ -1216,10 +1453,31 @@ const ListEditor = () => {
                           </Grid>
                         ) : (
                           <Grid container spacing={2}>
-                            <Grid item xs={12} sm={4}>
-                              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>Mennyiség:</Typography>
-                              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                                <Typography variant="body1" sx={{ fontSize: '1.1rem', fontWeight: '500' }}>
+                            <Grid item xs={6} sm={4}>
+                              <Typography 
+                                variant="subtitle2" 
+                                sx={{ 
+                                  fontWeight: 'bold', 
+                                  color: 'primary.main',
+                                  fontSize: { xs: '0.8rem', sm: 'inherit' }
+                                }}
+                              >
+                                Mennyiség:
+                              </Typography>
+                              <Box sx={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                mt: 1,
+                                borderRadius: 1,
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                p: 1,
+                                bgcolor: 'background.paper'
+                              }}>
+                                <Typography variant="body1" sx={{ 
+                                  fontSize: { xs: '1rem', sm: '1.1rem' }, 
+                                  fontWeight: '500' 
+                                }}>
                                   {product.quantity || 1}
                                 </Typography>
                                 <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
@@ -1227,8 +1485,17 @@ const ListEditor = () => {
                                 </Typography>
                               </Box>
                             </Grid>
-                            <Grid item xs={12} sm={6}>
-                              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>Megjegyzések:</Typography>
+                            <Grid item xs={6} sm={6}>
+                              <Typography 
+                                variant="subtitle2" 
+                                sx={{ 
+                                  fontWeight: 'bold', 
+                                  color: 'primary.main',
+                                  fontSize: { xs: '0.8rem', sm: 'inherit' }
+                                }}
+                              >
+                                Megjegyzések:
+                              </Typography>
                               <Paper sx={{ 
                                 mt: 1, 
                                 p: 1.5, 
@@ -1236,14 +1503,25 @@ const ListEditor = () => {
                                 border: '1px solid',
                                 borderColor: product.notes ? 'divider' : 'transparent',
                                 borderRadius: 1,
-                                minHeight: '40px'
+                                minHeight: '40px',
+                                wordBreak: 'break-word'
                               }}>
-                                <Typography>
+                                <Typography sx={{ fontSize: { xs: '0.85rem', sm: 'inherit' } }}>
                                   {product.notes || 'Nincs megjegyzés'}
                                 </Typography>
                               </Paper>
                             </Grid>
-                            <Grid item xs={12} sm={2} sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Grid 
+                              item 
+                              xs={12} 
+                              sm={2} 
+                              sx={{ 
+                                display: 'flex', 
+                                alignItems: 'center',
+                                justifyContent: { xs: 'flex-end', sm: 'flex-start' },
+                                mt: { xs: 1, sm: 0 }
+                              }}
+                            >
                               {canEdit && (
                                 <Button
                                   variant="outlined"
@@ -1263,98 +1541,290 @@ const ListEditor = () => {
                   </React.Fragment>
                 ))}
               </List>
-              
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'flex-end', 
-                mt: 2 
-              }}>
-                <Badge 
-                  badgeContent={products.length} 
-                  color="primary"
-                  showZero
-                  sx={{ mr: 2 }}
-                >
-                  <Typography variant="body2" color="text.secondary">
-                    Összes termék
-                  </Typography>
-                </Badge>
-                <Badge 
-                  badgeContent={products.filter(p => p.isPurchased).length} 
-                  color="success"
-                  showZero
-                >
-                  <Typography variant="body2" color="text.secondary">
-                    Megvásárolva
-                  </Typography>
-                </Badge>
-              </Box>
             </>
           ) : (
             <Box sx={{ 
               textAlign: 'center', 
-              py: 6,
-              borderRadius: 2,
+              py: { xs: 4, sm: 6 },
+              px: { xs: 2, sm: 0 },
+              borderRadius: { xs: 3, sm: 2 },
               border: '1px dashed',
               borderColor: 'divider'
             }}>
-              <ShoppingCartIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
-              <Typography variant="body1" color="textSecondary">
+              <ShoppingCartIcon sx={{ 
+                fontSize: { xs: 36, sm: 48 }, 
+                color: 'text.disabled', 
+                mb: 2,
+                opacity: 0.7
+              }} />
+              <Typography 
+                variant="body1" 
+                color="textSecondary"
+                sx={{ fontWeight: 'medium' }}
+              >
                 Adj hozzá termékeket a listához!
               </Typography>
               <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                Használd a fenti mezőt termékek hozzáadásához.
+                {isMobile ? 
+                  'Használd a + gombot termékek hozzáadásához.' : 
+                  'Használd a fenti mezőt termékek hozzáadásához.'}
               </Typography>
+              
+              {isMobile && canEdit && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={() => setAddProductDrawerOpen(true)}
+                  sx={{ 
+                    mt: 3,
+                    borderRadius: 8,
+                    boxShadow: 2,
+                    px: 3
+                  }}
+                >
+                  Termék hozzáadása
+                </Button>
+              )}
             </Box>
           )}
         </Paper>
-        
-        {/* Címbekérő modális ablak */}
-        <Modal
-          open={saveDialogOpen}
-          onClose={() => setSaveDialogOpen(false)}
-          title="Adj címet a listának"
-          description="A lista mentéséhez adj meg egy címet, ami alapján később könnyen azonosítható lesz."
-          actions={
-            <>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => setSaveDialogOpen(false)}
-                sx={{ borderRadius: 8 }}
-              >
-                Mégsem
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleDialogSave}
-                disabled={!listTitle.trim()}
-                sx={{ borderRadius: 8 }}
-              >
-                Mentés
-              </Button>
-            </>
-          }
-        >
-          <Input
-            autoFocus
-            fullWidth
-            value={listTitle}
-            onChange={(e) => setListTitle(e.target.value)}
-            label="Lista címe"
-            placeholder="Pl. Hétvégi grillparti"
-            sx={{ 
-              mt: 2,
-              '& .MuiInputBase-root': {
-                borderRadius: 2
+      </Container>
+      
+      {/* Címbekérő modális ablak */}
+      <Modal
+        open={saveDialogOpen}
+        onClose={() => setSaveDialogOpen(false)}
+        title="Adj címet a listának"
+        description="A lista mentéséhez adj meg egy címet, ami alapján később könnyen azonosítható lesz."
+        actions={
+          <>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => setSaveDialogOpen(false)}
+              sx={{ 
+                borderRadius: 8,
+                width: isMobile ? '45%' : 'auto'
+              }}
+            >
+              Mégsem
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleDialogSave}
+              disabled={!listTitle.trim()}
+              sx={{ 
+                borderRadius: 8,
+                width: isMobile ? '45%' : 'auto'
+              }}
+            >
+              Mentés
+            </Button>
+          </>
+        }
+      >
+        <Input
+          autoFocus
+          fullWidth
+          value={listTitle}
+          onChange={(e) => setListTitle(e.target.value)}
+          label="Lista címe"
+          placeholder="Pl. Hétvégi grillparti"
+          sx={{ 
+            mt: 2,
+            '& .MuiInputBase-root': {
+              borderRadius: { xs: 4, sm: 2 }
+            }
+          }}
+        />
+      </Modal>
+      
+      {/* Mobile SwipeableDrawer for adding products */}
+      {canEdit && isMobile && (
+        <>
+          <SwipeableDrawer
+            anchor="bottom"
+            open={addProductDrawerOpen}
+            onClose={() => setAddProductDrawerOpen(false)}
+            onOpen={() => setAddProductDrawerOpen(true)}
+            disableSwipeToOpen={false}
+            swipeAreaWidth={56}
+            sx={{
+              '& .MuiDrawer-paper': {
+                borderTopLeftRadius: 16,
+                borderTopRightRadius: 16,
+                maxHeight: '85vh'
               }
             }}
-          />
-        </Modal>
-      </Container>
+          >
+            <Box sx={{ p: 2, pb: 3 }}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                mb: 2
+              }}>
+                <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                  Új termék hozzáadása
+                </Typography>
+                <IconButton onClick={() => setAddProductDrawerOpen(false)}>
+                  <ExpandMoreIcon />
+                </IconButton>
+              </Box>
+              
+              <Divider sx={{ mb: 3 }} />
+              
+              <Grid container spacing={2} direction="column">
+                <Grid item xs={12}>
+                  <Input
+                    fullWidth
+                    variant="outlined"
+                    placeholder="Új termék neve..."
+                    value={newProduct}
+                    onChange={(e) => {
+                      setNewProduct(e.target.value);
+                      handleProductSearch(e.target.value);
+                    }}
+                    sx={{ 
+                      '& .MuiInputBase-root': {
+                        borderRadius: 8
+                      }
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Mennyiség"
+                    type="number"
+                    InputProps={{ inputProps: { min: 1 } }}
+                    value={newProductQuantity}
+                    onChange={(e) => setNewProductQuantity(parseInt(e.target.value) || 1)}
+                    sx={{ 
+                      '& .MuiInputBase-root': {
+                        borderRadius: 8
+                      }
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Egység"
+                    value={newProductUnit}
+                    onChange={(e) => setNewProductUnit(e.target.value)}
+                    sx={{ 
+                      '& .MuiInputBase-root': {
+                        borderRadius: 8
+                      }
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Megjegyzés"
+                    multiline
+                    rows={2}
+                    value={newProductNotes}
+                    onChange={(e) => setNewProductNotes(e.target.value)}
+                    sx={{ 
+                      '& .MuiInputBase-root': {
+                        borderRadius: 8
+                      }
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sx={{ mt: 1 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    size="large"
+                    onClick={() => {
+                      handleAddProduct();
+                      setAddProductDrawerOpen(false);
+                    }}
+                    disabled={!newProduct.trim()}
+                    startIcon={<AddIcon />}
+                    sx={{ 
+                      borderRadius: 8,
+                      py: 1.5
+                    }}
+                  >
+                    Termék hozzáadása
+                  </Button>
+                </Grid>
+              </Grid>
+              
+              {searchResults.length > 0 && (
+                <Box sx={{ mt: 3 }}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                    Találatok:
+                  </Typography>
+                  <Paper elevation={0} variant="outlined" sx={{ 
+                    maxHeight: 200, 
+                    overflow: 'auto',
+                    borderRadius: 2
+                  }}>
+                    <List dense>
+                      {searching ? (
+                        <ListItem>
+                          <CircularProgress size={20} sx={{ mr: 1 }} />
+                          <ListItemText primary="Keresés folyamatban..." />
+                        </ListItem>
+                      ) : (
+                        searchResults.map(item => (
+                          <ListItem
+                            key={item.id}
+                            button
+                            onClick={() => {
+                              setNewProduct(item.name);
+                              setSelectedCategory(item.category);
+                              setNewProductUnit(item.unit || 'db');
+                              setSearchResults([]);
+                            }}
+                          >
+                            <ListItemText 
+                              primary={item.name}
+                              secondary={`${item.unit || 'db'}`}
+                            />
+                          </ListItem>
+                        ))
+                      )}
+                    </List>
+                  </Paper>
+                </Box>
+              )}
+            </Box>
+          </SwipeableDrawer>
+          
+          <Fab
+            color="primary"
+            aria-label="Termék hozzáadása"
+            sx={{
+              position: 'fixed',
+              bottom: 16,
+              right: 16,
+              zIndex: 1000
+            }}
+            onClick={() => setAddProductDrawerOpen(true)}
+          >
+            <AddIcon />
+          </Fab>
+        </>
+      )}
     </>
   );
 };
 
-export default ListEditor; 
+export default ListEditor;

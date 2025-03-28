@@ -309,20 +309,22 @@ const Home = () => {
           </Tooltip>
           
           <Tooltip title="Frissítés">
-            <IconButton 
-              color="primary" 
-              onClick={handleRefreshLists}
-              disabled={refreshing || loading}
-              sx={{
-                animation: refreshing ? 'spin 1s linear infinite' : 'none',
-                '@keyframes spin': {
-                  '0%': { transform: 'rotate(0deg)' },
-                  '100%': { transform: 'rotate(360deg)' }
-                }
-              }}
-            >
-              <RefreshIcon />
-            </IconButton>
+            <span>
+              <IconButton 
+                color="primary" 
+                onClick={handleRefreshLists}
+                disabled={refreshing || loading}
+                sx={{
+                  animation: refreshing ? 'spin 1s linear infinite' : 'none',
+                  '@keyframes spin': {
+                    '0%': { transform: 'rotate(0deg)' },
+                    '100%': { transform: 'rotate(360deg)' }
+                  }
+                }}
+              >
+                <RefreshIcon />
+              </IconButton>
+            </span>
           </Tooltip>
           
           <Tooltip title={`Rendezés: ${getSortOrderText()}`}>

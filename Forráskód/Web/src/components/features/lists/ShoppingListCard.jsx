@@ -43,10 +43,10 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import CommentIcon from '@mui/icons-material/Comment';
 
 // Common komponensek importálása
-import Card from '../../common/Card';
-import Button from '../../common/Button';
-import Modal from '../../common/Modal';
-import Input from '../../common/Input';
+import Card from '../../common/Card/index';
+import Button from '../../common/Button/index';
+import Modal from '../../common/Modal/index';
+import Input from '../../common/Input/index';
 
 // Services importálása
 import ListService from '../../../services/list.service';
@@ -343,7 +343,7 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
           >
             <ShoppingBasketIcon color="action" />
           </Badge>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" component="span">
             {purchasedCount > 0 ? `${purchasedCount}/${safeProducts.length} megvásárolva` : `${safeProducts.length} termék`}
           </Typography>
         </Box>
@@ -456,6 +456,7 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Typography
                       variant="body2"
+                      component="span" 
                       sx={{ 
                         textDecoration: product.isPurchased ? 'line-through' : 'none',
                         color: product.isPurchased ? 'text.disabled' : 'text.primary'
@@ -471,7 +472,9 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
                     />
                     {product.notes && (
                       <Tooltip title={product.notes}>
-                        <CommentIcon fontSize="small" sx={{ ml: 1, color: 'text.secondary', fontSize: '0.9rem' }} />
+                        <span>
+                          <CommentIcon fontSize="small" sx={{ ml: 1, color: 'text.secondary', fontSize: '0.9rem' }} />
+                        </span>
                       </Tooltip>
                     )}
                   </Box>
@@ -480,9 +483,13 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
                   ? product.addedBy.username || 'Ismeretlen'
                   : product.addedBy || 'Ismeretlen'}`}
                 primaryTypographyProps={{ 
-                  variant: 'body2'
+                  variant: 'body2',
+                  component: 'div'
                 }}
-                secondaryTypographyProps={{ variant: 'caption' }}
+                secondaryTypographyProps={{ 
+                  variant: 'caption',
+                  component: 'div'
+                }}
               />
             </ListItem>
           );
@@ -492,7 +499,6 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
           <ListItem 
             disableGutters 
             sx={{ px: 0 }}
-            button
             onClick={toggleExpandedView}
           >
             <ListItemText
@@ -500,7 +506,8 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
               primaryTypographyProps={{ 
                 variant: 'body2', 
                 color: 'primary',
-                style: { fontStyle: 'italic' } 
+                style: { fontStyle: 'italic' },
+                component: 'div'
               }}
             />
           </ListItem>
@@ -513,7 +520,7 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
     <>
       <Card
         title={title}
-        titleAction={
+        action={
           <IconButton 
             size="small" 
             onClick={handleMenuOpen}
@@ -680,17 +687,17 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
               py: 2
             }}>
               <CheckCircleIcon color="success" sx={{ fontSize: 48, mb: 2 }} />
-              <Typography variant="h6" color="success.main">
+              <Typography variant="h6" color="success.main" component="div">
                 Sikeres megosztás!
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }} component="div">
                 A lista sikeresen megosztva a felhasználóval.
               </Typography>
             </Box>
           </Fade>
         ) : (
           <>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }} component="div">
               Add meg annak a felhasználónak a nevét vagy email címét, akivel meg szeretnéd osztani a listát.
             </Typography>
             
@@ -781,7 +788,7 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
               )}
             </Box>
             
-            <Typography variant="subtitle2" gutterBottom>
+            <Typography variant="subtitle2" gutterBottom component="div">
               Jogosultság
             </Typography>
             <Paper
@@ -866,7 +873,7 @@ const ShoppingListCard = ({ list, onEdit, onDelete }) => {
             {safeSharedWith && safeSharedWith.length > 0 && (
               <>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 3, mb: 2 }}>
-                  <Typography variant="subtitle2">
+                  <Typography variant="subtitle2" component="div">
                     Már megosztva ezekkel a felhasználókkal:
                   </Typography>
                   <Chip 
