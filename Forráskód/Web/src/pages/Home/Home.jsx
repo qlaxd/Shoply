@@ -279,82 +279,30 @@ const Home = () => {
         justifyContent: 'space-between',
         mb: 3
       }}>
-        <Typography 
-          variant="h4" 
-          component="h1" 
-          gutterBottom 
-          sx={{ 
-            fontWeight: 'bold', 
-            mb: { xs: 2, sm: 0 },
-            fontSize: { xs: '1.8rem', sm: '2.125rem' },
-            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-            backgroundClip: 'text',
-            textFillColor: 'transparent',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}
-        >
-          Bevásárló Listák
-        </Typography>
-        
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Tooltip title="Szűrési opciók">
-            <IconButton 
-              color="primary" 
-              onClick={toggleFilterOptions}
-              sx={{ display: { xs: 'flex', md: 'none' } }}
-            >
-              <TuneIcon />
-            </IconButton>
-          </Tooltip>
-          
-          <Tooltip title="Frissítés">
-            <span>
-              <IconButton 
-                color="primary" 
-                onClick={handleRefreshLists}
-                disabled={refreshing || loading}
-                sx={{
-                  animation: refreshing ? 'spin 1s linear infinite' : 'none',
-                  '@keyframes spin': {
-                    '0%': { transform: 'rotate(0deg)' },
-                    '100%': { transform: 'rotate(360deg)' }
-                  }
-                }}
-              >
-                <RefreshIcon />
-              </IconButton>
-            </span>
-          </Tooltip>
-          
-          <Tooltip title={`Rendezés: ${getSortOrderText()}`}>
-            <IconButton 
-              color="primary" 
-              onClick={handleSortChange}
-            >
-              <SortIcon />
-            </IconButton>
-          </Tooltip>
-          
-          {!isMobile && (
-            <Button 
-              variant="contained" 
-              color="primary" 
-              startIcon={<AddIcon />}
-              onClick={handleOpenNewListDialog}
-              sx={{ 
-                ml: 1,
-                boxShadow: 2,
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                  transform: 'translateY(-2px)',
-                  boxShadow: 4
-                }
-              }}
-            >
-              Új lista
-            </Button>
-          )}
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <Typography 
+            variant="h4" 
+            component="h1" 
+            gutterBottom 
+            sx={{ 
+              fontWeight: 'bold', 
+              mb: { xs: 2, sm: 0 },
+              fontSize: { xs: '1.8rem', sm: '2.125rem' },
+              color: 'white',
+              textShadow: `1px 1px 3px rgba(0, 0, 0, 0.3)`,
+              letterSpacing: '0.5px',
+              paddingY: 1,
+              paddingX: 2,
+              borderRadius: 2,
+              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              boxShadow: theme.shadows[4],
+              textAlign: 'center',
+            }}
+          >
+            Bevásárló Listák
+          </Typography>
         </Box>
       </Box>
       
@@ -446,7 +394,6 @@ const Home = () => {
             </Grid2>
           </Grid2>
         </Box>
-        
         <Collapse in={showFilterOptions || !isMobile}>
           <Divider />
           
@@ -516,6 +463,99 @@ const Home = () => {
             />
           </Tabs>
         </Collapse>
+      </Paper>
+
+      {/* Filter and Sort Controls - Enhanced Responsive Layout */}
+      <Paper 
+        elevation={0}
+        sx={{ 
+          mb: 3,
+          p: 1.5,
+          borderRadius: 2,
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2,
+          backgroundColor: 'transparent'
+        }}
+      >
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          gap: 1
+        }}>
+          <Box sx={{ 
+            display: 'flex', 
+            gap: 1, 
+            flexWrap: 'wrap',
+            justifyContent: 'center'
+          }}>
+            <Tooltip title="Szűrési opciók">
+              <Button 
+                variant="outlined"
+                size="small"
+                startIcon={<TuneIcon />}
+                onClick={toggleFilterOptions}
+                sx={{ 
+                  borderRadius: 8,
+                  minWidth: { xs: '100px', sm: 'auto' },
+                  px: { xs: 2, sm: 2 },
+                  display: { xs: 'flex', sm: 'none' }, // Only visible on mobile
+                  '& .MuiButton-startIcon': {
+                    margin: { xs: '0 8px 0 0', sm: '0 8px 0 0' }
+                  }
+                }}
+              >
+                <Box sx={{ display: 'block' }}>Szűrés</Box>
+              </Button>
+            </Tooltip>
+            
+            <Tooltip title={`Rendezés: ${getSortOrderText()}`}>
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<SortIcon />}
+                onClick={handleSortChange}
+                sx={{ 
+                  borderRadius: 8,
+                  minWidth: { xs: '100px', sm: 'auto' },
+                  px: { xs: 2, sm: 2 },
+                  '& .MuiButton-startIcon': {
+                    margin: { xs: '0 8px 0 0', sm: '0 8px 0 0' }
+                  }
+                }}
+              >
+                <Box sx={{ display: 'block' }}>
+                  {getSortOrderText()}
+                </Box>
+              </Button>
+            </Tooltip>
+            
+            <Tooltip title="Frissítés">
+              <span>
+                <IconButton 
+                  color="primary" 
+                  onClick={handleRefreshLists}
+                  disabled={refreshing || loading}
+                  size="small"
+                  sx={{
+                    animation: refreshing ? 'spin 1s linear infinite' : 'none',
+                    '@keyframes spin': {
+                      '0%': { transform: 'rotate(0deg)' },
+                      '100%': { transform: 'rotate(360deg)' }
+                    },
+                    border: `1px solid ${theme.palette.primary.light}`,
+                    borderRadius: 8,
+                    p: 1
+                  }}
+                >
+                  <RefreshIcon fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Box>
+        </Box>
       </Paper>
 
       {loading ? (

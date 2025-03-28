@@ -648,7 +648,6 @@ const ListEditor = () => {
                   background: isMobile ? `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})` : 'none',
                   backgroundClip: isMobile ? 'text' : 'unset',
                   WebkitBackgroundClip: isMobile ? 'text' : 'unset',
-                  WebkitTextFillColor: isMobile ? 'transparent' : 'unset',
                 }}
               >
                 {isNewList ? 'Új bevásárlólista' : listTitle}
