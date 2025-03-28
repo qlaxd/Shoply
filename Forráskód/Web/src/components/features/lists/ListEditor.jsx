@@ -166,11 +166,35 @@ const ListEditor = () => {
         const results = await ProductCatalogService.searchCatalogItems(query);
         
         if (Array.isArray(results)) {
-          setSearchResults(results.map(item => ({
-            id: item._id || item.id,
-            name: item.name,
-            category: item.category || null
-          })));
+          // Process the search results
+          const processedResults = results.map(item => {
+            // Find the matching category in the loaded categories
+            let categoryObj = item.category;
+            
+            // If category is an ID (not an object), find the full category object
+            if (categoryObj && typeof categoryObj === 'string') {
+              const matchingCategory = categories.find(cat => cat._id === categoryObj);
+              if (matchingCategory) {
+                categoryObj = matchingCategory;
+              }
+            } 
+            // If we have categories loaded and the category has an ID, try to match exactly
+            else if (categoryObj && categoryObj._id && categories.length > 0) {
+              const matchingCategory = categories.find(cat => cat._id === categoryObj._id);
+              if (matchingCategory) {
+                categoryObj = matchingCategory;
+              }
+            }
+            
+            return {
+              id: item._id || item.id,
+              name: item.name,
+              category: categoryObj,
+              unit: item.defaultUnit || 'db'
+            };
+          });
+          
+          setSearchResults(processedResults);
         } else {
           setSearchResults([]);
         }
@@ -192,7 +216,10 @@ const ListEditor = () => {
         setError(null);
         const newProductObj = {
           name: newProduct,
-          addedBy: username || 'Felhasználó',
+          addedBy: {
+            _id: userId,
+            username: username || 'Felhasználó'
+          },
           isPurchased: false,
           category: selectedCategory,
           quantity: newProductQuantity,
@@ -209,7 +236,10 @@ const ListEditor = () => {
             const addedProduct = {
               id: addedProductResponse._id || addedProductResponse.id,
               name: addedProductResponse.name || newProduct,
-              addedBy: addedProductResponse.addedBy || username || 'Felhasználó',
+              addedBy: addedProductResponse.addedBy || {
+                _id: userId,
+                username: username || 'Felhasználó'
+              },
               isPurchased: addedProductResponse.isPurchased || false,
               category: addedProductResponse.category || selectedCategory,
               quantity: addedProductResponse.quantity || newProductQuantity,
@@ -344,15 +374,19 @@ const ListEditor = () => {
         priority: priority,
         products: products.map(p => ({ 
           name: p.name, 
-          addedBy: p.addedBy || username || 'Felhasználó',
+          addedBy: p.addedBy,
           isPurchased: p.isPurchased || false,
           category: p.category,
           quantity: p.quantity,
           unit: p.unit || 'db',
           notes: p.notes
-        })),
-        owner: userId
+        }))
       };
+      
+      // Only set owner for new lists
+      if (isNewList) {
+        listData.owner = userId;
+      }
       
       if (isNewList) {
         await ListService.createList(listData);
@@ -828,7 +862,9 @@ const ListEditor = () => {
                       button
                       onClick={() => {
                         setNewProduct(item.name);
+                        // The category should already be matched to a full category object from the loaded categories
                         setSelectedCategory(item.category);
+                        setNewProductUnit(item.unit || 'db');
                         setSearchResults([]);
                       }}
                       sx={{
@@ -839,8 +875,30 @@ const ListEditor = () => {
                       }}
                     >
                       <ListItemText 
-                        primary={item.name} 
-                        secondary={item.category?.name ? `Kategória: ${item.category.name}` : null}
+                        primary={
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Typography>{item.name}</Typography>
+                            <Chip 
+                              label={item.unit || 'db'} 
+                              size="small" 
+                              color="primary"
+                              variant="outlined"
+                              sx={{ ml: 1, height: 24, fontSize: '0.75rem' }}
+                            />
+                          </Box>
+                        }
+                        secondary={
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            {item.category?.name && (
+                              <Chip 
+                                label={item.category.name} 
+                                size="small" 
+                                variant="outlined"
+                                sx={{ height: 20, fontSize: '0.7rem', mt: 0.5 }}
+                              />
+                            )}
+                          </Box>
+                        }
                       />
                     </ListItem>
                   ))
