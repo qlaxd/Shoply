@@ -108,7 +108,7 @@ const ListEditor = () => {
               setProducts(listData.products.map(product => ({
                 id: product._id || product.id,
                 name: product.name,
-                addedBy: product.addedBy || 'Ismeretlen',
+                addedBy: product.addedBy,
                 isPurchased: product.isPurchased || false,
                 category: product.category || null,
                 quantity: product.quantity,
@@ -372,15 +372,24 @@ const ListEditor = () => {
       const listData = {
         title: listTitle.trim(),
         priority: priority,
-        products: products.map(p => ({ 
-          name: p.name, 
-          addedBy: p.addedBy,
-          isPurchased: p.isPurchased || false,
-          category: p.category,
-          quantity: p.quantity,
-          unit: p.unit || 'db',
-          notes: p.notes
-        }))
+        products: products.map(p => {
+          
+          // If addedBy is an object with _id, just send the _id reference
+          // This matches MongoDB's expected format for references
+          const addedByValue = p.addedBy && typeof p.addedBy === 'object' && p.addedBy._id 
+            ? p.addedBy._id  // Send just the ID
+            : p.addedBy;     // Keep as is if not an object with _id
+          
+          return { 
+            name: p.name, 
+            addedBy: addedByValue,
+            isPurchased: p.isPurchased || false,
+            category: p.category,
+            quantity: p.quantity,
+            unit: p.unit || 'db',
+            notes: p.notes
+          };
+        })
       };
       
       // Only set owner for new lists
