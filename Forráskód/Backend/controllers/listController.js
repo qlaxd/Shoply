@@ -36,6 +36,32 @@ exports.getAllLists = async (req, res) => {
 // Get a single list by ID
 exports.getListById = async (req, res) => {
   try {
+    // Use the pre-loaded list from middleware if available
+    if (req.list) {
+      const list = await List.findById(req.list._id)
+      .populate({
+        path: 'owner',
+        select: '-password -__v'
+      })
+      .populate('products.catalogItem')
+      .populate({
+        path: 'products.addedBy',
+        select: '-password -__v'
+      })
+      .populate({
+        path: 'sharedUsers.user',
+        model: 'User',
+        select: '-password -__v'
+      });
+
+      // Add user's permission to the response
+      const responseList = list.toObject();
+      responseList.userPermission = req.userPermission || 'owner';
+      
+      return res.status(200).json(responseList);
+    }
+    
+    // Original implementation as fallback
     const list = await List.findById(req.params.id)
     .populate({
       path: 'owner',
@@ -127,6 +153,9 @@ exports.createList = async (req, res) => {
 // Update a list by ID
 exports.updateList = async (req, res) => {
   try {
+    // Use the pre-loaded list from middleware
+    // The permission check is already done by middleware
+    
     // Klónozzuk a request body-t, hogy ne módosítsuk közvetlenül
     const updateData = { ...req.body };
     
@@ -192,13 +221,13 @@ exports.updateList = async (req, res) => {
 // Delete a list by ID
 exports.deleteList = async (req, res) => {
   try {
-    const list = await List.findByIdAndDelete(req.params.id);
-    if (!list) {
-      return res.status(404).json({ message: 'List not found' });
-    }
-    res.status(200).json({ message: 'List deleted' });
+    // Use the pre-loaded list from middleware
+    // Permission check is already done by middleware
+    
+    await List.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: 'Lista sikeresen törölve' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting list', error });
+    res.status(500).json({ message: 'Hiba a lista törlése során', error });
   }
 };
 
@@ -255,17 +284,12 @@ exports.unshareList = async (req, res) => {
   }
 };
 
-// Termék hozzáadása a listához - módosított változat
+// Termék hozzáadása a listához
 exports.addProductToList = async (req, res) => {
   try {
-    const { id } = req.params;
-    const list = await List.findById(id);
-    
-    if (!list) {
-      return res.status(404).json({ message: 'Lista nem található' });
-    }
-    
-    // Jogosultságellenőrzés...
+    // Use the pre-loaded list from middleware
+    // Permission check is already done by middleware
+    const list = req.list;
     
     const addedById = req.user.id;
     
@@ -318,19 +342,10 @@ exports.addProductToList = async (req, res) => {
 // Termék eltávolítása a listából
 exports.removeProductFromList = async (req, res) => {
   try {
-    const list = await List.findById(req.params.listId);
-    if (!list) {
-      return res.status(404).json({ message: 'Lista nem található' });
-    }
-
-    // Ellenőrizzük a jogosultságot
-    if (list.owner.toString() !== req.user.id && 
-        !list.sharedUsers.some(share => 
-          share.user.toString() === req.user.id && 
-          ['edit', 'admin'].includes(share.permissionLevel)
-        )) {
-      return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
-    }
+    // Use the pre-loaded list from middleware
+    // Permission check is already done by middleware
+    const list = req.list;
+    
     // Termék eltávolítása a listából
     list.products = list.products.filter(
       product => product._id.toString() !== req.params.productId
@@ -357,22 +372,12 @@ exports.removeProductFromList = async (req, res) => {
 // Termék mennyiségének vagy megvásárlási státuszának módosítása
 exports.updateProductInList = async (req, res) => {
   try {
-    const { listId, productId } = req.params;
+    const { productId } = req.params;
     const { quantity, isPurchased, notes } = req.body;
     
-    const list = await List.findById(listId);
-    if (!list) {
-      return res.status(404).json({ message: 'Lista nem található' });
-    }
-
-    // Ellenőrizzük a jogosultságot
-    if (list.owner.toString() !== req.user.id && 
-        !list.sharedUsers.some(share => 
-          share.user.toString() === req.user.id && 
-          ['edit', 'admin'].includes(share.permissionLevel)
-        )) {
-      return res.status(403).json({ message: 'Nincs jogosultságod a művelethez' });
-    }
+    // Use the pre-loaded list from middleware
+    // Permission check is already done by middleware
+    const list = req.list;
 
     // Ellenőrizzük, hogy a termék a listához tartozik-e
     if (!list.products.some(product => product._id.toString() === productId)) {
@@ -393,7 +398,7 @@ exports.updateProductInList = async (req, res) => {
     }
     
     // Populált lista visszaadása
-    const updatedList = await List.findById(listId)
+    const updatedList = await List.findById(list._id)
       .populate({
         path: 'products.catalogItem',
         model: 'ProductCatalog'
