@@ -4,22 +4,16 @@ import {
   Grid, 
   Typography, 
   FormControl, 
-  FormHelperText, 
   InputLabel,
   Select,
   MenuItem,
   TextField,
-  Divider,
   Alert,
   Autocomplete,
   CircularProgress,
-  Checkbox,
   Chip,
   useTheme,
   useMediaQuery,
-  Paper,
-  Fade,
-  Zoom,
   Tooltip,
   InputAdornment,
   ButtonGroup,
@@ -39,7 +33,6 @@ import SearchIcon from '@mui/icons-material/Search';
 
 // Importáljuk a közös komponenseket
 import Button from '../../common/Button';
-import Input from '../../common/Input';
 
 // Importáljuk a szolgáltatásokat
 import ListService from '../../../services/list.service';
@@ -64,7 +57,6 @@ const AddProductForm = ({ listId, onAddSuccess }) => {
   const [searchTimeout, setSearchTimeout] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [categories, setCategories] = useState([]);
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [suggestionCount, setSuggestionCount] = useState(0);
   
   const theme = useTheme();
@@ -323,14 +315,14 @@ const AddProductForm = ({ listId, onAddSuccess }) => {
                     )
                   }}
                   helperText={
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                    <span style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                       <span>Válasszon a katalógusból vagy adjon meg saját terméket</span>
                       {suggestionCount > 0 && (
-                        <Typography variant="caption" color="text.secondary">
+                        <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
                           {suggestionCount} találat
-                        </Typography>
+                        </span>
                       )}
-                    </Box>
+                    </span>
                   }
                   fullWidth
                 />

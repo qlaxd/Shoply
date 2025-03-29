@@ -19,7 +19,8 @@ import {
   ListItemIcon,
   ListItemText,
   Tooltip,
-  Skeleton
+  Skeleton,
+  Collapse
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -47,6 +48,7 @@ const ProductCatalogItem = ({ product, onAddToList, index, categoryMap, categori
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [isHovered, setIsHovered] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   // Debug logging
   useEffect(() => {
@@ -102,6 +104,17 @@ const ProductCatalogItem = ({ product, onAddToList, index, categoryMap, categori
     return 'Ez egy termék a katalógusból.';
   };
 
+  // Truncate description for mobile or if it's too long
+  const truncateDescription = (text, maxLength = 100) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substr(0, maxLength) + '...';
+  };
+
+  const handleToggleDetails = () => {
+    setShowDetails(!showDetails);
+  };
+
   return (
     <Grow
       in={true}
@@ -114,7 +127,7 @@ const ProductCatalogItem = ({ product, onAddToList, index, categoryMap, categori
           subheader={
             <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {product.category && (
-                <Tooltip title="Kategória">
+                <Tooltip title="Kategória" arrow placement="top">
                   <Chip 
                     icon={<CategoryIcon fontSize="small" />}
                     label={Array.isArray(product.category) 
@@ -122,18 +135,21 @@ const ProductCatalogItem = ({ product, onAddToList, index, categoryMap, categori
                       : getCategoryName(product.category)} 
                     size="small" 
                     color="primary" 
+                    variant="outlined"
                     sx={{ 
                       transition: 'all 0.2s ease',
+                      borderRadius: '16px',
                       '&:hover': { 
                         transform: 'translateY(-2px)',
-                        boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                        backgroundColor: theme.palette.primary.main + '10'
                       }
                     }}
                   />
                 </Tooltip>
               )}
-              {product.tags && product.tags.map(tag => (
-                <Tooltip key={tag} title="Címke">
+              {product.tags && product.tags.slice(0, isMobile ? 1 : 2).map(tag => (
+                <Tooltip key={tag} title="Címke" arrow placement="top">
                   <Chip 
                     icon={<LocalOfferIcon fontSize="small" />}
                     label={tag} 
@@ -142,48 +158,90 @@ const ProductCatalogItem = ({ product, onAddToList, index, categoryMap, categori
                     color="secondary" 
                     sx={{ 
                       transition: 'all 0.2s ease',
-                      '&:hover': { transform: 'translateY(-2px)' }
+                      borderRadius: '16px',
+                      '&:hover': { 
+                        transform: 'translateY(-2px)',
+                        backgroundColor: theme.palette.secondary.main + '10'
+                      }
                     }}
                   />
                 </Tooltip>
               ))}
+              {product.tags && product.tags.length > (isMobile ? 1 : 2) && (
+                <Tooltip title={product.tags.slice(isMobile ? 1 : 2).join(', ')} arrow placement="top">
+                  <Chip 
+                    label={`+${product.tags.length - (isMobile ? 1 : 2)}`}
+                    size="small" 
+                    variant="outlined"
+                    sx={{ 
+                      transition: 'all 0.2s ease',
+                      borderRadius: '16px',
+                      '&:hover': { transform: 'translateY(-2px)' }
+                    }}
+                  />
+                </Tooltip>
+              )}
             </Box>
           }
           actions={
-            <Button
-              variant="contained"
-              color="primary"
-              size={isMobile ? "small" : "medium"}
-              startIcon={<AddShoppingCartIcon />}
-              onClick={() => onAddToList(product)}
-              fullWidth={isMobile}
-              sx={{ 
-                mt: isMobile ? 1 : 0,
-                transition: 'all 0.2s ease',
-                transform: isHovered ? 'scale(1.05)' : 'scale(1)'
-              }}
-            >
-              Hozzáadás
-            </Button>
+            <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                size={isMobile ? "small" : "medium"}
+                startIcon={<AddShoppingCartIcon />}
+                onClick={() => onAddToList(product)}
+                fullWidth
+                sx={{ 
+                  borderRadius: '8px',
+                  flex: '1 1 auto',
+                  transition: 'all 0.3s ease',
+                  transform: isHovered ? 'scale(1.03)' : 'scale(1)',
+                  boxShadow: isHovered ? '0 8px 16px rgba(0,0,0,0.15)' : '0 4px 6px rgba(0,0,0,0.1)'
+                }}
+              >
+                Listához
+              </Button>
+            </Box>
           }
           sx={{
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            transition: 'all 0.3s ease',
-            transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
+            transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            transform: isHovered ? 'translateY(-8px)' : 'translateY(0)',
             boxShadow: isHovered ? 
-              '0 10px 20px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06)' : 
-              '0 4px 6px rgba(0,0,0,0.05)',
+              '0 16px 32px rgba(0,0,0,0.15), 0 8px 16px rgba(0,0,0,0.08)' : 
+              '0 4px 8px rgba(0,0,0,0.08)',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            position: 'relative',
+            border: `1px solid ${theme.palette.divider}`,
+            '&:after': isHovered ? {
+              content: '""',
+              position: 'absolute',
+              bottom: 0,
+              left: '10%',
+              width: '80%',
+              height: '5px',
+              background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              borderRadius: '2.5px'
+            } : {}
           }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          elevation={isHovered ? 8 : 2}
           content={
             <Box sx={{ py: 1, flexGrow: 1 }}>
-              {/* Use the enhanced description logic */}
-              <Typography variant="body2" color="text.secondary">
-                {getDescription()}
-              </Typography>
+              {/* Description with expand/collapse */}
+              <Collapse in={isMobile || showDetails} collapsedSize={isMobile ? "100%" : "75px"}>
+                <Typography variant="body2" color="text.secondary" sx={{
+                  mb: 1.5,
+                  lineHeight: 1.5
+                }}>
+                  {getDescription()}
+                </Typography>
+              </Collapse>
               
               <Box sx={{ 
                 display: 'flex', 
@@ -191,33 +249,53 @@ const ProductCatalogItem = ({ product, onAddToList, index, categoryMap, categori
                 gap: 1,
                 mt: 1.5 
               }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Tooltip title="Alapértelmezett mértékegység">
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 0.5 }}>
+                  <Tooltip title="Alapértelmezett mértékegység" arrow placement="top">
                     <Chip 
                       icon={<ScaleIcon fontSize="small" />}
                       label={`${product.defaultUnit || 'db'}`}
                       size="small"
                       color="info"
                       variant="outlined"
+                      sx={{
+                        borderRadius: '16px',
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                          backgroundColor: theme.palette.info.light + '20'
+                        }
+                      }}
                     />
                   </Tooltip>
                   
                   {product.popularity && (
-                    <Tooltip title="Népszerűség">
+                    <Tooltip title="Népszerűség" arrow placement="top">
                       <Chip 
                         icon={<FactCheckIcon fontSize="small" />}
                         label={`${product.popularity}★`}
                         size="small"
                         color="secondary"
                         variant="outlined"
+                        sx={{
+                          borderRadius: '16px',
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            backgroundColor: theme.palette.secondary.light + '20'
+                          }
+                        }}
                       />
                     </Tooltip>
                   )}
                 </Box>
                 
                 {product.brand && (
-                  <Typography variant="body2" sx={{ mt: 0.5 }}>
-                    <strong>Márka:</strong> {product.brand}
+                  <Typography variant="body2" sx={{ mt: 0.5, display: 'flex', alignItems: 'center' }}>
+                    <strong>Márka:</strong> 
+                    <Chip 
+                      label={product.brand}
+                      size="small"
+                      variant="outlined"
+                      sx={{ ml: 1, height: '20px', fontSize: '0.7rem', borderRadius: '10px' }}
+                    />
                   </Typography>
                 )}
                 
@@ -259,6 +337,116 @@ const ProductCatalogItemSkeleton = ({ index }) => {
         <Skeleton variant="rectangular" height={40} width="100%" sx={{ mt: 2, borderRadius: 1 }} />
       </Paper>
     </Grow>
+  );
+};
+
+// Továbbfejlesztett kereső és szűrő komponensek
+const AdvancedSearch = ({ 
+  searchQuery,
+  onSearchChange,
+  sortMethod,
+  onSortClick,
+  onFilterClick,
+  activeFiltersCount
+}) => {
+  const theme = useTheme();
+  
+  return (
+    <Box 
+      sx={{ 
+        display: 'flex', 
+        flexDirection: 'column',
+        mb: 3,
+        width: '100%',
+        gap: 2
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          position: 'relative',
+          width: '100%',
+        }}
+      >
+        <Input
+          placeholder="Termék keresése..."
+          value={searchQuery}
+          onChange={onSearchChange}
+          startIcon={<SearchIcon />}
+          fullWidth
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '12px',
+              transition: 'all 0.2s ease',
+              pr: '0',
+              '&:hover': {
+                boxShadow: '0 0 0 4px rgba(63, 81, 181, 0.1)'
+              },
+              '&.Mui-focused': {
+                boxShadow: '0 0 0 4px rgba(63, 81, 181, 0.2)'
+              }
+            }
+          }}
+        />
+      </Box>
+      
+      <Box sx={{ 
+        display: 'flex', 
+        width: '100%',
+        justifyContent: 'space-between',
+        gap: 1.5,
+        flexWrap: 'nowrap'
+      }}>
+        <Button
+          variant={activeFiltersCount > 0 ? "contained" : "outlined"}
+          color={activeFiltersCount > 0 ? "secondary" : "primary"}
+          startIcon={<FilterListIcon />}
+          onClick={onFilterClick}
+          sx={{ 
+            flex: '1 1 50%',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            transition: 'all 0.3s ease',
+            borderRadius: '10px',
+            boxShadow: activeFiltersCount > 0 ? '0 4px 12px rgba(245, 0, 87, 0.25)' : 'none',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: activeFiltersCount > 0 ? 
+                '0 6px 16px rgba(245, 0, 87, 0.3)' : 
+                '0 4px 12px rgba(0, 0, 0, 0.08)'
+            }
+          }}
+        >
+          {activeFiltersCount > 0 ? `Szűrők (${activeFiltersCount})` : 'Szűrés'}
+        </Button>
+        
+        <Button
+          variant="outlined"
+          color="primary"
+          startIcon={<SortIcon />}
+          onClick={onSortClick}
+          sx={{ 
+            flex: '1 1 50%',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            transition: 'all 0.3s ease',
+            borderRadius: '10px',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
+            }
+          }}
+        >
+          {sortMethod === 'name_asc' ? 'Név (A-Z)' : 
+           sortMethod === 'name_desc' ? 'Név (Z-A)' : 
+           sortMethod === 'category' ? 'Kategória' : 
+           sortMethod === 'popularity' ? 'Népszerűség' : 'Rendezés'}
+        </Button>
+      </Box>
+    </Box>
   );
 };
 
@@ -462,9 +650,11 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
 
   // Termékek betöltése az oldal első betöltésekor
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       fetchProducts();
-    }, 500); // Kis késleltetés a vizuális hatás miatt
+    }, 300); // Kis késleltetés a vizuális hatás miatt
+    
+    return () => clearTimeout(timer);
   }, [fetchProducts]);
 
   // Keresés kezelése debounce-olással
@@ -530,64 +720,15 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      {/* Kereső és szűrők */}
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          mb: 3,
-          width: '100%',
-          gap: 2
-        }}
-      >
-        <Input
-          placeholder="Termék keresése..."
-          value={searchQuery}
-          onChange={handleSearchChange}
-          startIcon={<SearchIcon />}
-          fullWidth
-        />
-        
-        <Box sx={{ 
-          display: 'flex', 
-          width: '100%',
-          justifyContent: 'space-between',
-          gap: 1,
-          flexWrap: 'nowrap'
-        }}>
-          <Button
-            variant={activeFiltersCount > 0 ? "contained" : "outlined"}
-            color={activeFiltersCount > 0 ? "secondary" : "primary"}
-            startIcon={<FilterListIcon />}
-            onClick={handleFilterClick}
-            sx={{ 
-              flex: '1 1 50%',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            {activeFiltersCount > 0 ? `Szűrők (${activeFiltersCount})` : 'Szűrés'}
-          </Button>
-          
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<SortIcon />}
-            onClick={handleSortClick}
-            sx={{ 
-              flex: '1 1 50%',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            Rendezés
-          </Button>
-        </Box>
-      </Box>
+      {/* Továbbfejlesztett kereső és szűrő komponens */}
+      <AdvancedSearch 
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        sortMethod={sortMethod}
+        onSortClick={handleSortClick}
+        onFilterClick={handleFilterClick}
+        activeFiltersCount={selectedCategories.length}
+      />
 
       {/* Rendezés menü */}
       <Menu
@@ -596,10 +737,30 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         onClose={handleSortClose}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        PaperProps={{
+          elevation: 3,
+          sx: {
+            borderRadius: 2,
+            mt: 1.5,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+          }
+        }}
       >
         <MenuItem 
           onClick={() => handleSortChange('name_asc')}
           selected={sortMethod === 'name_asc'}
+          sx={{
+            borderRadius: 1,
+            mx: 0.5,
+            mb: 0.5,
+            transition: 'background-color 0.2s ease',
+            '&.Mui-selected': {
+              backgroundColor: theme.palette.primary.light + '30',
+              '&:hover': {
+                backgroundColor: theme.palette.primary.light + '40', 
+              }
+            }
+          }}
         >
           <ListItemIcon>
             <AlphabetIcon fontSize="small" />
@@ -609,6 +770,18 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         <MenuItem 
           onClick={() => handleSortChange('name_desc')}
           selected={sortMethod === 'name_desc'}
+          sx={{
+            borderRadius: 1,
+            mx: 0.5,
+            mb: 0.5,
+            transition: 'background-color 0.2s ease',
+            '&.Mui-selected': {
+              backgroundColor: theme.palette.primary.light + '30',
+              '&:hover': {
+                backgroundColor: theme.palette.primary.light + '40', 
+              }
+            }
+          }}
         >
           <ListItemIcon>
             <AlphabetIcon fontSize="small" sx={{ transform: 'rotate(180deg)' }} />
@@ -618,6 +791,18 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         <MenuItem 
           onClick={() => handleSortChange('category')}
           selected={sortMethod === 'category'}
+          sx={{
+            borderRadius: 1,
+            mx: 0.5,
+            mb: 0.5,
+            transition: 'background-color 0.2s ease',
+            '&.Mui-selected': {
+              backgroundColor: theme.palette.primary.light + '30',
+              '&:hover': {
+                backgroundColor: theme.palette.primary.light + '40', 
+              }
+            }
+          }}
         >
           <ListItemIcon>
             <CategoryIcon fontSize="small" />
@@ -627,6 +812,18 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         <MenuItem 
           onClick={() => handleSortChange('popularity')}
           selected={sortMethod === 'popularity'}
+          sx={{
+            borderRadius: 1,
+            mx: 0.5,
+            mb: 0.5,
+            transition: 'background-color 0.2s ease',
+            '&.Mui-selected': {
+              backgroundColor: theme.palette.primary.light + '30',
+              '&:hover': {
+                backgroundColor: theme.palette.primary.light + '40', 
+              }
+            }
+          }}
         >
           <ListItemIcon>
             <AccessTimeIcon fontSize="small" />
@@ -643,44 +840,78 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         PaperProps={{
-          style: {
-            maxHeight: 300,
-            width: '250px',
+          elevation: 3,
+          sx: {
+            maxHeight: 350,
+            width: '280px',
+            borderRadius: 2,
+            mt: 1.5,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
           }
         }}
       >
-        <Box sx={{ px: 2, py: 1 }}>
-          <Typography variant="subtitle2" color="text.secondary">
+        <Box sx={{ px: 2, py: 1, position: 'sticky', top: 0, bgcolor: 'background.paper', zIndex: 1 }}>
+          <Typography variant="subtitle2" color="text.secondary" fontWeight="medium">
             Szűrés kategória szerint
           </Typography>
         </Box>
         <Divider />
-        {categories.map(category => (
-          <MenuItem 
-            key={category._id}
-            onClick={() => handleFilterChange(category._id)}
-            selected={selectedCategories.includes(category._id)}
-            sx={{ display: 'flex', justifyContent: 'space-between' }}
-          >
-            <ListItemText>{category.name}</ListItemText>
-            {selectedCategories.includes(category._id) && (
-              <Chip 
-                size="small" 
-                color="primary" 
-                label="✓" 
-                sx={{ minWidth: 32 }} 
-              />
-            )}
-          </MenuItem>
-        ))}
+        <Box sx={{ maxHeight: 250, overflowY: 'auto', py: 0.5 }}>
+          {categories.map(category => (
+            <MenuItem 
+              key={category._id}
+              onClick={() => handleFilterChange(category._id)}
+              selected={selectedCategories.includes(category._id)}
+              sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                borderRadius: 1,
+                mx: 0.5,
+                mb: 0.5,
+                transition: 'background-color 0.2s ease',
+                '&.Mui-selected': {
+                  backgroundColor: theme.palette.primary.light + '30',
+                  '&:hover': {
+                    backgroundColor: theme.palette.primary.light + '40', 
+                  }
+                }
+              }}
+            >
+              <ListItemText primary={category.name} />
+              {selectedCategories.includes(category._id) && (
+                <Chip 
+                  size="small" 
+                  color="primary" 
+                  label="✓" 
+                  sx={{ 
+                    minWidth: 32,
+                    borderRadius: '10px',
+                    transition: 'all 0.2s ease'
+                  }} 
+                />
+              )}
+            </MenuItem>
+          ))}
+        </Box>
         {selectedCategories.length > 0 && (
           <>
             <Divider />
             <MenuItem 
               onClick={() => setSelectedCategories([])}
-              sx={{ color: theme.palette.primary.main }}
+              sx={{ 
+                color: theme.palette.primary.main,
+                fontWeight: 'bold',
+                borderRadius: 1,
+                mx: 0.5,
+                my: 0.5,
+                justifyContent: 'center',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: theme.palette.primary.light + '20'
+                }
+              }}
             >
-              <ListItemText>Szűrők törlése</ListItemText>
+              <ListItemText sx={{ textAlign: 'center' }}>Szűrők törlése</ListItemText>
             </MenuItem>
           </>
         )}
@@ -688,38 +919,78 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
 
       {/* Hibaüzenet */}
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert 
+          severity="error" 
+          sx={{ 
+            mb: 3,
+            borderRadius: 2,
+            boxShadow: '0 4px 12px rgba(211, 47, 47, 0.2)',
+            border: `1px solid ${theme.palette.error.light}`
+          }}
+        >
           {error}
         </Alert>
       )}
 
       {/* Szűrők jelzése */}
       {selectedCategories.length > 0 && (
-        <Box sx={{ mb: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          <Typography variant="body2" sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
-            <FilterListIcon fontSize="small" sx={{ mr: 0.5 }} />
-            Aktív szűrők:
-          </Typography>
-          {selectedCategories.map(categoryId => {
-            const categoryName = categories.find(c => c._id === categoryId)?.name || categoryId;
-            return (
+        <Fade in={selectedCategories.length > 0}>
+          <Box sx={{ 
+            mb: 2, 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: 1, 
+            p: 2, 
+            borderRadius: 2,
+            backgroundColor: `${theme.palette.background.paper}`,
+            border: `1px solid ${theme.palette.divider}`,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+          }}>
+            <Typography variant="body2" sx={{ mr: 1, display: 'flex', alignItems: 'center', color: theme.palette.text.secondary }}>
+              <FilterListIcon fontSize="small" sx={{ mr: 0.5 }} />
+              Aktív szűrők:
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, flex: 1 }}>
+              {selectedCategories.map(categoryId => {
+                const categoryName = categories.find(c => c._id === categoryId)?.name || categoryId;
+                return (
+                  <Chip
+                    key={categoryId}
+                    label={categoryName}
+                    onDelete={() => handleFilterChange(categoryId)}
+                    color="primary"
+                    size="small"
+                    sx={{
+                      borderRadius: '16px',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                      }
+                    }}
+                  />
+                );
+              })}
               <Chip
-                key={categoryId}
-                label={categoryName}
-                onDelete={() => handleFilterChange(categoryId)}
-                color="primary"
+                label="Összes törlése"
+                onClick={() => setSelectedCategories([])}
                 size="small"
-                variant="outlined"
+                color="default"
+                sx={{
+                  borderRadius: '16px',
+                  transition: 'all 0.2s ease',
+                  backgroundColor: theme.palette.error.main,
+                  '&:hover': {
+                    backgroundColor: theme.palette.error.main,
+                    boxShadow: `0 8px 8px ${theme.palette.error.main}40`,
+                    transform: 'translateY(-2px)',
+                    filter: 'brightness(1.3)'
+                  }
+                }}
               />
-            );
-          })}
-          <Chip
-            label="Összes törlése"
-            onClick={() => setSelectedCategories([])}
-            size="small"
-            color="default"
-          />
-        </Box>
+            </Box>
+          </Box>
+        </Fade>
       )}
 
       {/* Termékek listája */}
@@ -743,7 +1014,14 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
               gap: 2
             }}
           >
-            <CircularProgress />
+            <CircularProgress 
+              sx={{
+                color: theme.palette.primary.main,
+                '& .MuiCircularProgress-circle': {
+                  strokeLinecap: 'round',
+                }
+              }}
+            />
             <Typography color="text.secondary" variant="body2">
               Termékek betöltése...
             </Typography>
@@ -754,14 +1032,21 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
           {products.length === 0 ? (
             <Alert 
               severity="info" 
-              sx={{ display: 'flex', alignItems: 'center' }}
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                borderRadius: 2,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                backgroundColor: theme.palette.info.light + '30',
+                border: `1px solid ${theme.palette.info.light}`
+              }}
               icon={<InfoOutlinedIcon fontSize="inherit" />}
             >
               Nem található termék a megadott keresési feltételekkel.
             </Alert>
           ) : (
             <>
-              <Grid container spacing={2}>
+              <Grid container spacing={2.5}>
                 {paginatedProducts.map((product, index) => (
                   <Grid item xs={12} sm={6} md={4} key={product._id} sx={{ display: 'flex' }}>
                     <ProductCatalogItem 
@@ -775,17 +1060,25 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
                 ))}
               </Grid>
               
-              {/* Találatok száma */}
+              {/* Találatok száma és Pagináció */}
               <Box sx={{ 
                 display: 'flex', 
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                mt: 3,
-                mb: 2,
+                mt: 4,
+                mb: 1,
                 flexWrap: 'wrap',
                 gap: 1
               }}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '4px 12px',
+                  borderRadius: '16px',
+                  fontWeight: 'medium',
+                  border: `1px solid ${theme.palette.divider}`
+                }}>
+                  <InfoOutlinedIcon fontSize="small" sx={{ mr: 0.5 }} />
                   {products.length} termék található
                 </Typography>
                 
@@ -798,14 +1091,19 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
                     color="primary"
                     size={isMobile ? "small" : "medium"}
                     siblingCount={isMobile ? 0 : 1}
+                    shape="rounded"
                     sx={{
                       '& .MuiPaginationItem-root': {
                         transition: 'all 0.2s ease',
+                        borderRadius: '8px',
+                        margin: '0 2px',
                         '&:hover': {
                           transform: 'scale(1.1)',
+                          backgroundColor: theme.palette.primary.light + '30'
                         },
                         '&.Mui-selected': {
                           fontWeight: 'bold',
+                          boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
                         }
                       }
                     }}
@@ -828,7 +1126,11 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         <Alert 
           onClose={handleCloseSnackbar} 
           severity={snackbar.severity}
-          sx={{ width: '100%' }}
+          sx={{ 
+            width: '100%',
+            borderRadius: '12px',
+            boxShadow: '0 6px 16px rgba(0,0,0,0.1)'
+          }}
           variant="filled"
           elevation={6}
         >
