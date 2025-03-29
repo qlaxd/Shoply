@@ -296,7 +296,7 @@ const Home = () => {
               textAlign: 'center',
             }}
           >
-            Bevásárló Listák
+            Bevásárló Listáim
           </Typography>
         </Box>
       </Box>
