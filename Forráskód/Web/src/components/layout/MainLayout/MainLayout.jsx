@@ -133,7 +133,6 @@ const MainLayout = ({ children }) => {
 
   // Navigáció kezelése
   const handleNavigate = (segment) => {
-    console.log("Navigation segment clicked:", segment);
     
     // Special case for empty segment (home)
     if (segment === '') {

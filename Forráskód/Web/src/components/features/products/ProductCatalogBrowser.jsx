@@ -50,13 +50,6 @@ const ProductCatalogItem = ({ product, onAddToList, index, categoryMap, categori
   const [isHovered, setIsHovered] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
-  // Debug logging
-  useEffect(() => {
-    console.log("Product:", product);
-    console.log("Product Category:", product.category);
-    console.log("CategoryMap:", categoryMap);
-  }, [product, categoryMap]);
-
   // Get category name from map
   const getCategoryName = (categoryId) => {
     // If we have a valid category ID and it exists in our map, return the name
@@ -475,18 +468,11 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
   
   const itemsPerPage = isMobile ? 6 : 9;
 
-  // Debug logging for categories
-  useEffect(() => {
-    console.log("Loaded Categories:", categories);
-    console.log("Category Map:", categoryMap);
-  }, [categories, categoryMap]);
-
   // Enhanced category loading with better error handling
   useEffect(() => {
     const loadCategories = async () => {
       try {
         const categoryData = await CategoryService.getAllCategories();
-        console.log("Raw Category Data:", categoryData);
         
         if (!Array.isArray(categoryData)) {
           console.error('Category data is not an array:', categoryData);
@@ -513,7 +499,6 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
             }
           });
         }
-        console.log("Created Category Map:", catMap);
         setCategoryMap(catMap);
       } catch (error) {
         console.error('Hiba a kategóriák betöltésekor:', error);
@@ -534,7 +519,6 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
 
   // Define sortProducts before it's used in handleSortChange
   const sortProducts = useCallback((productList, method) => {
-    console.log("Sorting products, method:", method, "product count:", productList.length);
     const sorted = [...productList];
     
     switch(method) {
@@ -567,7 +551,6 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         break;
     }
     
-    console.log("Sorted products:", sorted.length);
     setProducts(sorted);
   }, [categoryMap]);
 
@@ -610,9 +593,6 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         const response = await ProductCatalogService.searchCatalogItems(query);
         data = response;
       }
-      
-      // Debug log
-      console.log("Loaded Products:", data);
       
       // Szűrés kategóriák alapján, ha szükséges
       if (selectedCategories.length > 0) {

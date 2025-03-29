@@ -81,7 +81,6 @@ Az e.target.value az új érték, amit a felhasználó beírt
 AuthService megfelelő metódusát (login/register) és átadja neki a formData
 értékeit amit a handleChange függvény kezel */
   const handleSubmit = async () => {
-    console.log('Validáció ellenőrzése..., action:', action);
     if (!validateForm()) {
       console.log('Hibás form, validáció sikertelen!');
       return;
