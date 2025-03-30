@@ -116,7 +116,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
         {
             Caption = "Statisztikák";
             Icon = IconChar.ChartBar;
-            CurrentChildView = _statisticsViewModel;
+            CurrentChildView = new Views.Statistics.StatisticsView { DataContext = _statisticsViewModel };
         }
 
         [RelayCommand]
