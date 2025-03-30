@@ -27,7 +27,8 @@ import {
   Fab,
   LinearProgress,
   ButtonGroup,
-  Button
+  Button,
+  ListItemButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -1032,10 +1033,11 @@ const ListEditor = () => {
                   alignItems: 'center', 
                   justifyContent: 'center' 
                 }}>
+                  {/* Desktop "Add Product" button */}
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={toggleAddProductDrawer}
+                    onClick={() => handleAddProduct()}
                     disabled={!newProduct.trim()}
                     startIcon={<AddIcon />}
                     sx={{ 
@@ -1079,9 +1081,8 @@ const ListEditor = () => {
                     </ListItem>
                   ) : (
                     searchResults.map(item => (
-                      <ListItem
+                      <ListItemButton
                         key={item.id}
-                        button
                         onClick={() => {
                           setNewProduct(item.name);
                           handleCategorySelect(item.category);
@@ -1093,7 +1094,7 @@ const ListEditor = () => {
                           primary={<Typography component="span">{item.name}</Typography>}
                           secondary={`${item.unit || 'db'}`}
                         />
-                      </ListItem>
+                      </ListItemButton>
                     ))
                   )}
                 </List>
@@ -1743,9 +1744,8 @@ const ListEditor = () => {
                         </ListItem>
                       ) : (
                         searchResults.map(item => (
-                          <ListItem
+                          <ListItemButton
                             key={item.id}
-                            button
                             onClick={() => {
                               setNewProduct(item.name);
                               handleCategorySelect(item.category);
@@ -1757,7 +1757,7 @@ const ListEditor = () => {
                               primary={<Typography component="span">{item.name}</Typography>}
                               secondary={`${item.unit || 'db'}`}
                             />
-                          </ListItem>
+                          </ListItemButton>
                         ))
                       )}
                     </List>
