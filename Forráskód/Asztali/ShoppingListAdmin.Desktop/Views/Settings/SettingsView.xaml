@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.Settings"
-             d:DataContext="{d:DesignInstance Type=viewModels:SettingsViewModel, IsDesignTimeCreatable=True}"
+            d:DataContext="{d:DesignInstance Type=viewModels:SettingsViewModel, IsDesignTimeCreatable=True}"
              xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views.Settings"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -13,5 +13,10 @@
                    FontSize="28"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"/>
+        <TextBlock Text="Ez a funkció még fejlesztés alatt." 
+                   FontSize="18"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Margin="0,50,0,0"/>
     </Grid>
 </UserControl>

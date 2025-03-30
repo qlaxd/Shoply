@@ -10,6 +10,8 @@ using ShoppingListAdmin.Desktop.Services;
 using ShoppingListAdmin.Desktop.ViewModels.Categories;
 using ShoppingListAdmin.Desktop.ViewModels;
 using ShoppingListAdmin.Desktop.ViewModels.Lists;
+using ShoppingListAdmin.Desktop.ViewModels.Settings;
+using ShoppingListAdmin.Desktop.Views.Settings;
 
 
 namespace ShoppingListAdmin.Desktop
@@ -45,6 +47,13 @@ namespace ShoppingListAdmin.Desktop
                     //services.AddSingleton<CategoryService>(); TODO: bugfix or remove
                     services.AddSingleton<ListsViewModel>();
                     //services.AddSingleton<ProductCatalogService>(); TODO: bugfix or remove
+
+                    services.AddSingleton<SettingsViewModel>();
+                    services.AddSingleton<SettingsView>(s => new SettingsView()
+                    {
+                        DataContext = s.GetRequiredService<SettingsViewModel>()
+                    });
+
                 })
                 .Build();
         }
