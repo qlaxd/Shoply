@@ -27,7 +27,16 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Settings
 
         public SettingsViewModel()
         {
-            _fontSize = string.Empty;
+            LoadSettings();
+        }
+
+        private void LoadSettings()
+        {
+            // Example: Load settings from a configuration file or database
+            _fontSize = "Medium";
+            _isDarkTheme = false;
+            _notificationsEnabled = true;
+            _soundEnabled = true;
         }
     }
 }
