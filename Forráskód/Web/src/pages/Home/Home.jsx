@@ -18,7 +18,6 @@ import {
   Fab,
   Collapse,
   Skeleton,
-  Stack
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
@@ -33,8 +32,6 @@ import Grid2 from '@mui/material/Grid2';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
-import Loader from '../../components/common/Loader';
-
 // Importáljuk a feature komponenseket
 import ShoppingListCard from '../../components/features/lists/ShoppingListCard';
 
@@ -46,7 +43,6 @@ const Home = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   
   // Állapotok
   const [lists, setLists] = useState([]);
@@ -63,7 +59,6 @@ const Home = () => {
   const [filterTab, setFilterTab] = useState(0); // 0: All, 1: High, 2: Medium, 3: Low
   const [showFilterOptions, setShowFilterOptions] = useState(false);
 
-  const userId = localStorage.getItem('userId');
 
   // Listák betöltése
   const fetchLists = async (showRefreshing = false) => {
@@ -301,7 +296,7 @@ const Home = () => {
               textAlign: 'center',
             }}
           >
-            Bevásárló Listák
+            Bevásárló Listáim
           </Typography>
         </Box>
       </Box>

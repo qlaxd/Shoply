@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Box, 
   Typography, 
@@ -13,7 +13,6 @@ import {
   ListItemIcon,
   Checkbox,
   ListItemSecondaryAction,
-  Avatar,
   Chip,
   Tooltip,
   Divider,
@@ -22,31 +21,20 @@ import {
   useMediaQuery,
   Fade,
   Collapse,
-  Zoom,
-  Badge,
   TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Grid,
   SwipeableDrawer,
   Fab,
-  SpeedDial,
-  SpeedDialAction,
-  SpeedDialIcon,
   LinearProgress,
-  Card,
-  CardContent,
   ButtonGroup,
-  Button
+  Button,
+  ListItemButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import TitleIcon from '@mui/icons-material/Title';
@@ -54,11 +42,9 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CommentIcon from '@mui/icons-material/Comment';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CategoryIcon from '@mui/icons-material/Category';
+
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import SortIcon from '@mui/icons-material/Sort';
-import FilterListIcon from '@mui/icons-material/FilterList';
+
 import { useNavigate, useParams } from 'react-router-dom';
 
 // Common komponensek importálása
@@ -77,7 +63,6 @@ const ListEditor = () => {
   const isNewList = id === 'new';
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down('xs'));
   
   // Állapotok
   const [listTitle, setListTitle] = useState('');
@@ -104,7 +89,6 @@ const ListEditor = () => {
   // Mobile-specific states
   const [addProductDrawerOpen, setAddProductDrawerOpen] = useState(false);
   const [actionMenuOpen, setActionMenuOpen] = useState(false);
-  const [showCompletedProducts, setShowCompletedProducts] = useState(true);
   const [mobileProductFilter, setMobileProductFilter] = useState('all'); // 'all', 'pending', 'completed'
   
   // Felhasználói adatok
@@ -182,7 +166,7 @@ const ListEditor = () => {
 
     fetchListData();
     fetchCategories();
-  }, [id, isNewList]);
+  }, [id, isNewList, userId]);
 
   // Számoljuk a teljesítés százalékát
   useEffect(() => {
@@ -313,7 +297,7 @@ const ListEditor = () => {
         setNewProductUnit('db');
         setNewProductNotes('');
         setSearchResults([]);
-        setSelectedCategory(null);
+        handleCategorySelect(null);
       } catch (err) {
         console.error('Hiba a termék hozzáadásakor:', err);
         setError('Nem sikerült hozzáadni a terméket: ' + (err.message || 'Ismeretlen hiba'));
@@ -512,25 +496,25 @@ const ListEditor = () => {
   };
 
   // Kategória kiválasztása
-  const handleCategorySelect = (category) => {
+  const handleCategorySelect = useCallback((category) => {
     setSelectedCategory(category);
     setShowCategoryInfo(true);
     setTimeout(() => setShowCategoryInfo(false), 3000);
-  };
+  }, []);
 
-  // Add mobile drawer handlers
-  const toggleAddProductDrawer = () => {
-    setAddProductDrawerOpen(!addProductDrawerOpen);
-  };
+  // Mobile drawer handlers - consolidate these functions
+  const toggleAddProductDrawer = useCallback(() => {
+    setAddProductDrawerOpen(prev => !prev);
+  }, []);
 
-  const toggleActionMenu = () => {
-    setActionMenuOpen(!actionMenuOpen);
-  };
+  const toggleActionMenu = useCallback(() => {
+    setActionMenuOpen(prev => !prev);
+  }, []);
 
   // Mobile filter products
-  const handleFilterProducts = (filterType) => {
+  const handleFilterProducts = useCallback((filterType) => {
     setMobileProductFilter(filterType);
-  };
+  }, []);
 
   // Termék vásárlási állapotának módosítása
   const handleToggleProduct = async (productId) => {
@@ -666,7 +650,7 @@ const ListEditor = () => {
             {isMobile && (
               <IconButton
                 aria-label="További műveletek"
-                onClick={() => setActionMenuOpen(!actionMenuOpen)}
+                onClick={toggleActionMenu}
                 color="primary"
               >
                 <MoreVertIcon />
@@ -912,7 +896,7 @@ const ListEditor = () => {
                   sx={{ width: '100%' }}
                 >
                   <Button 
-                    onClick={() => setMobileProductFilter('all')}
+                    onClick={() => handleFilterProducts('all')}
                     sx={{ 
                       flex: 1, 
                       color: mobileProductFilter === 'all' ? 'primary.main' : 'text.secondary',
@@ -923,7 +907,7 @@ const ListEditor = () => {
                     Összes
                   </Button>
                   <Button 
-                    onClick={() => setMobileProductFilter('pending')}
+                    onClick={() => handleFilterProducts('pending')}
                     sx={{ 
                       flex: 1,
                       color: mobileProductFilter === 'pending' ? 'warning.main' : 'text.secondary',
@@ -934,7 +918,7 @@ const ListEditor = () => {
                     Teendő
                   </Button>
                   <Button 
-                    onClick={() => setMobileProductFilter('completed')}
+                    onClick={() => handleFilterProducts('completed')}
                     sx={{ 
                       flex: 1,
                       color: mobileProductFilter === 'completed' ? 'success.main' : 'text.secondary',
@@ -1049,10 +1033,11 @@ const ListEditor = () => {
                   alignItems: 'center', 
                   justifyContent: 'center' 
                 }}>
+                  {/* Desktop "Add Product" button */}
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleAddProduct}
+                    onClick={() => handleAddProduct()}
                     disabled={!newProduct.trim()}
                     startIcon={<AddIcon />}
                     sx={{ 
@@ -1096,12 +1081,11 @@ const ListEditor = () => {
                     </ListItem>
                   ) : (
                     searchResults.map(item => (
-                      <ListItem
+                      <ListItemButton
                         key={item.id}
-                        button
                         onClick={() => {
                           setNewProduct(item.name);
-                          setSelectedCategory(item.category);
+                          handleCategorySelect(item.category);
                           setNewProductUnit(item.unit || 'db');
                           setSearchResults([]);
                         }}
@@ -1110,7 +1094,7 @@ const ListEditor = () => {
                           primary={<Typography component="span">{item.name}</Typography>}
                           secondary={`${item.unit || 'db'}`}
                         />
-                      </ListItem>
+                      </ListItemButton>
                     ))
                   )}
                 </List>
@@ -1551,7 +1535,7 @@ const ListEditor = () => {
                   variant="contained"
                   color="primary"
                   startIcon={<AddIcon />}
-                  onClick={() => setAddProductDrawerOpen(true)}
+                  onClick={toggleAddProductDrawer}
                   sx={{ 
                     mt: 3,
                     borderRadius: 8,
@@ -1623,8 +1607,8 @@ const ListEditor = () => {
           <SwipeableDrawer
             anchor="bottom"
             open={addProductDrawerOpen}
-            onClose={() => setAddProductDrawerOpen(false)}
-            onOpen={() => setAddProductDrawerOpen(true)}
+            onClose={toggleAddProductDrawer}
+            onOpen={toggleAddProductDrawer}
             disableSwipeToOpen={false}
             swipeAreaWidth={56}
             sx={{
@@ -1645,7 +1629,7 @@ const ListEditor = () => {
                 <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
                   Új termék hozzáadása
                 </Typography>
-                <IconButton onClick={() => setAddProductDrawerOpen(false)}>
+                <IconButton onClick={toggleAddProductDrawer}>
                   <ExpandMoreIcon />
                 </IconButton>
               </Box>
@@ -1760,12 +1744,11 @@ const ListEditor = () => {
                         </ListItem>
                       ) : (
                         searchResults.map(item => (
-                          <ListItem
+                          <ListItemButton
                             key={item.id}
-                            button
                             onClick={() => {
                               setNewProduct(item.name);
-                              setSelectedCategory(item.category);
+                              handleCategorySelect(item.category);
                               setNewProductUnit(item.unit || 'db');
                               setSearchResults([]);
                             }}
@@ -1774,7 +1757,7 @@ const ListEditor = () => {
                               primary={<Typography component="span">{item.name}</Typography>}
                               secondary={`${item.unit || 'db'}`}
                             />
-                          </ListItem>
+                          </ListItemButton>
                         ))
                       )}
                     </List>
@@ -1793,7 +1776,7 @@ const ListEditor = () => {
               right: 16,
               zIndex: 1000
             }}
-            onClick={() => setAddProductDrawerOpen(true)}
+            onClick={toggleAddProductDrawer}
           >
             <AddIcon />
           </Fab>

@@ -25,6 +25,7 @@ function App() {
           <Route path="/profile/change-password" element={<MainLayout><ChangePasswordPage /></MainLayout>} />
           <Route path="/users/search" element={<MainLayout><UserSearchPage /></MainLayout>} />
           <Route path="/users/:userId" element={<MainLayout><UserDetailsPage /></MainLayout>} />
+          <Route path="/profile/view" element={<MainLayout><ProfilePage /></MainLayout>} />
         </Route>
       </Routes>
     </BrowserRouter>
