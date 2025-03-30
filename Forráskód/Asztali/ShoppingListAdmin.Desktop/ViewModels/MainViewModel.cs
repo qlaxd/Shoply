@@ -15,6 +15,8 @@ using ShoppingListAdmin.Desktop.Views.Login;
 using ShoppingListAdmin.Desktop.ViewModels.Login;
 using System.Linq;
 using ShoppingListAdmin.Desktop.Views;
+using ShoppingListAdmin.Desktop.Views.Lists;
+using ShoppingListAdmin.Desktop.Views.Categories;
 using System;
 using System.Diagnostics;
 
@@ -98,8 +100,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
         {
             Caption = "Listák";
             Icon = IconChar.List;
-            CurrentChildView = _listsViewModel;
-            
+            CurrentChildView = new Views.Lists.ListsView { DataContext = _listsViewModel };
         }
 
         [RelayCommand]
@@ -118,12 +119,12 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             CurrentChildView = _statisticsViewModel;
         }
 
-                [RelayCommand]
+        [RelayCommand]
         public void ShowCategories()
         {
             Caption = "Kategóriák";
             Icon = IconChar.Box;
-            CurrentChildView = _categoriesViewModel;
+            CurrentChildView = new Views.Categories.CategoriesView { DataContext = _categoriesViewModel };
         }
 
         [RelayCommand]
