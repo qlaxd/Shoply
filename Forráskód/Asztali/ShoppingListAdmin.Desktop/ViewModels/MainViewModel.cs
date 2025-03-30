@@ -75,7 +75,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
         private IconChar _icon = new IconChar();
 
         [ObservableProperty]
-        private BaseViewModel _currentChildView;
+        private object _currentChildView;
 
         [RelayCommand]
         public void ShowDashboard()
@@ -131,7 +131,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
         {
             Caption = "Beállítások";
             Icon = IconChar.Gear;
-            CurrentChildView = _settingsViewModel;
+            CurrentChildView = new Views.Settings.SettingsView { DataContext = _settingsViewModel };
         }
 
         [RelayCommand]

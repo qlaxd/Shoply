@@ -9,21 +9,20 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <StackPanel Margin="20">
-            <TextBlock Text="Beállítások" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
-            
-            <CheckBox Content="Sötét téma" IsChecked="{Binding IsDarkTheme}" Margin="0,10"/>
-            <CheckBox Content="Értesítések engedélyezése" IsChecked="{Binding NotificationsEnabled}" Margin="0,10"/>
-            <CheckBox Content="Hang engedélyezése" IsChecked="{Binding SoundEnabled}" Margin="0,10"/>
-            
-            <TextBlock Text="Betűméret:" Margin="0,20,0,5"/>
-            <ComboBox SelectedItem="{Binding FontSize}" Margin="0,0,0,20">
-                <ComboBoxItem Content="Kicsi" />
-                <ComboBoxItem Content="Közepes" />
-                <ComboBoxItem Content="Nagy" />
-            </ComboBox>
-            
-            <Button Content="Mentés" Command="{Binding SaveSettingsCommand}" Width="100" HorizontalAlignment="Left"/>
-        </StackPanel>
+
+        <TextBlock Text="Beállítások"
+                   Foreground="White"
+                   FontSize="28"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+        <TextBlock Text="Beállítások fejlesztés alatt" 
+                   FontSize="18"
+                   Foreground="White"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Margin="0,50,0,0"/>
+
+
+
     </Grid>
 </UserControl>
