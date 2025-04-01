@@ -57,10 +57,14 @@ const AuthService = {
   },
 
   getCurrentUser: () => {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    const username = localStorage.getItem('username');
+    
     return {
-      userId: localStorage.getItem('userId'),
-      username: localStorage.getItem('username'),
-      isAuthenticated: !!localStorage.getItem('token')
+      userId: userId || null,
+      username: username || null,
+      isAuthenticated: !!token
     };
   },
 
