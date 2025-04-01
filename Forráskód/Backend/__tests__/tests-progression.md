@@ -42,7 +42,8 @@ This document tracks the implementation progress of our testing strategy. Mark i
 - [x] Test error handling in all services
 - [x] Verify business logic in isolation
 - [x] Test edge cases for all critical functions
-- [ ] Achieve >80% code coverage for all service modules
+- [x] Achieve >80% code coverage for models
+- [ ] Achieve >80% code coverage for services
 
 ## Integration Tests
 
