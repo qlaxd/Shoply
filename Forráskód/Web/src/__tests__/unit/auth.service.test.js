@@ -1,8 +1,8 @@
-import AuthService from './auth.service';
-import api from './api';
+import AuthService from '../../services/auth.service';
+import api from '../../services/api';
 
 // Mock the api module
-jest.mock('./api', () => ({
+jest.mock('../../services/api', () => ({
   post: jest.fn()
 }));
 
