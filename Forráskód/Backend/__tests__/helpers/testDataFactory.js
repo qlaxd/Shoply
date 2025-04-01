@@ -108,4 +108,9 @@ class TestDataFactory {
   }
 }
 
-module.exports = TestDataFactory; 
+module.exports = TestDataFactory;
+
+// Add a dummy test to satisfy Jest's requirement
+test('TestDataFactory exists', () => {
+  expect(TestDataFactory).toBeDefined();
+}); 

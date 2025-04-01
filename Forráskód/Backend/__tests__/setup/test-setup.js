@@ -19,10 +19,10 @@ if (result.error) {
 console.log('Test environment setup:');
 console.log('- NODE_ENV:', process.env.NODE_ENV);
 console.log('- JWT_SECRET:', process.env.JWT_SECRET ? 'Set' : 'Not set');
-console.log('- MONGODB_URI:', process.env.MONGODB_URI);
+console.log('- MONGO_URI:', process.env.MONGO_URI);
 
 // Verify required environment variables
-const requiredVars = ['JWT_SECRET', 'MONGODB_URI'];
+const requiredVars = ['JWT_SECRET', 'MONGO_URI'];
 const missing = requiredVars.filter(key => !process.env[key]);
 
 if (missing.length > 0) {

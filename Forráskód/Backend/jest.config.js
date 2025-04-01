@@ -2,6 +2,17 @@ module.exports = {
   // Automatically clear mock calls and instances between every test
   clearMocks: true,
   
+  // Enable test coverage collection
+  collectCoverage: true,
+  
+  // Define files to collect coverage from
+  collectCoverageFrom: [
+    'controllers/**/*.js',
+    'middleware/**/*.js',
+    'models/**/*.js',
+    'routes/**/*.js'
+  ],
+  
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
   
