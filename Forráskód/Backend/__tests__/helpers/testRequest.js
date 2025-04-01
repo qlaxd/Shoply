@@ -26,6 +26,14 @@ const listPermissionMiddleware = require('../../middleware/listPermissionMiddlew
 // Configure app middleware
 app.use(express.json());
 
+// Add request logging for debugging
+app.use((req, res, next) => {
+  console.log(`[TEST] ${req.method} ${req.path}`);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  next();
+});
+
 // Set up routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
@@ -37,7 +45,7 @@ app.use('/api/statistics', statisticsRoutes);
 
 // Error handler middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Express error handler:', err.stack);
   res.status(500).json({ message: 'Internal Server Error', error: err.message });
 });
 
@@ -45,8 +53,6 @@ app.use((err, req, res, next) => {
 const request = supertest(app);
 
 module.exports = {
-  request,
-  
   /**
    * Make a GET request
    * @param {string} url - The URL to request
@@ -99,6 +105,9 @@ module.exports = {
    */
   withAuth: (method, url, body = {}, token) => {
     const headers = { 'Authorization': `Bearer ${token}` };
+    console.log(`Making authenticated request: ${method.toUpperCase()} ${url}`);
+    console.log('Token:', token);
+    
     switch (method.toLowerCase()) {
       case 'get':
         return request.get(url).set(headers);
