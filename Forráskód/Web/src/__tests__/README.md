@@ -1,1 +1,1 @@
-To run available unit test cd into the Web directory and run npx jest
+To run available unit test cd into the Web directory and run npm test
