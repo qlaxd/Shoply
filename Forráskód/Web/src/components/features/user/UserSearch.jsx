@@ -127,7 +127,7 @@ const UserSearch = ({ onSelectUser }) => {
                     secondary={
                       <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                         <EmailIcon fontSize="small" sx={{ mr: 0.5, color: 'text.secondary' }} />
-                        <Typography variant="body2" color="text.secondary">{user.email}</Typography>
+                        <Typography variant="body2" component="span" color="text.secondary">{user.email}</Typography>
                       </Box>
                     }
                   />
