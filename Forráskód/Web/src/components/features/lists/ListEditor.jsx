@@ -612,11 +612,16 @@ const ListEditor = () => {
             width: '100%', 
             justifyContent: 'space-between'
           }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              minWidth: 0, // Add this to allow proper text truncation
+              flex: 1, // Allow this box to grow and shrink
+            }}>
               <IconButton 
                 onClick={() => navigate('/')} 
                 color="primary" 
-                sx={{ mr: 1 }}
+                sx={{ mr: 1, flexShrink: 0 }}
               >
                 <ArrowBackIcon />
               </IconButton>
@@ -632,30 +637,40 @@ const ListEditor = () => {
                   background: isMobile ? `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})` : 'none',
                   backgroundClip: isMobile ? 'text' : 'unset',
                   WebkitBackgroundClip: isMobile ? 'text' : 'unset',
+                  maxWidth: { xs: isMobile && !canEdit ? 'calc(100% - 20px)' : '100%' },
+                  minWidth: 0, // Allow text to shrink below its content size
                 }}
               >
                 {isNewList ? 'Új bevásárlólista' : listTitle}
               </Typography>
             </Box>
             
-            {!canEdit && !isNewList && (
-              <Chip 
-                label="Csak megtekintés" 
-                size="small" 
-                color="secondary" 
-                sx={{ ml: 1, fontSize: '0.7rem' }}
-              />
-            )}
-            
-            {isMobile && (
-              <IconButton
-                aria-label="További műveletek"
-                onClick={toggleActionMenu}
-                color="primary"
-              >
-                <MoreVertIcon />
-              </IconButton>
-            )}
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              flexShrink: 0, // Prevent this area from shrinking
+              ml: 1, // Add margin to separate from title
+            }}>
+              {!canEdit && !isNewList && (
+                <Chip 
+                  label="Csak megtekintés" 
+                  size="small" 
+                  color="secondary" 
+                  sx={{ fontSize: '0.7rem', mr: isMobile ? 1 : 0 }}
+                />
+              )}
+              
+              {isMobile && (
+                <IconButton
+                  aria-label="További műveletek"
+                  onClick={toggleActionMenu}
+                  color="primary"
+                  sx={{ p: 1 }} // Reduce padding on mobile
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              )}
+            </Box>
           </Box>
           
           {!isMobile && (
