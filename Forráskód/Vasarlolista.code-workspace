@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "Web",
+			"path": "Web"
+		},
+		{
+			"name": "Backend",
+			"path": "Backend"
+		}
+	],
+	"settings": {
+		"jest.disabledWorkspaceFolders": [
+			"Vasarlolista"
+		]
+	}
+}
