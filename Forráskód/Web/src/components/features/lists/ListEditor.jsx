@@ -56,6 +56,7 @@ import Loader from '../../common/Loader';
 import ListService from '../../../services/list.service';
 import ProductCatalogService from '../../../services/productCatalog.service';
 import CategoryService from '../../../services/category.service';
+import { FeaturedPlayList } from '@mui/icons-material';
 
 const ListEditor = () => {
   const navigate = useNavigate();
@@ -800,7 +801,7 @@ const ListEditor = () => {
           }
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <TitleIcon color="primary" sx={{ mr: 1 }} />
+            <FeaturedPlayList color="primary" sx={{ mr: 1 }} />
             <Typography variant="h6" component="h2" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
               Lista adatai
             </Typography>
