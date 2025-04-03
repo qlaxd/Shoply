@@ -27,7 +27,9 @@ import {
   LinearProgress,
   ButtonGroup,
   Button,
-  ListItemButton
+  ListItemButton,
+  Menu,
+  MenuItem
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -40,6 +42,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CommentIcon from '@mui/icons-material/Comment';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
@@ -515,6 +519,41 @@ const ListEditor = () => {
     setMobileProductFilter(filterType);
   }, []);
 
+  // Mobile Menu for Actions
+  const actionMenu = (
+    <Menu
+      anchorEl={document.getElementById('mobile-action-button')}
+      open={actionMenuOpen}
+      onClose={toggleActionMenu}
+      onClick={(e) => e.stopPropagation()}
+      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+      anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      PaperProps={{
+        elevation: 3,
+        sx: { borderRadius: 2, minWidth: 180 }
+      }}
+    >
+      <MenuItem onClick={handleSave} disabled={!canEdit || saving || !listTitle.trim() || products.length === 0}>
+        <ListItemIcon>
+          <SaveIcon fontSize="small" color="primary" />
+        </ListItemIcon>
+        <ListItemText>Mentés</ListItemText>
+      </MenuItem>
+      <MenuItem onClick={() => handleToggleAllProducts(true)} disabled={!canEdit}>
+        <ListItemIcon>
+          <CheckBoxIcon fontSize="small" color="success" />
+        </ListItemIcon>
+        <ListItemText>Összes megjelölése</ListItemText>
+      </MenuItem>
+      <MenuItem onClick={() => handleToggleAllProducts(false)} disabled={!canEdit}>
+        <ListItemIcon>
+          <CheckBoxOutlineBlankIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Összes visszaállítása</ListItemText>
+      </MenuItem>
+    </Menu>
+  );
+
   // Termék vásárlási állapotának módosítása
   const handleToggleProduct = async (productId) => {
     if (!canEdit) {
@@ -661,6 +700,7 @@ const ListEditor = () => {
               
               {isMobile && (
                 <IconButton
+                  id="mobile-action-button"
                   aria-label="További műveletek"
                   onClick={toggleActionMenu}
                   color="primary"
@@ -1796,6 +1836,9 @@ const ListEditor = () => {
           </Fab>
         </>
       )}
+      
+      {/* Action menu for mobile */}
+      {isMobile && actionMenu}
     </>
   );
 };

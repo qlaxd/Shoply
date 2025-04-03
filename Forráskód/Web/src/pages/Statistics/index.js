@@ -56,10 +56,10 @@ const Statistics = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom align="center" color="primary" fontWeight="bold">
-        Your Shopping Statistics
+        A Vásárlási Szokásaid
       </Typography>
       <Typography variant="subtitle1" align="center" color="text.secondary" paragraph>
-        Insights about your shopping habits and list management
+        Egy kis betekintés a vásárlási szokásaidba
       </Typography>
 
       {/* Summary Cards */}
