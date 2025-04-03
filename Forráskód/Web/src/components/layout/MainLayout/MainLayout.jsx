@@ -49,13 +49,11 @@ const NAVIGATION = [
     path: '/statistics'
   },
   {
-    segment: 'history',
-    title: 'Vásárlási előzmények',
-    icon: <HistoryIcon />,
-    path: '/history'
+    kind: 'divider',
   },
   {
-    kind: 'divider',
+    kind: 'header',
+    title: 'Profil',
   },
   {
     segment: 'profile',
