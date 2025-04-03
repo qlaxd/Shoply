@@ -22,9 +22,6 @@ import {
   Alert,
   Snackbar,
   useMediaQuery,
-  Collapse,
-  Zoom,
-  LinearProgress
 } from '@mui/material';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import DeleteIcon from '@mui/icons-material/Delete';

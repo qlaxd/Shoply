@@ -8,7 +8,6 @@ import {
   ListItem, 
   ListItemText, 
   IconButton,
-  InputAdornment,
   Slider,
   ListItemIcon,
   Checkbox,
@@ -37,7 +36,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
-import TitleIcon from '@mui/icons-material/Title';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CommentIcon from '@mui/icons-material/Comment';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
