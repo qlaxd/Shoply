@@ -1,10 +1,38 @@
+using System;
+using System.Text.Json.Serialization;
+
 namespace ShoppingListAdmin.Desktop.Models
 {
     public class ProductCatalogModel
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string[] Category { get; set; }
-        public string DefaultUnit { get; set; }
+        [JsonPropertyName("_id")]
+        public string Id { get; set; } = string.Empty;
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("category")]
+        public string CategoryId { get; set; } = string.Empty;
+
+        [JsonPropertyName("defaultUnit")]
+        public string DefaultUnit { get; set; } = string.Empty;
+
+        [JsonPropertyName("barcode")]
+        public string? Barcode { get; set; }
+
+        [JsonPropertyName("createdBy")]
+        public string CreatedById { get; set; } = string.Empty;
+
+        [JsonPropertyName("lastUsed")]
+        public DateTime LastUsed { get; set; }
+
+        [JsonPropertyName("usageCount")]
+        public int UsageCount { get; set; }
+
+        [JsonPropertyName("createdAt")]
+        public DateTime CreatedAt { get; set; }
+
+        [JsonPropertyName("updatedAt")]
+        public DateTime UpdatedAt { get; set; }
     }
 }
