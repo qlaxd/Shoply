@@ -9,73 +9,101 @@ using System.Diagnostics;
 
 namespace ShoppingListAdmin.Desktop.Services
 {
-public class ApiService
-{
-    private readonly HttpClient _httpClient;
-    private string _authToken;
-
-    public ApiService()
+    public class ApiService
     {
-        _httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:5000/api/") };
-        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-    }
+        private readonly HttpClient _httpClient;
+        private string _authToken;
 
-    public async Task<bool> LoginAsync(string email, string password)
-    {
-        try
+        public ApiService()
         {
-            Console.WriteLine($"Attempting login with email: {email}");
-            
-            var payload = new { email, password };
-            Console.WriteLine($"Request payload: {System.Text.Json.JsonSerializer.Serialize(payload)}");
-            
-            var response = await _httpClient.PostAsJsonAsync("auth/login", payload);
-            
-            Console.WriteLine($"Response status: {response.StatusCode}");
-            var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Response content: {content}");
+            _httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:5000/api/") };
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
 
-            if (response.IsSuccessStatusCode)
+        public async Task<bool> LoginAsync(string email, string password)
+        {
+            try
             {
-                var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-                if (result?.Token != null)
+                Console.WriteLine($"Attempting login with email: {email}");
+                
+                var payload = new { email, password };
+                Console.WriteLine($"Request payload: {System.Text.Json.JsonSerializer.Serialize(payload)}");
+                
+                var response = await _httpClient.PostAsJsonAsync("auth/login", payload);
+                
+                Console.WriteLine($"Response status: {response.StatusCode}");
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Response content: {content}");
+
+                if (response.IsSuccessStatusCode)
                 {
-                    SetAuthToken(result.Token);
-                    return true;
+                    var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+                    if (result?.Token != null)
+                    {
+                        SetAuthToken(result.Token);
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Login error: {ex.Message}");
-            return false;
-        }
-    }
-
-    private void SetAuthToken(string token)
-    {
-        if (!string.IsNullOrEmpty(token))
-        {
-            _authToken = token;
-            _httpClient.DefaultRequestHeaders.Authorization = 
-                new AuthenticationHeaderValue("Bearer", token);
-        }
-    }
-
-    public string GetAuthToken()
-    {
-        return _authToken;
-    }
-
-    public async Task<List<UserModel>> GetUsersAsync()
-    {
-        try 
-        {
-            if (string.IsNullOrEmpty(_authToken))
+            catch (Exception ex)
             {
-                throw new UnauthorizedAccessException("No authentication token available");
+                Console.WriteLine($"Login error: {ex.Message}");
+                return false;
             }
+        }
+
+        private void SetAuthToken(string token)
+        {
+            if (!string.IsNullOrEmpty(token))
+            {
+                _authToken = token;
+                _httpClient.DefaultRequestHeaders.Authorization = 
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
+        }
+
+        public string GetAuthToken()
+        {
+            return _authToken;
+        }
+
+        // User management methods
+        public async Task<UserModel> GetCurrentUserAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<UserModel>("users/me");
+        }
+
+        public async Task UpdateUserProfileAsync(UserModel userModel)
+        {
+            await _httpClient.PutAsJsonAsync("users/profile", userModel);
+        }
+
+        public async Task ChangePasswordAsync(string currentPassword, string newPassword)
+        {
+            var payload = new { currentPassword, newPassword };
+            await _httpClient.PutAsJsonAsync("users/password", payload);
+        }
+
+        public async Task<List<UserModel>> SearchUsersAsync(string searchTerm)
+        {
+            return await _httpClient.GetFromJsonAsync<List<UserModel>>($"users/search?term={searchTerm}");
+        }
+
+        public async Task<UserModel> GetUserByIdAsync(string userId)
+        {
+            return await _httpClient.GetFromJsonAsync<UserModel>($"users/{userId}");
+        }
+
+        // Admin methods
+        public async Task<List<UserModel>> GetUsersAsync()
+        {
+            try 
+            {
+                if (string.IsNullOrEmpty(_authToken))
+                {
+                    throw new UnauthorizedAccessException("No authentication token available");
+                }
 
             var response = await _httpClient.GetAsync("admin/users");
             if (response.IsSuccessStatusCode)
@@ -127,6 +155,4 @@ public class ApiService
         public string? Token { get; set; }
         public string? Message { get; set; }
     }
-
-
 }

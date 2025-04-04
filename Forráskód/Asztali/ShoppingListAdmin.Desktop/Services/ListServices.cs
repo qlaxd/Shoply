@@ -43,5 +43,32 @@ namespace ShoppingListAdmin.Desktop.Services
         {
             await _httpClient.DeleteAsync($"lists/{listId}");
         }
+
+        // New methods for list sharing
+        public async Task ShareListAsync(string listId, string userId)
+        {
+            await _httpClient.PostAsJsonAsync($"lists/{listId}/share", new { userId });
+        }
+
+        public async Task UnshareListAsync(string listId, string userId)
+        {
+            await _httpClient.DeleteAsync($"lists/{listId}/unshare");
+        }
+
+        // New methods for product management within lists
+        public async Task AddProductToListAsync(string listId, ProductModel product)
+        {
+            await _httpClient.PostAsJsonAsync($"lists/{listId}/products", product);
+        }
+
+        public async Task RemoveProductFromListAsync(string listId, string productId)
+        {
+            await _httpClient.DeleteAsync($"lists/{listId}/products/{productId}");
+        }
+
+        public async Task UpdateProductInListAsync(string listId, string productId, ProductModel product)
+        {
+            await _httpClient.PutAsJsonAsync($"lists/{listId}/products/{productId}", product);
+        }
     }
 }
