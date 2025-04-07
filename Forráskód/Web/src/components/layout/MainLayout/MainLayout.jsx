@@ -198,10 +198,21 @@ const MainLayout = ({ children }) => {
         router={router}
         onNavigate={handleNavigate}
         basePath=""  // Set an empty base path
+        
         branding={{
-          title: 'Bevásárlólistáim',
-          logo: <img src={shoply} alt="Logo" style={{ width: 'auto', height: 'auto' , alignItems: 'center'}} />,
+          title: '',
+          logo: <img src={shoply} alt="Logo" style={{ width: 'auto', height: 'auto' }} />,
+          sx: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            '& img': {
+              marginBottom: '8px'
+            }
+          }
         }}
+        breadcrumbs={false}
         
       >
         <DashboardLayout
