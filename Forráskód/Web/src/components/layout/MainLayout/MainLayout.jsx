@@ -7,13 +7,12 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import HistoryIcon from '@mui/icons-material/History';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import PeopleIcon from '@mui/icons-material/People';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
+import shoply from '../../../assets/shoply.png';
 // Import custom page header
 import '../../common/PageHeader/styles.css';
 
@@ -201,9 +200,9 @@ const MainLayout = ({ children }) => {
         basePath=""  // Set an empty base path
         branding={{
           title: 'Bevásárlólistáim',
-          logo: <ShoppingCartIcon style={{ transform: 'translateY(7px)' }} />,
+          logo: <img src={shoply} alt="Logo" style={{ width: 'auto', height: 'auto' , alignItems: 'center'}} />,
         }}
-        breadcrumbs={false}
+        
       >
         <DashboardLayout
           account={{
