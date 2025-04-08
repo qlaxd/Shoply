@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './LoginSignup.css';
 import AuthService from '../../services/auth.service';
 import { useNavigate } from 'react-router-dom';
@@ -9,12 +9,15 @@ import email_icon from '../../assets/email.png';
 import password_icon from '../../assets/padlock.png';
 import showPwd from '../../assets/showPwd.png';
 import hidePwd from '../../assets/hidePwd.png';
+import shoplyLogo from '../../assets/shoply.png';
 
 
 const LoginSignup = () => { 
   const navigate = useNavigate();
   const [action, setAction] = useState('Sign Up');
   const [showPassword, setShowPassword] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+  const [animationStage, setAnimationStage] = useState('logo-enter');
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -25,6 +28,24 @@ const LoginSignup = () => {
     email: '',
     password: ''
   });
+
+  // Handle splash screen animation sequence
+  useEffect(() => {
+    // Logo enter animation
+    setTimeout(() => {
+      setAnimationStage('logo-visible');
+      
+      // Logo exit animation after 2 seconds
+      setTimeout(() => {
+        setAnimationStage('logo-exit');
+        
+        // Hide splash and show login form after exit animation completes
+        setTimeout(() => {
+          setShowSplash(false);
+        }, 1000); // Matches the exit animation duration
+      }, 2000);
+    }, 100);
+  }, []);
 
 
 /*
@@ -129,94 +150,102 @@ AuthService megfelelő metódusát (login/register) és átadja neki a formData
   };
 
   return (
-    <div className='container'>
-      <div className='header'>
-        <div className='text'>{action}</div>
-        <div className='underline'></div>
-      </div>
-      <div className='inputs'>
-        {action === "Log In" ? <div></div> : 
-          <div className="input-container">
-            <div className='input'>
-              <img src={user_icon} alt='user' />
-              <input
-                type='text'
-                placeholder='Username'
-                name='username'
-                value={formData.username}
-                onChange={handleChange}
-              />
+    <>
+      {showSplash ? (
+        <div className={`splash-screen ${animationStage}`}>
+          <img src={shoplyLogo} alt="Shoply Logo" className="splash-logo" />
+        </div>
+      ) : (
+        <div className='container'>
+          <div className='header'>
+            <div className='text'>{action}</div>
+            <div className='underline'></div>
+          </div>
+          <div className='inputs'>
+            {action === "Log In" ? <div></div> : 
+              <div className="input-container">
+                <div className='input'>
+                  <img src={user_icon} alt='user' />
+                  <input
+                    type='text'
+                    placeholder='Username'
+                    name='username'
+                    value={formData.username}
+                    onChange={handleChange}
+                  />
+                </div>
+                {errors.username && <div className="error-message">{errors.username}</div>}
+              </div>
+            }
+            <div className="input-container">
+              <div className='input'>
+                <img src={email_icon} alt='email' />
+                <input
+                  type='email'
+                  placeholder='Email'
+                  name='email'
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+              {errors.email && <div className="error-message">{errors.email}</div>}
             </div>
-            {errors.username && <div className="error-message">{errors.username}</div>}
+            <div className="input-container">
+              <div className='input'>
+                <img src={password_icon} alt='password' />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder='Password'
+                  name='password'
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+                <img
+                  src={showPassword ? showPwd : hidePwd}
+                  alt={showPassword ? 'hide password' : 'show password'}
+                  className='show-pwd'
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+              </div>
+              {errors.password && <div className="error-message">{errors.password}</div>}
+            </div>
           </div>
-        }
-        <div className="input-container">
-          <div className='input'>
-            <img src={email_icon} alt='email' />
-            <input
-              type='email'
-              placeholder='Email'
-              name='email'
-              value={formData.email}
-              onChange={handleChange}
-            />
+          {action === "Sign Up" ? <div></div> : 
+            <div className='forgot-password'>Forgot Password? <span>Click Here</span></div>
+          }
+          <div className='submit-container'>
+            <button 
+              type="button"
+              tabIndex={0}
+              className={action === "Sign Up" ? "submit grey" : "submit"} 
+              onClick={() => {
+                if (action !== "Sign Up") {
+                  setAction("Sign Up");
+                } else {
+                  handleSubmit();
+                }
+              }}
+            >
+              Sign Up
+            </button>
+            <button 
+              type="button"
+              tabIndex={0}
+              className={action === "Log In" ? "submit grey" : "submit"} 
+              onClick={() => {
+                if (action !== "Log In") {
+                  setAction("Log In");
+                } else {
+                  handleSubmit();
+                }
+              }}
+            >
+              Log In
+            </button>
           </div>
-          {errors.email && <div className="error-message">{errors.email}</div>}
         </div>
-        <div className="input-container">
-          <div className='input'>
-            <img src={password_icon} alt='password' />
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder='Password'
-              name='password'
-              value={formData.password}
-              onChange={handleChange}
-            />
-            <img
-              src={showPassword ? showPwd : hidePwd}
-              alt={showPassword ? 'hide password' : 'show password'}
-              className='show-pwd'
-              onClick={() => setShowPassword(!showPassword)}
-            />
-          </div>
-          {errors.password && <div className="error-message">{errors.password}</div>}
-        </div>
-      </div>
-      {action === "Sign Up" ? <div></div> : 
-        <div className='forgot-password'>Forgot Password? <span>Click Here</span></div>
-      }
-      <div className='submit-container'>
-        <button 
-          type="button"
-          tabIndex={0}
-          className={action === "Sign Up" ? "submit grey" : "submit"} 
-          onClick={() => {
-            if (action !== "Sign Up") {
-              setAction("Sign Up");
-            } else {
-              handleSubmit();
-            }
-          }}
-        >
-          Sign Up
-        </button>
-        <button 
-          type="button"
-          tabIndex={0}
-          className={action === "Log In" ? "submit grey" : "submit"} 
-          onClick={() => {
-            if (action !== "Log In") {
-              setAction("Log In");
-            } else {
-              handleSubmit();
-            }
-          }}
-        >
-          Log In
-        </button>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 
