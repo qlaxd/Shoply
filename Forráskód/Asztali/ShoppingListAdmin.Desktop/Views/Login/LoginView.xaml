@@ -139,9 +139,9 @@
                         Width="220">
                     <StackPanel Orientation="Vertical"
                                 Margin="0,10,0,0">
-                        <Image Source="/Images/profile.png"
-                               Width="100" Height="100"/>
-                        <TextBlock Text="Közös Vásárlólista adminisztrációs program."
+                        <Image Source="/Images/shoply.png"
+                               Width="199" Height="100"/>
+                        <TextBlock Text="Shoply alkalmazás adminisztrációs program"
                                Foreground="LightGray"
                                FontSize="12"
                                FontWeight="Medium"
