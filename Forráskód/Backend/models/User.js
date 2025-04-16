@@ -25,9 +25,10 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  isActive: {
-    type: Boolean,
-    default: true
+  status: {
+    type: String,
+    enum: ['active', 'banned'],
+    default: 'active'
   }
 }, {
   timestamps: true // Ez automatikusan kezeli a createdAt és updatedAt mezőket

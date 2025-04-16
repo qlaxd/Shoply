@@ -18,8 +18,8 @@ describe('User Model Test', () => {
     expect(savedUser.username).toBe(validUser.username);
     expect(savedUser.email).toBe(validUser.email);
     expect(savedUser.password).toBe(validUser.password);
-    expect(savedUser.role).toBe('user'); // Default value
-    expect(savedUser.isActive).toBe(true); // Default value
+    expect(savedUser.role).toBe('user');
+    expect(savedUser.status).toBe('active');
     expect(savedUser.createdAt).toBeDefined();
     expect(savedUser.updatedAt).toBeDefined();
   });
@@ -107,7 +107,7 @@ describe('User Model Test', () => {
     
     // Verify default values
     expect(savedUser.role).toBe('user');
-    expect(savedUser.isActive).toBe(true);
+    expect(savedUser.status).toBe('active');
     expect(savedUser.lastLogin).toBeDefined();
   });
 }); 
