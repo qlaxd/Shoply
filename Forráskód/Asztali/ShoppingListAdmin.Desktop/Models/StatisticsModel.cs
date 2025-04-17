@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Vasarlolista.Admin.Models
+namespace ShoppingListAdmin.Desktop.Models
 {
     public class StatisticsModel
     {

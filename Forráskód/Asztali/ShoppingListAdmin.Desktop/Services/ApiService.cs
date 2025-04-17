@@ -148,6 +148,99 @@ namespace ShoppingListAdmin.Desktop.Services
         throw new HttpRequestException($"Failed to demote user. Status code: {response.StatusCode}");
     }
     }
+
+    // Statistics methods
+    public async Task<StatisticsModel> GetStatisticsAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(_authToken))
+            {
+                throw new UnauthorizedAccessException("No authentication token available");
+            }
+
+            var response = await _httpClient.GetAsync("statistics");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<StatisticsModel>();
+            }
+            throw new HttpRequestException($"Error: {response.StatusCode}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"GetStatisticsAsync error: {ex.Message}");
+            throw;
+        }
+    }
+
+    public async Task<StatisticsModel> GetUserGrowthStatsAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(_authToken))
+            {
+                throw new UnauthorizedAccessException("No authentication token available");
+            }
+
+            var response = await _httpClient.GetAsync("statistics/users");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<StatisticsModel>();
+            }
+            throw new HttpRequestException($"Error: {response.StatusCode}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"GetUserGrowthStatsAsync error: {ex.Message}");
+            throw;
+        }
+    }
+
+    public async Task<StatisticsModel> GetListActivityStatsAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(_authToken))
+            {
+                throw new UnauthorizedAccessException("No authentication token available");
+            }
+
+            var response = await _httpClient.GetAsync("statistics/lists");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<StatisticsModel>();
+            }
+            throw new HttpRequestException($"Error: {response.StatusCode}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"GetListActivityStatsAsync error: {ex.Message}");
+            throw;
+        }
+    }
+
+    public async Task<StatisticsModel> GetProductStatsAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(_authToken))
+            {
+                throw new UnauthorizedAccessException("No authentication token available");
+            }
+
+            var response = await _httpClient.GetAsync("statistics/products");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<StatisticsModel>();
+            }
+            throw new HttpRequestException($"Error: {response.StatusCode}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"GetProductStatsAsync error: {ex.Message}");
+            throw;
+        }
+    }
 }
 
     public class LoginResponse
