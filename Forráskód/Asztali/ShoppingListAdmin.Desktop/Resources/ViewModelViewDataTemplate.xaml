@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:ShoppingListAdmin.Desktop.ViewModels"
+                    xmlns:v="clr-namespace:ShoppingListAdmin.Desktop.Views"
+                    xmlns:statistics="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.Statistics"
+                    xmlns:statisticsView="clr-namespace:ShoppingListAdmin.Desktop.Views.Statistics">
+
+    <!-- Statistics View Template -->
+    <DataTemplate DataType="{x:Type statistics:StatisticsViewModel}">
+        <statisticsView:StatisticsView/>
+    </DataTemplate>
+
+</ResourceDictionary> 
