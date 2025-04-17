@@ -97,6 +97,10 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Statistics
             LoadStatisticsCommand.Execute(null);
         }
 
+        public StatisticsViewModel()
+        {
+        }
+
         private async Task ExecuteLoadStatisticsCommand()
         {
             try
