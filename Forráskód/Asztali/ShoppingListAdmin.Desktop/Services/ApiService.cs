@@ -173,7 +173,7 @@ namespace ShoppingListAdmin.Desktop.Services
         }
     }
 
-    public async Task<StatisticsModel> GetUserGrowthStatsAsync()
+    public async Task<UserGrowthStatistics> GetUserGrowthStatsAsync()
     {
         try
         {
@@ -185,7 +185,7 @@ namespace ShoppingListAdmin.Desktop.Services
             var response = await _httpClient.GetAsync("statistics/users");
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<StatisticsModel>();
+                return await response.Content.ReadFromJsonAsync<UserGrowthStatistics>();
             }
             throw new HttpRequestException($"Error: {response.StatusCode}");
         }
@@ -196,7 +196,7 @@ namespace ShoppingListAdmin.Desktop.Services
         }
     }
 
-    public async Task<StatisticsModel> GetListActivityStatsAsync()
+    public async Task<ListActivityStatistics> GetListActivityStatsAsync()
     {
         try
         {
@@ -208,7 +208,7 @@ namespace ShoppingListAdmin.Desktop.Services
             var response = await _httpClient.GetAsync("statistics/lists");
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<StatisticsModel>();
+                return await response.Content.ReadFromJsonAsync<ListActivityStatistics>();
             }
             throw new HttpRequestException($"Error: {response.StatusCode}");
         }
@@ -219,7 +219,7 @@ namespace ShoppingListAdmin.Desktop.Services
         }
     }
 
-    public async Task<StatisticsModel> GetProductStatsAsync()
+    public async Task<ProductStatistics> GetProductStatsAsync()
     {
         try
         {
@@ -231,7 +231,7 @@ namespace ShoppingListAdmin.Desktop.Services
             var response = await _httpClient.GetAsync("statistics/products");
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<StatisticsModel>();
+                return await response.Content.ReadFromJsonAsync<ProductStatistics>();
             }
             throw new HttpRequestException($"Error: {response.StatusCode}");
         }
