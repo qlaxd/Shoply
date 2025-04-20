@@ -21,151 +21,185 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Statistics
         [ObservableProperty]
         private string _errorMessage;
 
-        // User statistics
+        // User Statistics
         [ObservableProperty]
-        private int _totalUsers;
+        private UserGrowthStatistics _userGrowthStatistics;
 
         [ObservableProperty]
-        private int _activeUsers;
+        private ObservableCollection<MonthlyGrowthStat> _userGrowthByMonth;
 
         [ObservableProperty]
-        private int _newUsersThisMonth;
+        private ObservableCollection<DailyActivityStat> _userActivityByDay;
 
-        // List statistics
+        // List Statistics
         [ObservableProperty]
-        private int _totalLists;
-
-        [ObservableProperty]
-        private int _activeLists;
+        private ListActivityStatistics _listActivityStatistics;
 
         [ObservableProperty]
-        private int _completedLists;
+        private ObservableCollection<CategoryListStat> _listsByCategory;
 
         [ObservableProperty]
-        private double _averageListsPerUser;
+        private ObservableCollection<UserCollaborationStat> _mostActiveCollaborators;
 
-        // Product statistics
+        // Product Statistics
         [ObservableProperty]
-        private int _totalProducts;
-
-        [ObservableProperty]
-        private double _averageProductsPerList;
+        private ProductStatistics _productStatistics;
 
         [ObservableProperty]
-        private ObservableCollection<ProductStat> _mostAddedProducts;
+        private ObservableCollection<CategoryProductStat> _productsByCategory;
 
         [ObservableProperty]
-        private ObservableCollection<ProductStat> _mostPurchasedProducts;
+        private ObservableCollection<PriceRangeStat> _priceDistribution;
 
-        // Collaboration statistics
-        [ObservableProperty]
-        private double _averageContributorsPerList;
-
-        [ObservableProperty]
-        private double _collaborativeListsPercentage;
-
-        // Time-based metrics
-        [ObservableProperty]
-        private ObservableCollection<TimeBasedStat> _dailyActiveUsers;
-
-        [ObservableProperty]
-        private ObservableCollection<TimeBasedStat> _weeklyActiveUsers;
-
-        [ObservableProperty]
-        private ObservableCollection<TimeBasedStat> _monthlyActiveUsers;
-
-        [ObservableProperty]
-        private DateTime _lastUpdated;
-
-        public ICommand LoadStatisticsCommand { get; }
+        // Commands
+        public ICommand LoadUserStatsCommand { get; }
+        public ICommand LoadListStatsCommand { get; }
+        public ICommand LoadProductStatsCommand { get; }
+        public ICommand LoadAllStatsCommand { get; }
 
         public StatisticsViewModel(ApiService apiService)
         {
             _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             
             // Initialize collections
-            MostAddedProducts = new ObservableCollection<ProductStat>();
-            MostPurchasedProducts = new ObservableCollection<ProductStat>();
-            DailyActiveUsers = new ObservableCollection<TimeBasedStat>();
-            WeeklyActiveUsers = new ObservableCollection<TimeBasedStat>();
-            MonthlyActiveUsers = new ObservableCollection<TimeBasedStat>();
+            UserGrowthByMonth = new ObservableCollection<MonthlyGrowthStat>();
+            UserActivityByDay = new ObservableCollection<DailyActivityStat>();
+            ListsByCategory = new ObservableCollection<CategoryListStat>();
+            MostActiveCollaborators = new ObservableCollection<UserCollaborationStat>();
+            ProductsByCategory = new ObservableCollection<CategoryProductStat>();
+            PriceDistribution = new ObservableCollection<PriceRangeStat>();
 
             // Initialize commands
-            LoadStatisticsCommand = new AsyncRelayCommand(ExecuteLoadStatisticsCommand);
+            LoadUserStatsCommand = new AsyncRelayCommand(ExecuteLoadUserStatsCommand);
+            LoadListStatsCommand = new AsyncRelayCommand(ExecuteLoadListStatsCommand);
+            LoadProductStatsCommand = new AsyncRelayCommand(ExecuteLoadProductStatsCommand);
+            LoadAllStatsCommand = new AsyncRelayCommand(ExecuteLoadAllStatsCommand);
 
-            // Load data on initialization
-            LoadStatisticsCommand.Execute(null);
+            // Load initial data
+            LoadAllStatsCommand.Execute(null);
         }
 
         public StatisticsViewModel()
         {
         }
 
-        private async Task ExecuteLoadStatisticsCommand()
+        private async Task ExecuteLoadUserStatsCommand()
         {
             try
             {
                 IsLoading = true;
                 ErrorMessage = string.Empty;
 
-                var statistics = await _apiService.GetStatisticsAsync();
+                UserGrowthStatistics = await _apiService.GetUserGrowthStatsAsync();
 
-                // Update user statistics
-                TotalUsers = statistics.TotalUsers;
-                ActiveUsers = statistics.ActiveUsers;
-                NewUsersThisMonth = statistics.NewUsersThisMonth;
-
-                // Update list statistics
-                TotalLists = statistics.TotalLists;
-                ActiveLists = statistics.ActiveLists;
-                CompletedLists = statistics.CompletedLists;
-                AverageListsPerUser = statistics.AverageListsPerUser;
-
-                // Update product statistics
-                TotalProducts = statistics.TotalProducts;
-                AverageProductsPerList = statistics.AverageProductsPerList;
-                
-                MostAddedProducts.Clear();
-                foreach (var product in statistics.MostAddedProducts)
+                // Update collections
+                UserGrowthByMonth.Clear();
+                foreach (var stat in UserGrowthStatistics.UserGrowthByMonth)
                 {
-                    MostAddedProducts.Add(product);
+                    UserGrowthByMonth.Add(stat);
                 }
 
-                MostPurchasedProducts.Clear();
-                foreach (var product in statistics.MostPurchasedProducts)
+                UserActivityByDay.Clear();
+                foreach (var stat in UserGrowthStatistics.UserActivityByDay)
                 {
-                    MostPurchasedProducts.Add(product);
+                    UserActivityByDay.Add(stat);
                 }
-
-                // Update collaboration statistics
-                AverageContributorsPerList = statistics.AverageContributorsPerList;
-                CollaborativeListsPercentage = statistics.CollaborativeListsPercentage;
-
-                // Update time-based metrics
-                DailyActiveUsers.Clear();
-                foreach (var stat in statistics.DailyActiveUsers)
-                {
-                    DailyActiveUsers.Add(stat);
-                }
-
-                WeeklyActiveUsers.Clear();
-                foreach (var stat in statistics.WeeklyActiveUsers)
-                {
-                    WeeklyActiveUsers.Add(stat);
-                }
-
-                MonthlyActiveUsers.Clear();
-                foreach (var stat in statistics.MonthlyActiveUsers)
-                {
-                    MonthlyActiveUsers.Add(stat);
-                }
-
-                LastUpdated = statistics.LastUpdated;
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error loading statistics: {ex.Message}";
-                Debug.WriteLine($"Error in ExecuteLoadStatisticsCommand: {ex}");
+                ErrorMessage = $"Error loading user statistics: {ex.Message}";
+                Debug.WriteLine($"Error in ExecuteLoadUserStatsCommand: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task ExecuteLoadListStatsCommand()
+        {
+            try
+            {
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                ListActivityStatistics = await _apiService.GetListActivityStatsAsync();
+
+                // Update collections
+                ListsByCategory.Clear();
+                foreach (var stat in ListActivityStatistics.ListsByCategory)
+                {
+                    ListsByCategory.Add(stat);
+                }
+
+                MostActiveCollaborators.Clear();
+                foreach (var stat in ListActivityStatistics.CollaborativeLists.MostActiveCollaborators)
+                {
+                    MostActiveCollaborators.Add(stat);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error loading list statistics: {ex.Message}";
+                Debug.WriteLine($"Error in ExecuteLoadListStatsCommand: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task ExecuteLoadProductStatsCommand()
+        {
+            try
+            {
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                ProductStatistics = await _apiService.GetProductStatsAsync();
+
+                // Update collections
+                ProductsByCategory.Clear();
+                foreach (var stat in ProductStatistics.ProductsByCategory)
+                {
+                    ProductsByCategory.Add(stat);
+                }
+
+                PriceDistribution.Clear();
+                foreach (var stat in ProductStatistics.PriceStats.PriceDistribution)
+                {
+                    PriceDistribution.Add(stat);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error loading product statistics: {ex.Message}";
+                Debug.WriteLine($"Error in ExecuteLoadProductStatsCommand: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task ExecuteLoadAllStatsCommand()
+        {
+            try
+            {
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                // Load all statistics in parallel
+                var userStatsTask = ExecuteLoadUserStatsCommand();
+                var listStatsTask = ExecuteLoadListStatsCommand();
+                var productStatsTask = ExecuteLoadProductStatsCommand();
+
+                await Task.WhenAll(userStatsTask, listStatsTask, productStatsTask);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error loading all statistics: {ex.Message}";
+                Debug.WriteLine($"Error in ExecuteLoadAllStatsCommand: {ex}");
             }
             finally
             {
