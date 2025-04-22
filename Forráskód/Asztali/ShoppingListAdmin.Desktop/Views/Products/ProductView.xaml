@@ -48,7 +48,8 @@
                 <TextBlock Text="Termékek" 
                            FontSize="24" 
                            FontWeight="Bold" 
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           Foreground="White"/>
                 
                 <Button Content="Új termék"
                         Command="{Binding CreateProductCommand}"
