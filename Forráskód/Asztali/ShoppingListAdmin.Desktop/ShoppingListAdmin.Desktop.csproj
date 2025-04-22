@@ -18,6 +18,7 @@
     <None Remove="Images\kreta_atl.png" />
     <None Remove="Images\profil.jpg" />
     <None Remove="Images\profile.png" />
+    <None Remove="Images\shoply.png" />
     <None Remove="Images\user-icon.png" />
   </ItemGroup>
 
@@ -39,6 +40,7 @@
     <Resource Include="Images\kreta_atl.png" />
     <Resource Include="Images\profil.jpg" />
     <Resource Include="Images\profile.png" />
+    <Resource Include="Images\shoply.png" />
     <Resource Include="Images\user-icon.png" />
   </ItemGroup>
 
