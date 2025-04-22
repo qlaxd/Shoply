@@ -5,6 +5,8 @@ using ShoppingListAdmin.Desktop.Services;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using ShoppingListAdmin.Desktop.ViewModels.Base;
+using System;
+using System.Diagnostics;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Products
 {
@@ -12,6 +14,12 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Products
     {
         private readonly ProductCatalogService _productCatalogService;
         private ProductCatalogModel? _selectedProduct;
+
+        [ObservableProperty]
+        private bool _isLoading;
+
+        [ObservableProperty]
+        private string _errorMessage;
 
         public ObservableCollection<ProductCatalogModel> Products { get; set; }
 
@@ -23,7 +31,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Products
 
         public ProductViewModel(ProductCatalogService productCatalogService)
         {
-            _productCatalogService = productCatalogService;
+            _productCatalogService = productCatalogService ?? throw new ArgumentNullException(nameof(productCatalogService));
             Products = new ObservableCollection<ProductCatalogModel>();
             LoadProducts();
         }
@@ -34,33 +42,93 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Products
 
         private async void LoadProducts()
         {
-            var products = await _productCatalogService.GetAllProductCatalogsAsync();
-            Products.Clear();
-            foreach (var product in products)
+            try
             {
-                Products.Add(product);
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                var products = await _productCatalogService.GetAllProductCatalogsAsync();
+                Products.Clear();
+                foreach (var product in products)
+                {
+                    Products.Add(product);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Hiba a termékek betöltése közben: {ex.Message}";
+                Debug.WriteLine($"Error in LoadProducts: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
         [RelayCommand]
         public async Task CreateProductAsync(ProductCatalogModel product)
         {
-            await _productCatalogService.CreateProductCatalogAsync(product);
-            LoadProducts();
+            try
+            {
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                await _productCatalogService.CreateProductCatalogAsync(product);
+                LoadProducts();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Hiba a termék létrehozása közben: {ex.Message}";
+                Debug.WriteLine($"Error in CreateProductAsync: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         [RelayCommand]
         public async Task UpdateProductAsync(ProductCatalogModel product)
         {
-            await _productCatalogService.UpdateProductCatalogAsync(product.Id, product);
-            LoadProducts();
+            try
+            {
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                await _productCatalogService.UpdateProductCatalogAsync(product.Id, product);
+                LoadProducts();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Hiba a termék frissítése közben: {ex.Message}";
+                Debug.WriteLine($"Error in UpdateProductAsync: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         [RelayCommand]
         public async Task DeleteProductAsync(ProductCatalogModel product)
         {
-            await _productCatalogService.DeleteProductCatalogAsync(product.Id);
-            LoadProducts();
+            try
+            {
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                await _productCatalogService.DeleteProductCatalogAsync(product.Id);
+                LoadProducts();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Hiba a termék törlése közben: {ex.Message}";
+                Debug.WriteLine($"Error in DeleteProductAsync: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
     }
 }

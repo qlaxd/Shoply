@@ -3,29 +3,112 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views.Products" xmlns:products="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.Products"
+             xmlns:local="clr-namespace:ShoppingListAdmin.Desktop.Views.Products" 
+             xmlns:products="clr-namespace:ShoppingListAdmin.Desktop.ViewModels.Products"
              d:DataContext="{d:DesignInstance Type=products:ProductViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="1000">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/UIColors.xaml"/>
+                <ResourceDictionary Source="/Styles/DataGridStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <Grid>
-        <Label>Termékek</Label>
-         <DataGrid ItemsSource="{Binding Products}" AutoGenerateColumns="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*"/>
-                <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="*"/>
-                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="*"/>
-                <DataGridTextColumn Header="Is Available" Binding="{Binding IsAvailable}" Width="*"/>
-                <DataGridTextColumn Header="Default Unit" Binding="{Binding DefaultUnit}" Width="*"/>
-                <DataGridTemplateColumn Header="Actions" Width="120">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="Delete" Command="{Binding DataContext.DeleteProductCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>           
+        <!-- Loading Indicator -->
+        <Grid Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Background="{StaticResource backgroundPrimaryColor1}" Opacity="0.7"/>
+            <ProgressBar IsIndeterminate="True" 
+                         Height="50" 
+                         Width="200"
+                         Foreground="{StaticResource colorMidleGreen}"/>
+        </Grid>
+
+        <!-- Error Message -->
+        <TextBlock Text="{Binding ErrorMessage}"
+                   Foreground="Red"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Top"
+                   Margin="0,10,0,0"
+                   Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+
+        <!-- Main Content -->
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,20">
+                <TextBlock Text="Termékek" 
+                           FontSize="24" 
+                           FontWeight="Bold" 
+                           VerticalAlignment="Center"/>
+                
+                <Button Content="Új termék"
+                        Command="{Binding CreateProductCommand}"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Margin="20,0,0,0"/>
+            </StackPanel>
+
+            <!-- Products DataGrid -->
+            <DataGrid Grid.Row="1"
+                      ItemsSource="{Binding Products}"
+                      SelectedItem="{Binding SelectedProduct}"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      IsReadOnly="False"
+                      Style="{StaticResource DataGridStyle}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" 
+                                      Binding="{Binding Id}"
+                                      IsReadOnly="True"
+                                      Width="*"/>
+                    <DataGridTextColumn Header="Név" 
+                                      Binding="{Binding Name}"
+                                      Width="*"/>
+                    <DataGridTextColumn Header="Kategória" 
+                                      Binding="{Binding Category}"
+                                      Width="*"/>
+                    <DataGridTextColumn Header="Ár" 
+                                      Binding="{Binding Price, StringFormat={}{0:C2}}"
+                                      Width="*"/>
+                    <DataGridTextColumn Header="Mennyiség" 
+                                      Binding="{Binding Quantity}"
+                                      Width="*"/>
+                    <DataGridCheckBoxColumn Header="Elérhető" 
+                                          Binding="{Binding IsAvailable}"
+                                          Width="*"/>
+                    <DataGridTextColumn Header="Alapértelmezett egység" 
+                                      Binding="{Binding DefaultUnit}"
+                                      Width="*"/>
+                    <DataGridTemplateColumn Header="Műveletek" Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Szerkesztés"
+                                            Command="{Binding DataContext.UpdateProductCommand, 
+                                                      RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource IconButtonStyle}"
+                                            Margin="0,0,5,0"/>
+                                    <Button Content="Törlés"
+                                            Command="{Binding DataContext.DeleteProductCommand, 
+                                                      RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource IconButtonStyle}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
     </Grid>
 </UserControl>
