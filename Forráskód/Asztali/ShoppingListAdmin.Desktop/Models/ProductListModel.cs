@@ -1,12 +1,89 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace ShoppingListAdmin.Desktop.Models
 {
     public class ProductListModel : INotifyPropertyChanged
     {
         private ObservableCollection<ProductModel> _products;
+        private string _id;
+        private string _name;
+        private string _owner;
+        private DateTime _createdAt;
+        private DateTime _updatedAt;
+
+        [JsonPropertyName("_id")]
+        public string Id
+        {
+            get => _id;
+            set
+            {
+                if (_id != value)
+                {
+                    _id = value;
+                    OnPropertyChanged(nameof(Id));
+                }
+            }
+        }
+
+        [JsonPropertyName("name")]
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_name != value)
+                {
+                    _name = value;
+                    OnPropertyChanged(nameof(Name));
+                }
+            }
+        }
+
+        [JsonPropertyName("owner")]
+        public string Owner
+        {
+            get => _owner;
+            set
+            {
+                if (_owner != value)
+                {
+                    _owner = value;
+                    OnPropertyChanged(nameof(Owner));
+                }
+            }
+        }
+
+        [JsonPropertyName("createdAt")]
+        public DateTime CreatedAt
+        {
+            get => _createdAt;
+            set
+            {
+                if (_createdAt != value)
+                {
+                    _createdAt = value;
+                    OnPropertyChanged(nameof(CreatedAt));
+                }
+            }
+        }
+
+        [JsonPropertyName("updatedAt")]
+        public DateTime UpdatedAt
+        {
+            get => _updatedAt;
+            set
+            {
+                if (_updatedAt != value)
+                {
+                    _updatedAt = value;
+                    OnPropertyChanged(nameof(UpdatedAt));
+                }
+            }
+        }
 
         // Termékek listája
         public ObservableCollection<ProductModel> Products
@@ -35,7 +112,11 @@ namespace ShoppingListAdmin.Desktop.Models
         public ProductListModel()
         {
             _products = new ObservableCollection<ProductModel>();
-            Products = _products;
+            _id = string.Empty;
+            _name = string.Empty;
+            _owner = string.Empty;
+            _createdAt = DateTime.Now;
+            _updatedAt = DateTime.Now;
         }
 
         // Termék hozzáadása a listához

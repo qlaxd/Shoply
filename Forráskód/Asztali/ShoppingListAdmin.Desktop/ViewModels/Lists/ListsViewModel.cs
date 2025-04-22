@@ -1,172 +1,147 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using ShoppingListAdmin.Desktop.Models;
 using ShoppingListAdmin.Desktop.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using ShoppingListAdmin.Desktop.Services;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Lists
 {
-    public class ListsViewModel : BaseViewModel
+    public partial class ListsViewModel : BaseViewModel
     {
-        private ProductListModel _productListModel;
-        private ProductModel? _selectedProduct;
-        private string _newProductName;
-        private string _newProductCategory;
-        private decimal _newProductPrice;
-        private int _newProductStock;
-        private bool _newProductIsAvailable;
+        private readonly ListService _listService;
+        private ProductListModel? _selectedList;
 
-        // Terméklisták kezelése
-        public ObservableCollection<ProductModel> Products => _productListModel.Products;
+        [ObservableProperty]
+        private bool _isLoading;
 
-        // Kiválasztott termék
-        public ProductModel? SelectedProduct
+        [ObservableProperty]
+        private string _errorMessage;
+
+        public ObservableCollection<ProductListModel> Lists { get; set; }
+
+        public ProductListModel? SelectedList
         {
-            get => _selectedProduct;
-            set
-            {
-                if (_selectedProduct != value)
-                {
-                    _selectedProduct = value;
-                    OnPropertyChanged(nameof(SelectedProduct));
-                }
-            }
+            get => _selectedList;
+            set => SetProperty(ref _selectedList, value);
         }
 
-        // Új termék tulajdonságai
-        public string NewProductName
+        // Commands
+        public ICommand LoadListsCommand { get; }
+        public ICommand CreateListCommand { get; }
+        public ICommand UpdateListCommand { get; }
+        public ICommand DeleteListCommand { get; }
+
+        public ListsViewModel(ListService listService)
         {
-            get => _newProductName;
-            set
-            {
-                if (_newProductName != value)
-                {
-                    _newProductName = value;
-                    OnPropertyChanged(nameof(NewProductName));
-                }
-            }
+            _listService = listService ?? throw new ArgumentNullException(nameof(listService));
+            Lists = new ObservableCollection<ProductListModel>();
+
+            // Initialize commands
+            LoadListsCommand = new AsyncRelayCommand(ExecuteLoadListsCommand);
+            CreateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteCreateListCommand);
+            UpdateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteUpdateListCommand);
+            DeleteListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteDeleteListCommand);
+
+            // Load initial data
+            LoadListsCommand.Execute(null);
         }
 
-        public string NewProductCategory
-        {
-            get => _newProductCategory;
-            set
-            {
-                if (_newProductCategory != value)
-                {
-                    _newProductCategory = value;
-                    OnPropertyChanged(nameof(NewProductCategory));
-                }
-            }
-        }
-
-        public decimal NewProductPrice
-        {
-            get => _newProductPrice;
-            set
-            {
-                if (_newProductPrice != value)
-                {
-                    _newProductPrice = value;
-                    OnPropertyChanged(nameof(NewProductPrice));
-                }
-            }
-        }
-
-        public int NewProductStock
-        {
-            get => _newProductStock;
-            set
-            {
-                if (_newProductStock != value)
-                {
-                    _newProductStock = value;
-                    OnPropertyChanged(nameof(NewProductStock));
-                }
-            }
-        }
-
-        public bool NewProductIsAvailable
-        {
-            get => _newProductIsAvailable;
-            set
-            {
-                if (_newProductIsAvailable != value)
-                {
-                    _newProductIsAvailable = value;
-                    OnPropertyChanged(nameof(NewProductIsAvailable));
-                }
-            }
-        }
-
-        // Parancsok
-        public ICommand AddProductCommand { get; }
-        public ICommand RemoveProductCommand { get; }
-
-        // INotifyPropertyChanged implementáció
-        public new event PropertyChangedEventHandler? PropertyChanged;
-
-        protected new virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        // Konstruktor
         public ListsViewModel()
         {
-            _productListModel = new ProductListModel();
-            _productListModel.PropertyChanged += ProductListModel_PropertyChanged;
-
-            _selectedProduct = new ProductModel();
-            _newProductName = string.Empty;
-            _newProductCategory = string.Empty;
-
-            // Parancsok inicializálása
-            AddProductCommand = new RelayCommand(AddProduct, CanAddProduct);
-            RemoveProductCommand = new RelayCommand(RemoveProduct, CanRemoveProduct);
         }
 
-        private void ProductListModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        private async Task ExecuteLoadListsCommand()
         {
-            if (e.PropertyName == nameof(ProductListModel.Products))
+            try
             {
-                OnPropertyChanged(nameof(Products));
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                var lists = await _listService.GetAllListsAsync();
+                Lists.Clear();
+                foreach (var list in lists)
+                {
+                    Lists.Add(list);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Hiba a listák betöltése közben: {ex.Message}";
+                Debug.WriteLine($"Error in ExecuteLoadListsCommand: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
-        // Új termék hozzáadása
-        private void AddProduct()
+        private async Task ExecuteCreateListCommand(ProductListModel list)
         {
-            var newProduct = new ProductModel(Products.Count + 1, NewProductName, NewProductCategory, NewProductPrice, NewProductStock, NewProductIsAvailable);
-            _productListModel.AddProduct(newProduct);
-
-            // Tisztítsuk az űrlapot az új termék hozzáadása után
-            NewProductName = string.Empty;
-            NewProductCategory = string.Empty;
-            NewProductPrice = 0m;
-            NewProductStock = 0;
-            NewProductIsAvailable = false;
-        }
-
-        private bool CanAddProduct()
-        {
-            return !string.IsNullOrWhiteSpace(NewProductName) && !string.IsNullOrWhiteSpace(NewProductCategory) && NewProductPrice > 0 && NewProductStock >= 0;
-        }
-
-        // Termék eltávolítása
-        private void RemoveProduct()
-        {
-            if (SelectedProduct != null)
+            try
             {
-                _productListModel.RemoveProduct(SelectedProduct);
-                SelectedProduct = null;
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                await _listService.CreateListAsync(list);
+                await ExecuteLoadListsCommand();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Hiba a lista létrehozása közben: {ex.Message}";
+                Debug.WriteLine($"Error in ExecuteCreateListCommand: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
-        private bool CanRemoveProduct()
+        private async Task ExecuteUpdateListCommand(ProductListModel list)
         {
-            return SelectedProduct != null;
+            try
+            {
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                await _listService.UpdateListAsync(list.Id, list);
+                await ExecuteLoadListsCommand();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Hiba a lista frissítése közben: {ex.Message}";
+                Debug.WriteLine($"Error in ExecuteUpdateListCommand: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task ExecuteDeleteListCommand(ProductListModel list)
+        {
+            try
+            {
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                await _listService.DeleteListAsync(list.Id);
+                await ExecuteLoadListsCommand();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Hiba a lista törlése közben: {ex.Message}";
+                Debug.WriteLine($"Error in ExecuteDeleteListCommand: {ex}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
     }
 }
