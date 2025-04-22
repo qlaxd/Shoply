@@ -21,62 +21,35 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Statistics
         [ObservableProperty]
         private string _errorMessage;
 
-        // User Statistics
-        [ObservableProperty]
-        private UserGrowthStatistics _userGrowthStatistics;
-
         [ObservableProperty]
         private ObservableCollection<MonthlyGrowthStat> _userGrowthByMonth;
-
-        [ObservableProperty]
-        private ObservableCollection<DailyActivityStat> _userActivityByDay;
-
-        // List Statistics
-        [ObservableProperty]
-        private ListActivityStatistics _listActivityStatistics;
 
         [ObservableProperty]
         private ObservableCollection<CategoryListStat> _listsByCategory;
 
         [ObservableProperty]
-        private ObservableCollection<UserCollaborationStat> _mostActiveCollaborators;
-
-        // Product Statistics
-        [ObservableProperty]
-        private ProductStatistics _productStatistics;
-
-        [ObservableProperty]
         private ObservableCollection<CategoryProductStat> _productsByCategory;
 
-        [ObservableProperty]
-        private ObservableCollection<PriceRangeStat> _priceDistribution;
-
-        // Commands
         public ICommand LoadUserStatsCommand { get; }
         public ICommand LoadListStatsCommand { get; }
         public ICommand LoadProductStatsCommand { get; }
-        public ICommand LoadAllStatsCommand { get; }
 
         public StatisticsViewModel(ApiService apiService)
         {
-            _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
-            
-            // Initialize collections
-            UserGrowthByMonth = new ObservableCollection<MonthlyGrowthStat>();
-            UserActivityByDay = new ObservableCollection<DailyActivityStat>();
-            ListsByCategory = new ObservableCollection<CategoryListStat>();
-            MostActiveCollaborators = new ObservableCollection<UserCollaborationStat>();
-            ProductsByCategory = new ObservableCollection<CategoryProductStat>();
-            PriceDistribution = new ObservableCollection<PriceRangeStat>();
+            _apiService = apiService;
 
-            // Initialize commands
+            UserGrowthByMonth = new ObservableCollection<MonthlyGrowthStat>();
+            ListsByCategory = new ObservableCollection<CategoryListStat>();
+            ProductsByCategory = new ObservableCollection<CategoryProductStat>();
+
             LoadUserStatsCommand = new AsyncRelayCommand(ExecuteLoadUserStatsCommand);
             LoadListStatsCommand = new AsyncRelayCommand(ExecuteLoadListStatsCommand);
             LoadProductStatsCommand = new AsyncRelayCommand(ExecuteLoadProductStatsCommand);
-            LoadAllStatsCommand = new AsyncRelayCommand(ExecuteLoadAllStatsCommand);
 
             // Load initial data
-            LoadAllStatsCommand.Execute(null);
+            ExecuteLoadUserStatsCommand();
+            ExecuteLoadListStatsCommand();
+            ExecuteLoadProductStatsCommand();
         }
 
         public StatisticsViewModel()
@@ -90,25 +63,16 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Statistics
                 IsLoading = true;
                 ErrorMessage = string.Empty;
 
-                UserGrowthStatistics = await _apiService.GetUserGrowthStatsAsync();
-
-                // Update collections
+                var userStats = await _apiService.GetUserGrowthStatsAsync();
                 UserGrowthByMonth.Clear();
-                foreach (var stat in UserGrowthStatistics.UserGrowthByMonth)
+                foreach (var stat in userStats.UserGrowthByMonth)
                 {
                     UserGrowthByMonth.Add(stat);
-                }
-
-                UserActivityByDay.Clear();
-                foreach (var stat in UserGrowthStatistics.UserActivityByDay)
-                {
-                    UserActivityByDay.Add(stat);
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error loading user statistics: {ex.Message}";
-                Debug.WriteLine($"Error in ExecuteLoadUserStatsCommand: {ex}");
+                ErrorMessage = $"Error loading user stats: {ex.Message}";
             }
             finally
             {
@@ -123,25 +87,16 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Statistics
                 IsLoading = true;
                 ErrorMessage = string.Empty;
 
-                ListActivityStatistics = await _apiService.GetListActivityStatsAsync();
-
-                // Update collections
+                var listStats = await _apiService.GetListActivityStatsAsync();
                 ListsByCategory.Clear();
-                foreach (var stat in ListActivityStatistics.ListsByCategory)
+                foreach (var stat in listStats.ListsByCategory)
                 {
                     ListsByCategory.Add(stat);
-                }
-
-                MostActiveCollaborators.Clear();
-                foreach (var stat in ListActivityStatistics.CollaborativeLists.MostActiveCollaborators)
-                {
-                    MostActiveCollaborators.Add(stat);
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error loading list statistics: {ex.Message}";
-                Debug.WriteLine($"Error in ExecuteLoadListStatsCommand: {ex}");
+                ErrorMessage = $"Error loading list stats: {ex.Message}";
             }
             finally
             {
@@ -156,50 +111,16 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Statistics
                 IsLoading = true;
                 ErrorMessage = string.Empty;
 
-                ProductStatistics = await _apiService.GetProductStatsAsync();
-
-                // Update collections
+                var productStats = await _apiService.GetProductStatsAsync();
                 ProductsByCategory.Clear();
-                foreach (var stat in ProductStatistics.ProductsByCategory)
+                foreach (var stat in productStats.ProductsByCategory)
                 {
                     ProductsByCategory.Add(stat);
                 }
-
-                PriceDistribution.Clear();
-                foreach (var stat in ProductStatistics.PriceStats.PriceDistribution)
-                {
-                    PriceDistribution.Add(stat);
-                }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error loading product statistics: {ex.Message}";
-                Debug.WriteLine($"Error in ExecuteLoadProductStatsCommand: {ex}");
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        private async Task ExecuteLoadAllStatsCommand()
-        {
-            try
-            {
-                IsLoading = true;
-                ErrorMessage = string.Empty;
-
-                // Load all statistics in parallel
-                var userStatsTask = ExecuteLoadUserStatsCommand();
-                var listStatsTask = ExecuteLoadListStatsCommand();
-                var productStatsTask = ExecuteLoadProductStatsCommand();
-
-                await Task.WhenAll(userStatsTask, listStatsTask, productStatsTask);
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Error loading all statistics: {ex.Message}";
-                Debug.WriteLine($"Error in ExecuteLoadAllStatsCommand: {ex}");
+                ErrorMessage = $"Error loading product stats: {ex.Message}";
             }
             finally
             {

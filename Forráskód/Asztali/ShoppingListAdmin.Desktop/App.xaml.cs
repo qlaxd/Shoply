@@ -12,6 +12,8 @@ using ShoppingListAdmin.Desktop.ViewModels;
 using ShoppingListAdmin.Desktop.ViewModels.Lists;
 using ShoppingListAdmin.Desktop.ViewModels.Settings;
 using ShoppingListAdmin.Desktop.Views.Settings;
+using ShoppingListAdmin.Desktop.ViewModels.Statistics;
+using ShoppingListAdmin.Desktop.Views.Statistics;
 
 
 namespace ShoppingListAdmin.Desktop
@@ -52,6 +54,12 @@ namespace ShoppingListAdmin.Desktop
                     services.AddSingleton<SettingsView>(s => new SettingsView()
                     {
                         DataContext = s.GetRequiredService<SettingsViewModel>()
+                    });
+
+                    services.AddSingleton<StatisticsViewModel>();
+                    services.AddSingleton<StatisticsView>(s => new StatisticsView
+                    {
+                        DataContext = s.GetRequiredService<StatisticsViewModel>()
                     });
 
                 })
