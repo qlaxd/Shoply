@@ -38,7 +38,16 @@ namespace ShoppingListAdmin.Desktop.Views.Users
                 var viewModel = DataContext as UsersViewModel;
                 if (viewModel != null)
                 {
-                    await viewModel.EditUserAsync(user);
+                    var dialog = new EditUserDialog(user);
+                    if (dialog.ShowDialog() == true)
+                    {
+                        // If a new password was entered, update it
+                        if (!string.IsNullOrEmpty(dialog.NewPassword))
+                        {
+                            user.PasswordHash = dialog.NewPassword; // Note: In a real application, this should be hashed
+                        }
+                        await viewModel.EditUserAsync(user);
+                    }
                 }
             }
         }
