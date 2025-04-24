@@ -10,22 +10,66 @@
              d:DesignHeight="700" d:DesignWidth="1000">
 
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Styles/UIColors.xaml"/>
-                <ResourceDictionary Source="/Styles/DataGridStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#3E6057"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="15,5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#083A4D"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DataGridStyle" TargetType="DataGrid">
+            <Setter Property="Background" Value="#2C3E50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#3E6057"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowBackground" Value="#2C3E50"/>
+            <Setter Property="AlternatingRowBackground" Value="#34495E"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#3E6057"/>
+            <Setter Property="VerticalGridLinesBrush" Value="#3E6057"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="False"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+        </Style>
+
+        <Style x:Key="DataGridColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#3E6057"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderBrush" Value="#2C3E50"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+        </Style>
+
+        <Style x:Key="DataGridCellStyle" TargetType="DataGridCell">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid>
         <!-- Loading Indicator -->
         <Grid Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Border Background="{StaticResource backgroundPrimaryColor1}" Opacity="0.7"/>
+            <Border Background="#2C3E50" Opacity="0.7"/>
             <ProgressBar IsIndeterminate="True" 
                          Height="50" 
                          Width="200"
-                         Foreground="{StaticResource colorMidleGreen}"/>
+                         Foreground="#3E6057"/>
         </Grid>
 
         <!-- Error Message -->
@@ -34,7 +78,7 @@
                    HorizontalAlignment="Center"
                    VerticalAlignment="Top"
                    Margin="0,10,0,0"
-                   Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+                   Visibility="{Binding ErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
         <!-- Main Content -->
         <Grid Margin="20">
@@ -46,10 +90,7 @@
             <!-- Header -->
             <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,20">
                 <TextBlock Text="Listák" 
-                           FontSize="24" 
-                           FontWeight="Bold" 
-                           VerticalAlignment="Center"
-                           Foreground="White"/>
+                           Style="{StaticResource HeaderTextStyle}"/>
                 
                 <Button Content="Új lista"
                         Command="{Binding CreateListCommand}"
@@ -61,10 +102,6 @@
             <DataGrid Grid.Row="1"
                       ItemsSource="{Binding Lists}"
                       SelectedItem="{Binding SelectedList}"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
-                      IsReadOnly="False"
                       Style="{StaticResource DataGridStyle}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" 
@@ -91,13 +128,13 @@
                                             Command="{Binding DataContext.UpdateListCommand, 
                                                       RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"
-                                            Style="{StaticResource IconButtonStyle}"
+                                            Style="{StaticResource ActionButtonStyle}"
                                             Margin="0,0,5,0"/>
                                     <Button Content="Törlés"
                                             Command="{Binding DataContext.DeleteListCommand, 
                                                       RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"
-                                            Style="{StaticResource IconButtonStyle}"/>
+                                            Style="{StaticResource ActionButtonStyle}"/>
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
