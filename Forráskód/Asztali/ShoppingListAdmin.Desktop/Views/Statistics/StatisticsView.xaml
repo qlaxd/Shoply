@@ -13,7 +13,6 @@
     
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
     </UserControl.Resources>
     
     <Grid Margin="10">
@@ -28,7 +27,7 @@
                             <DataGridTextColumn Header="Aktív felhasználók" Binding="{Binding ActiveUsers}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button Content="Reload Users Stats" Command="{Binding LoadUserStatsCommand}" HorizontalAlignment="Right" Margin="0,10,0,0"/>
+                    <Button Content="User statisztika újratöltés" Command="{Binding LoadUserStatsCommand}" HorizontalAlignment="Right" Margin="0,10,0,0"/>
                 </Grid>
             </TabItem>
 
@@ -62,7 +61,7 @@
             <!-- Loading/Error Indicators -->
             <TextBlock Text="{Binding ErrorMessage}" 
                        Foreground="Red" 
-                       Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" 
+                       Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}" 
                        HorizontalAlignment="Center" 
                        VerticalAlignment="Top" 
                        Margin="0,10"/>

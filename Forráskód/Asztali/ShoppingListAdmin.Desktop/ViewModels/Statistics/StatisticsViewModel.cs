@@ -30,6 +30,8 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Statistics
         [ObservableProperty]
         private ObservableCollection<CategoryProductStat> _productsByCategory;
 
+        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+
         public ICommand LoadUserStatsCommand { get; }
         public ICommand LoadListStatsCommand { get; }
         public ICommand LoadProductStatsCommand { get; }
