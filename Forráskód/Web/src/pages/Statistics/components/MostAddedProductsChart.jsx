@@ -17,7 +17,7 @@ const MostAddedProductsChart = ({ stats }) => {
       return (
         <Box
           sx={{
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            backgroundColor: 'rgb(113, 189, 62)',
             p: 1.5,
             borderRadius: 1,
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',

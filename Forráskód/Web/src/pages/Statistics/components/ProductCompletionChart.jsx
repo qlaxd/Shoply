@@ -7,17 +7,17 @@ const ProductCompletionChart = ({ stats }) => {
   
   const completionRateData = [
     { name: 'Megvásárolva', value: stats.totalPurchasedProducts },
-    { name: 'Nem megvásárolva', value: stats.totalProducts - stats.totalPurchasedProducts }
+    { name: 'Nincs megvásárolva', value: stats.totalProducts - stats.totalPurchasedProducts }
   ];
 
-  const COLORS = [theme.palette.success.main, theme.palette.grey[300]];
+  const COLORS = [theme.palette.success.main, theme.palette.grey[500]];
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
         <Box
           sx={{
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            backgroundColor: 'rgb(113, 189, 62)',
             p: 1.5,
             borderRadius: 1,
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
@@ -96,12 +96,12 @@ const ProductCompletionChart = ({ stats }) => {
           }}
         >
           {completionRateData.map((entry, index) => (
-            <Box 
+            <Box
               key={index}
-              display="flex" 
+              display="flex"
               alignItems="center"
               sx={{
-                backgroundColor: 'rgba(255,255,255,0.8)',
+                backgroundColor: 'rgba(0,0,0,0.4)',
                 p: 1,
                 borderRadius: 2,
                 boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
