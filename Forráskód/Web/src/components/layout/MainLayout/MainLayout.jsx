@@ -62,7 +62,7 @@ const NAVIGATION = [
       {
         title: 'Profil megtekintése',
         icon: <AccountCircleIcon/>,
-        path: '/profile/view'
+        path: '/profile'
       },
       {
         segment: 'change-password',
@@ -139,7 +139,7 @@ const MainLayout = ({ children }) => {
     
     // Directly handle specific segments
     const directNavigationPaths = {
-      'profile': '/profile/view',
+      'profile': '/profile',
       'change-password': '/profile/change-password',
       'users/search': '/users/search'
     };
@@ -172,7 +172,7 @@ const MainLayout = ({ children }) => {
       navigate('/login');
     } else if (path) {
       // Check if the path is implemented in the application
-      const implementedRoutes = ['/', '/products', '/profile/view', '/profile/change-password', '/users/search', '/statistics'];
+      const implementedRoutes = ['/', '/products', '/profile', '/profile/change-password', '/users/search', '/statistics'];
       
       if (implementedRoutes.includes(path)) {
         navigate(path);

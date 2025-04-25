@@ -327,40 +327,45 @@ const AddProductForm = ({ listId, onAddSuccess }) => {
                   fullWidth
                 />
               )}
-              renderOption={(props, option, { selected }) => (
-                <Grow in={true} style={{ transformOrigin: '0 0 0' }} key={option._id}>
-                  <li {...props}>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      flexDirection: 'column',
-                      width: '100%',
-                      py: 0.5
-                    }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                        <Typography variant="body1" fontWeight={selected ? 'bold' : 'normal'}>
-                          {option.name}
-                        </Typography>
-                        {selected && (
-                          <CheckCircleIcon color="success" fontSize="small" sx={{ ml: 'auto' }} />
-                        )}
+              renderOption={(props, option, { selected }) => {
+                // Extract key from props if it exists
+                const { key, ...otherProps } = props;
+                
+                return (
+                  <Grow in={true} style={{ transformOrigin: '0 0 0' }} key={option._id}>
+                    <li {...otherProps}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        width: '100%',
+                        py: 0.5
+                      }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                          <Typography variant="body1" fontWeight={selected ? 'bold' : 'normal'}>
+                            {option.name}
+                          </Typography>
+                          {selected && (
+                            <CheckCircleIcon color="success" fontSize="small" sx={{ ml: 'auto' }} />
+                          )}
+                        </Box>
+                        <Box sx={{ display: 'flex', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
+                          {option.category && (
+                            <Chip
+                              label={categories.find(cat => cat._id === option.category)?.name || option.category}
+                              size="small"
+                              color="primary"
+                              variant="outlined"
+                            />
+                          )}
+                          <Typography variant="body2" color="text.secondary">
+                            {option.unit || 'db'}
+                          </Typography>
+                        </Box>
                       </Box>
-                      <Box sx={{ display: 'flex', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
-                        {option.category && (
-                          <Chip
-                            label={categories.find(cat => cat._id === option.category)?.name || option.category}
-                            size="small"
-                            color="primary"
-                            variant="outlined"
-                          />
-                        )}
-                        <Typography variant="body2" color="text.secondary">
-                          {option.unit || 'db'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </li>
-                </Grow>
-              )}
+                    </li>
+                  </Grow>
+                );
+              }}
               noOptionsText="Nincs találat"
               loadingText="Keresés..."
               fullWidth
