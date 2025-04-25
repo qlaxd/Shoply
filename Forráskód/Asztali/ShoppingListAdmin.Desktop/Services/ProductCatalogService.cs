@@ -19,6 +19,10 @@ namespace ShoppingListAdmin.Desktop.Services
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
         }
 
+        public ProductCatalogService()
+        {
+        }
+
         public async Task<List<ProductCatalogModel>> GetAllProductCatalogsAsync()
         {
             return await _httpClient.GetFromJsonAsync<List<ProductCatalogModel>>("productCatalogs");

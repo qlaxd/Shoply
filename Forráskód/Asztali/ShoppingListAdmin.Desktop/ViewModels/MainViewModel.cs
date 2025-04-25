@@ -36,10 +36,11 @@ namespace ShoppingListAdmin.Desktop.ViewModels
         public MainViewModel()
         {
             var apiService = new ApiService(); // Assuming ApiService has a parameterless constructor
+            var productCatalogService = new ProductCatalogService();
             _controlPanelViewModel = new ControlPanelViewModel();
             _usersViewModel = new UsersViewModel(apiService);
             _listsViewModel = new ListsViewModel();
-            _productViewModel = new ProductViewModel();
+            _productViewModel = new ProductViewModel(productCatalogService);
             _statisticsViewModel = new StatisticsViewModel();
             _settingsViewModel = new SettingsViewModel();
             _adminsViewModel = new AdminsViewModel(apiService); // Initialize _adminsViewModel

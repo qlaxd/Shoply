@@ -58,6 +58,7 @@ namespace KretaDesktop.Extensions
             });
 
             // Products
+            services.AddSingleton<ProductCatalogService>();
             services.AddSingleton<ProductViewModel>();
             services.AddSingleton<ProductView>(s => new ProductView()
             {
