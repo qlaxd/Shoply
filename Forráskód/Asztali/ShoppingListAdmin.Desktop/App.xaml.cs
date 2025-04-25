@@ -52,6 +52,7 @@ namespace ShoppingListAdmin.Desktop
                     services.AddSingleton<CategoryViewModel>();
                     services.AddSingleton<ListsViewModel>();
                     services.AddSingleton<ProductViewModel>();
+                    services.AddSingleton<StatisticsViewModel>(s => new StatisticsViewModel(s.GetRequiredService<ApiService>()));
 
                     services.AddSingleton<SettingsViewModel>();
                     services.AddSingleton<SettingsView>(s => new SettingsView()
