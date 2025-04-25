@@ -4,7 +4,9 @@ const ProductCatalogService = {
   // Összes katalógus elem lekérdezése
   getAllCatalogItems: async (options = {}) => {
     try {
-      const response = await api.get('/productCatalogs', options);
+      const response = Object.keys(options).length > 0 
+        ? await api.get('/productCatalogs', options)
+        : await api.get('/productCatalogs');
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Hiba a katalógus elemek betöltésekor');
