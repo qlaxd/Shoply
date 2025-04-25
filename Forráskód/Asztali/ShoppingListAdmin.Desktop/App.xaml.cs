@@ -14,6 +14,7 @@ using ShoppingListAdmin.Desktop.ViewModels.Settings;
 using ShoppingListAdmin.Desktop.Views.Settings;
 using ShoppingListAdmin.Desktop.ViewModels.Statistics;
 using ShoppingListAdmin.Desktop.Views.Statistics;
+using ShoppingListAdmin.Desktop.ViewModels.Products;
 
 
 namespace ShoppingListAdmin.Desktop
@@ -45,10 +46,12 @@ namespace ShoppingListAdmin.Desktop
                     services.AddSingleton<ProductService>();
                     services.AddSingleton<AdminService>();
                     services.AddSingleton<CategoryService>(s => new CategoryService(s.GetRequiredService<ApiService>().GetAuthToken()));
+                    services.AddSingleton<ProductCatalogService>(s => new ProductCatalogService(s.GetRequiredService<ApiService>().GetAuthToken()));
+                    services.AddSingleton<ListService>(s => new ListService(s.GetRequiredService<ApiService>().GetAuthToken()));
                     
                     services.AddSingleton<CategoryViewModel>();
                     services.AddSingleton<ListsViewModel>();
-                    services.AddSingleton<ProductCatalogService>();
+                    services.AddSingleton<ProductViewModel>();
 
                     services.AddSingleton<SettingsViewModel>();
                     services.AddSingleton<SettingsView>(s => new SettingsView()

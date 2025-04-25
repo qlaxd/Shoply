@@ -47,7 +47,9 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             SettingsViewModel settingsViewModel,
             CategoryViewModel categoriesViewModel,
             AdminsViewModel adminsViewModel,
-            CategoryService categoryService)
+            CategoryService categoryService,
+            ProductCatalogService productCatalogService,
+            ListService listService)
         {
             _controlPanelViewModel = controlPanelViewModel;
             _usersViewModel = usersViewModel;
