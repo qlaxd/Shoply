@@ -879,6 +879,7 @@ const ProductCatalogPage = () => {
                       <ProductCatalogBrowser 
                         onAddToList={handleAddToList}
                         selectedListId={selectedListId}
+                        selectedCategory={selectedCategory}
                       />
                     )}
                     

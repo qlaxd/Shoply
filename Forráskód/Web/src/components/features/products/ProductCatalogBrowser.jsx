@@ -340,7 +340,7 @@ const AdvancedSearch = ({
   sortMethod,
   onSortClick,
   onFilterClick,
-  activeFiltersCount
+  activeCategoryFilterCount
 }) => {
   const theme = useTheme();
   
@@ -392,8 +392,8 @@ const AdvancedSearch = ({
         flexWrap: 'nowrap'
       }}>
         <Button
-          variant={activeFiltersCount > 0 ? "contained" : "outlined"}
-          color={activeFiltersCount > 0 ? "secondary" : "primary"}
+          variant={activeCategoryFilterCount > 0 ? "contained" : "outlined"}
+          color={activeCategoryFilterCount > 0 ? "secondary" : "primary"}
           startIcon={<FilterListIcon />}
           onClick={onFilterClick}
           sx={{ 
@@ -403,16 +403,16 @@ const AdvancedSearch = ({
             textOverflow: 'ellipsis',
             transition: 'all 0.3s ease',
             borderRadius: '10px',
-            boxShadow: activeFiltersCount > 0 ? '0 4px 12px rgba(245, 0, 87, 0.25)' : 'none',
+            boxShadow: activeCategoryFilterCount > 0 ? '0 4px 12px rgba(245, 0, 87, 0.25)' : 'none',
             '&:hover': {
               transform: 'translateY(-2px)',
-              boxShadow: activeFiltersCount > 0 ? 
+              boxShadow: activeCategoryFilterCount > 0 ? 
                 '0 6px 16px rgba(245, 0, 87, 0.3)' : 
                 '0 4px 12px rgba(0, 0, 0, 0.08)'
             }
           }}
         >
-          {activeFiltersCount > 0 ? `Szűrők (${activeFiltersCount})` : 'Szűrés'}
+          {activeCategoryFilterCount > 0 ? `Kategória szűrő aktív` : 'Szűrés'}
         </Button>
         
         <Button
@@ -443,7 +443,7 @@ const AdvancedSearch = ({
   );
 };
 
-const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
+const ProductCatalogBrowser = ({ onAddToList, selectedListId, selectedCategory }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -459,7 +459,6 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
   const [sortMethod, setSortMethod] = useState('name_asc');
   const [categories, setCategories] = useState([]);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [selectedCategories, setSelectedCategories] = useState([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [categoryMap, setCategoryMap] = useState({});
 
@@ -479,6 +478,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
           return;
         }
         
+        console.log('Betöltött kategóriák a ProductCatalogBrowser-ben:', categoryData);
         setCategories(categoryData);
         
         // Create a map of category IDs to category names (not complex objects)
@@ -494,11 +494,43 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
               if (stringId !== category._id) {
                 catMap[stringId] = category.name;
               }
+              
+              // Ha a kategória neve valamelyik előre definiált értéknek felel meg, 
+              // akkor azt is vegyük fel (backward compatibility)
+              const lowerName = category.name.toLowerCase();
+              switch (lowerName) {
+                case 'pékáruk':
+                  catMap['bakery'] = category.name;
+                  break;
+                case 'tejtermékek':
+                  catMap['dairy'] = category.name;
+                  break;
+                case 'húsáruk':
+                  catMap['meat'] = category.name;
+                  break;
+                case 'zöldségek és gyümölcsök':
+                  catMap['vegetables'] = category.name;
+                  catMap['fruits'] = category.name;
+                  break;
+                case 'élelmiszerek':
+                  catMap['groceries'] = category.name;
+                  break;
+                case 'háztartási cikkek':
+                  catMap['household'] = category.name;
+                  break;
+                case 'italok':
+                  catMap['drinks'] = category.name;
+                  break;
+                case 'tisztítószerek':
+                  catMap['cleaning'] = category.name;
+                  break;
+              }
             } else {
               console.warn('Invalid category object:', category);
             }
           });
         }
+        console.log('Kategória map:', catMap);
         setCategoryMap(catMap);
       } catch (error) {
         console.error('Hiba a kategóriák betöltésekor:', error);
@@ -517,7 +549,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
     setSortAnchorEl(null);
   }, []);
 
-  // Define sortProducts before it's used in handleSortChange
+  // Define sortProducts (client-side sorting remains for now)
   const sortProducts = useCallback((productList, method) => {
     const sorted = [...productList];
     
@@ -569,43 +601,35 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
     setFilterAnchorEl(null);
   };
 
-  const handleFilterChange = (categoryId) => {
-    setSelectedCategories(prev => {
-      if (prev.includes(categoryId)) {
-        return prev.filter(id => id !== categoryId);
-      } else {
-        return [...prev, categoryId];
-      }
-    });
-  };
+  // Placeholder if other filter types are added later
+  // const handleFilterChange = (filterType, value) => { ... };
 
   // Enhanced product loading
-  const fetchProducts = useCallback(async (query = '') => {
+  const fetchProducts = useCallback(async (query = '', categoryFilter = 'all') => {
     setLoading(true);
     try {
       let data;
-      if (query.trim() === '') {
-        // Ha nincs keresési kifejezés, az összes terméket betöltjük
-        const response = await ProductCatalogService.getAllCatalogItems();
-        data = response;
-      } else {
-        // Ha van keresési kifejezés, keresünk a termékek között
-        const response = await ProductCatalogService.searchCatalogItems(query);
-        data = response;
+      // Construct parameters for API call
+      const params = {};
+      if (query.trim()) {
+        params.query = query.trim();
+      }
+      if (categoryFilter && categoryFilter !== 'all') {
+        params.category = categoryFilter;
       }
       
-      // Szűrés kategóriák alapján, ha szükséges
-      if (selectedCategories.length > 0) {
-        data = data.filter(product => {
-          if (!product.category) return false;
-          
-          // Ha a termék kategóriája egy tömb
-          if (Array.isArray(product.category)) {
-            return product.category.some(catId => selectedCategories.includes(catId));
-          }
-          
-          // Ha a termék kategóriája egyetlen érték
-          return selectedCategories.includes(product.category);
+      console.log('Paraméterek a kéréshez:', params);
+      console.log('Kategória szűrő:', categoryFilter);
+      
+      // Use a single endpoint, assuming it handles both search and filtering
+      const response = await ProductCatalogService.getAllCatalogItems({ params });
+      data = response;
+      
+      console.log('Szerver válasza:', data.length, 'termék');
+      if (data.length > 0) {
+        console.log('Első termék mintának:', {
+          name: data[0].name,
+          category: data[0].category
         });
       }
       
@@ -621,21 +645,23 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
       setLoading(false);
       setInitialLoading(false);
     }
-  }, [selectedCategories, sortMethod, sortProducts]);
+  }, [sortMethod, sortProducts]);
 
-  // Termékek betöltése az oldal betöltésekor és a szűrés változásakor
+  // Termékek betöltése az oldal betöltésekor és a szűrés/keresés változásakor
   useEffect(() => {
-    fetchProducts(searchQuery);
-  }, [selectedCategories, fetchProducts, searchQuery]);
+    // Fetch based on current search query and selected category
+    fetchProducts(searchQuery, selectedCategory);
+  }, [selectedCategory, searchQuery, fetchProducts]);
 
   // Termékek betöltése az oldal első betöltésekor
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchProducts();
+      // Initial fetch, potentially with a default category if needed
+      fetchProducts(searchQuery, selectedCategory);
     }, 300); // Kis késleltetés a vizuális hatás miatt
     
     return () => clearTimeout(timer);
-  }, [fetchProducts]);
+  }, [fetchProducts, searchQuery, selectedCategory]); // Add dependencies
 
   // Keresés kezelése debounce-olással
   const handleSearchChange = (e) => {
@@ -649,7 +675,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
     
     // Új időzítő beállítása a kereséssel
     const timeoutId = setTimeout(() => {
-      fetchProducts(query);
+      fetchProducts(query, selectedCategory); // Pass selectedCategory here too
     }, 500); // 500ms késleltetés a kereséshez
     
     setSearchTimeout(timeoutId);
@@ -695,8 +721,8 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
     page * itemsPerPage
   );
 
-  // Aktív szűrők számolása
-  const activeFiltersCount = selectedCategories.length;
+  // Determine if a category filter is active (excluding 'all')
+  const activeCategoryFilterCount = (selectedCategory && selectedCategory !== 'all') ? 1 : 0;
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -707,7 +733,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         sortMethod={sortMethod}
         onSortClick={handleSortClick}
         onFilterClick={handleFilterClick}
-        activeFiltersCount={selectedCategories.length}
+        activeCategoryFilterCount={activeCategoryFilterCount}
       />
 
       {/* Rendezés menü */}
@@ -812,7 +838,9 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         </MenuItem>
       </Menu>
 
-      {/* Szűrés menü */}
+      {/* Szűrés menü - Keep for potential future filter types (e.g., tags, price) */}
+      {/* Currently disabled as filtering is handled by CategorySelector */}
+      {/* 
       <Menu
         anchorEl={filterAnchorEl}
         open={Boolean(filterAnchorEl)}
@@ -896,6 +924,7 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
           </>
         )}
       </Menu>
+      */}
 
       {/* Hibaüzenet */}
       {error && (
@@ -912,9 +941,9 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
         </Alert>
       )}
 
-      {/* Szűrők jelzése */}
-      {selectedCategories.length > 0 && (
-        <Fade in={selectedCategories.length > 0}>
+      {/* Aktív kategória szűrő jelzése */}
+      {selectedCategory && selectedCategory !== 'all' && (
+        <Fade in={selectedCategory && selectedCategory !== 'all'}>
           <Box sx={{ 
             mb: 2, 
             display: 'flex', 
@@ -928,43 +957,19 @@ const ProductCatalogBrowser = ({ onAddToList, selectedListId }) => {
           }}>
             <Typography variant="body2" sx={{ mr: 1, display: 'flex', alignItems: 'center', color: theme.palette.text.secondary }}>
               <FilterListIcon fontSize="small" sx={{ mr: 0.5 }} />
-              Aktív szűrők:
+              Aktív kategória szűrő:
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, flex: 1 }}>
-              {selectedCategories.map(categoryId => {
-                const categoryName = categories.find(c => c._id === categoryId)?.name || categoryId;
-                return (
-                  <Chip
-                    key={categoryId}
-                    label={categoryName}
-                    onDelete={() => handleFilterChange(categoryId)}
-                    color="primary"
-                    size="small"
-                    sx={{
-                      borderRadius: '16px',
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
-                      }
-                    }}
-                  />
-                );
-              })}
               <Chip
-                label="Összes törlése"
-                onClick={() => setSelectedCategories([])}
+                label={categoryMap[selectedCategory] || selectedCategory}
+                color="primary"
                 size="small"
-                color="default"
                 sx={{
                   borderRadius: '16px',
                   transition: 'all 0.2s ease',
-                  backgroundColor: theme.palette.error.main,
                   '&:hover': {
-                    backgroundColor: theme.palette.error.main,
-                    boxShadow: `0 8px 8px ${theme.palette.error.main}40`,
                     transform: 'translateY(-2px)',
-                    filter: 'brightness(1.3)'
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
                   }
                 }}
               />

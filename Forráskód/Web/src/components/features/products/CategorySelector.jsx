@@ -61,16 +61,23 @@ const CategorySelector = ({ onCategorySelect, selectedCategory = 'all' }) => {
     try {
       // Először betöltjük a kategóriákat a kategória szolgáltatásból
       const categoryData = await CategoryService.getAllCategories();
+      console.log('Betöltött kategóriák:', categoryData);
       
       // Az összes termék lekérése
       const allProducts = await ProductCatalogService.getAllCatalogItems();
+      console.log('Összes termék:', allProducts.length);
+      if (allProducts.length > 0) {
+        console.log('Termék minta kategória:', allProducts[0].category);
+      }
       
       // Kategóriák és termékszámok számolása
       const categoryCounts = { all: allProducts.length };
       
+      // Kategória számok összesítése
       allProducts.forEach(product => {
         if (product.category) {
-          categoryCounts[product.category] = (categoryCounts[product.category] || 0) + 1;
+          const categoryId = product.category.toString();
+          categoryCounts[categoryId] = (categoryCounts[categoryId] || 0) + 1;
         } else {
           categoryCounts['other'] = (categoryCounts['other'] || 0) + 1;
         }
@@ -83,42 +90,41 @@ const CategorySelector = ({ onCategorySelect, selectedCategory = 'all' }) => {
       
       // Ha van kategória adat API-ból, azt használjuk
       if (categoryData && categoryData.length > 0) {
-        categoryData.forEach(category => {
+        // Fő kategóriák (parentCategory == null)
+        const mainCategories = categoryData.filter(cat => !cat.parentCategory);
+        
+        // Alkategóriák rendezése a szülő kategória szerint
+        const subCategories = categoryData.filter(cat => cat.parentCategory);
+        
+        // Fő kategóriák hozzáadása
+        mainCategories.forEach(category => {
+          const categoryId = category._id;
           formattedCategories.push({
-            id: category.id || category._id,
+            id: categoryId,
             name: category.name,
-            count: categoryCounts[category.id || category._id] || 0,
+            count: categoryCounts[categoryId] || 0,
             icon: category.icon,
-            color: category.color || CATEGORY_COLORS[category.id] || theme.palette.primary.main
+            color: category.color || CATEGORY_COLORS[category.name.toLowerCase()] || theme.palette.primary.main,
+            level: category.level || 0
           });
         });
-      } else {
-        // Ha nincs API adat, akkor az alapértelmezett kategóriákat használjuk
-        Object.entries(CATEGORY_COLORS).forEach(([id, color]) => {
-          if (id !== 'all') {
-            let categoryName = id.charAt(0).toUpperCase() + id.slice(1);
-            // Magyar nevek hozzárendelése
-            if (id === 'groceries') categoryName = 'Élelmiszerek';
-            if (id === 'dairy') categoryName = 'Tejtermékek';
-            if (id === 'meat') categoryName = 'Húsáruk';
-            if (id === 'fruits') categoryName = 'Gyümölcsök';
-            if (id === 'vegetables') categoryName = 'Zöldségek';
-            if (id === 'bakery') categoryName = 'Pékáruk';
-            if (id === 'drinks') categoryName = 'Italok';
-            if (id === 'cleaning') categoryName = 'Tisztítószerek';
-            if (id === 'household') categoryName = 'Háztartási cikkek';
-            if (id === 'other') categoryName = 'Egyéb';
-            
-            formattedCategories.push({
-              id,
-              name: categoryName,
-              count: categoryCounts[id] || 0,
-              color
-            });
-          }
+        
+        // Alkategóriák hozzáadása
+        subCategories.forEach(category => {
+          const categoryId = category._id;
+          formattedCategories.push({
+            id: categoryId,
+            name: category.name,
+            count: categoryCounts[categoryId] || 0,
+            icon: category.icon,
+            color: category.color || CATEGORY_COLORS[category.name.toLowerCase()] || theme.palette.primary.main,
+            level: category.level || 1,
+            parentId: category.parentCategory
+          });
         });
       }
       
+      console.log('Formázott kategóriák:', formattedCategories);
       setCategories(formattedCategories);
       setError(null);
     } catch (error) {
@@ -140,6 +146,7 @@ const CategorySelector = ({ onCategorySelect, selectedCategory = 'all' }) => {
   };
 
   const handleCategorySelect = (categoryId) => {
+    console.log('Kategória kiválasztva:', categoryId);
     onCategorySelect(categoryId);
   };
 

@@ -2,9 +2,9 @@ import api from './api';
 
 const ProductCatalogService = {
   // Összes katalógus elem lekérdezése
-  getAllCatalogItems: async () => {
+  getAllCatalogItems: async (options = {}) => {
     try {
-      const response = await api.get('/productCatalogs');
+      const response = await api.get('/productCatalogs', options);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Hiba a katalógus elemek betöltésekor');

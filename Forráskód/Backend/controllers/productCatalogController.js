@@ -4,8 +4,60 @@ const ProductCatalog = require('../models/ProductCatalog');
 // Összes katalógus elem lekérdezése
 exports.getAllCatalogItems = async (req, res) => {
   try {
-    const catalogItems = await ProductCatalog.find({});
-    res.status(200).json(catalogItems);
+    console.log('Query paraméterek:', req.query);
+    
+    // Először lekérjük az összes terméket
+    const allProducts = await ProductCatalog.find({});
+    console.log(`Összesen ${allProducts.length} termék van az adatbázisban`);
+    
+    // Kategória vizsgálata egy mintán
+    if (allProducts.length > 0) {
+      const sample = allProducts[0];
+      console.log('Első termék kategória vizsgálata:');
+      console.log('- Név:', sample.name);
+      console.log('- Kategória:', sample.category);
+      console.log('- Kategória típus:', typeof sample.category);
+    }
+    
+    // Kategória szűrés (JavaScript oldalon)
+    let filteredProducts = [...allProducts];
+    
+    if (req.query.category && req.query.category !== 'all') {
+      const categoryId = req.query.category;
+      console.log('Kategória szűrő:', categoryId);
+      
+      // JavaScript szintű szűrés string összehasonlítással
+      filteredProducts = allProducts.filter(product => {
+        const productCatStr = product.category ? product.category.toString() : '';
+        const match = productCatStr === categoryId;
+        return match;
+      });
+      
+      console.log(`Kategória szűrés eredménye (JS): ${filteredProducts.length} termék`);
+      
+      // Log néhány terméket, ami megfelel a szűrésnek
+      if (filteredProducts.length > 0) {
+        console.log('Szűrt termék példák:');
+        filteredProducts.slice(0, 3).forEach((item, i) => {
+          console.log(`- ${item.name}, kategória: ${item.category}`);
+        });
+      }
+    }
+    
+    // Szöveges keresés (JavaScript oldalon)
+    if (req.query.query && req.query.query.trim() !== '') {
+      const query = req.query.query.trim().toLowerCase();
+      console.log('Szöveges keresés:', query);
+      
+      filteredProducts = filteredProducts.filter(product => {
+        return product.name.toLowerCase().includes(query);
+      });
+      
+      console.log(`Szöveges keresés eredménye: ${filteredProducts.length} termék`);
+    }
+    
+    // Küldjük vissza a szűrt termékeket
+    res.status(200).json(filteredProducts);
   } catch (error) {
     console.error('Hiba a katalógus elemek lekérdezésekor:', error);
     res.status(500).json({ message: 'Hiba a katalógus elemek lekérdezésekor', error });
