@@ -152,14 +152,14 @@ const CategorySelector = ({ onCategorySelect, selectedCategory = 'all' }) => {
   const renderLoadingSkeleton = () => (
     <Box sx={{ p: 2 }}>
       {isMobile ? (
-        <Grid container spacing={1}>
-          {Array.from(new Array(6)).map((_, index) => (
-            <Grid item xs={6} sm={4} key={index}>
+        <Grid container spacing={1.5}>
+          {Array.from(new Array(8)).map((_, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
               <Skeleton 
                 variant="rectangular" 
-                height={40} 
+                height={48} 
                 width="100%" 
-                sx={{ borderRadius: 4 }}
+                sx={{ borderRadius: '16px' }}
               />
             </Grid>
           ))}
@@ -194,10 +194,10 @@ const CategorySelector = ({ onCategorySelect, selectedCategory = 'all' }) => {
     if (isMobile) {
       return (
         <Box sx={{ p: 2 }}>
-          <Grid container spacing={1}>
+          <Grid container spacing={1.5}>
             {categories.map((category, index) => (
               <Zoom in={true} style={{ transitionDelay: `${index * 50}ms` }} key={category.id}>
-                <Grid item xs={6} sm={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Chip
                     avatar={
                       <Avatar 
@@ -210,30 +210,60 @@ const CategorySelector = ({ onCategorySelect, selectedCategory = 'all' }) => {
                       </Avatar>
                     }
                     label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                        <Typography variant="body2" noWrap sx={{ maxWidth: '70%' }}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between', 
+                        width: '100%', 
+                        overflow: 'hidden'
+                      }}>
+                        <Typography variant="body2" noWrap sx={{ 
+                          flexGrow: 1,
+                          mr: 0.5
+                        }}>
                           {category.name}
                         </Typography>
                         <Chip 
                           label={category.count} 
                           size="small"
-                          variant="outlined"
-                          sx={{ ml: 0.5, minWidth: 32 }}
+                          variant="filled"
+                          color={selectedCategory === category.id ? "secondary" : "default"}
+                          sx={{ 
+                            ml: 0.5, 
+                            minWidth: 28,
+                            height: 20,
+                            fontSize: '0.75rem',
+                            flexShrink: 0,
+                            bgcolor: selectedCategory === category.id ? theme.palette.secondary.main + '!important' : theme.palette.action.selected,
+                          }}
                         />
                       </Box>
                     }
                     onClick={() => handleCategorySelect(category.id)}
                     color={selectedCategory === category.id ? "primary" : "default"}
-                    variant={selectedCategory === category.id ? "filled" : "outlined"}
+                    variant={"filled"}
                     sx={{ 
                       width: '100%', 
                       justifyContent: 'flex-start',
                       height: 'auto',
-                      py: 0.5,
+                      py: 1,
+                      px: 1.5,
+                      borderRadius: '16px',
+                      boxShadow: selectedCategory === category.id ? theme.shadows[3] : theme.shadows[1],
+                      bgcolor: selectedCategory === category.id ? theme.palette.primary.main : theme.palette.background.paper,
+                      color: selectedCategory === category.id ? theme.palette.primary.contrastText : theme.palette.text.primary,
+                      '& .MuiChip-avatar': {
+                        color: selectedCategory === category.id ? theme.palette.primary.main : '#fff',
+                        bgcolor: selectedCategory === category.id ? theme.palette.primary.contrastText : (category.color || theme.palette.primary.main) + '!important',
+                      },
+                      '& .MuiTypography-root': {
+                        color: selectedCategory === category.id ? theme.palette.primary.contrastText : theme.palette.text.primary,
+                      },
                       transition: 'all 0.2s ease',
                       '&:hover': { 
                         transform: 'translateY(-2px)',
-                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                        boxShadow: theme.shadows[4],
+                        bgcolor: selectedCategory === category.id ? theme.palette.primary.dark : theme.palette.action.hover
                       }
                     }}
                   />
@@ -339,12 +369,14 @@ const CategorySelector = ({ onCategorySelect, selectedCategory = 'all' }) => {
           </ListItemIcon>
           <ListItemText 
             primary={
-              <Typography variant="subtitle1" fontWeight="medium">
-                Kategóriák
-              </Typography>
+              <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis', pr: 1 }}>
+                <Typography variant="subtitle1" fontWeight="medium">
+                  Kategóriák
+                </Typography>
+              </Box>
             } 
           />
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
             {refreshing ? (
               <CircularProgress size={20} sx={{ mr: 1 }} />
             ) : (
@@ -354,11 +386,14 @@ const CategorySelector = ({ onCategorySelect, selectedCategory = 'all' }) => {
                   e.stopPropagation();
                   handleRefresh();
                 }}
-                sx={{ 
+                sx={{
                   mr: 1, 
                   cursor: 'pointer',
                   transition: 'transform 0.3s ease',
-                  '&:hover': { transform: 'rotate(180deg)' }
+                  '&:hover': { 
+                    transform: 'rotate(180deg)',
+                    color: theme.palette.primary.dark
+                   }
                 }}
               />
             )}
