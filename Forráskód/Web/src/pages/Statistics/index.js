@@ -135,7 +135,7 @@ const Statistics = () => {
             mb: 2
           }}
         >
-          A Vásárlási Szokásaid
+          A vásárlási szokásaid
         </Typography>
         <Typography 
           variant="subtitle1" 

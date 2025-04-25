@@ -6,8 +6,8 @@ const ProductCompletionChart = ({ stats }) => {
   const theme = useTheme();
   
   const completionRateData = [
-    { name: 'Megvásárolva', value: stats.totalPurchasedProducts },
-    { name: 'Nincs megvásárolva', value: stats.totalProducts - stats.totalPurchasedProducts }
+    { name: 'Megvett', value: stats.totalPurchasedProducts },
+    { name: 'Nem megvett', value: stats.totalProducts - stats.totalPurchasedProducts }
   ];
 
   const COLORS = [theme.palette.success.main, theme.palette.grey[500]];
