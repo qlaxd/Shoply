@@ -389,7 +389,7 @@ const ProductCatalogPage = () => {
               gutterBottom 
               sx={{ 
                 fontWeight: 'bold', 
-                mb: 3,
+                mb: { xs: 2, sm: 3 },
                 display: 'flex',
                 alignItems: 'center',
                 backgroundImage: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
@@ -397,14 +397,14 @@ const ProductCatalogPage = () => {
                 WebkitBackgroundClip: 'text',
                 color: 'transparent',
                 textShadow: '0px 1px 2px rgba(0,0,0,0.05)',
-                fontSize: { xs: '1.8rem', sm: '2.2rem' },
+                fontSize: { xs: '1.7rem', sm: '2.2rem' },
                 transition: 'all 0.3s ease'
               }}
             >
               <InventoryIcon 
                 sx={{ 
                   mr: 1.5, 
-                  fontSize: { xs: '1.8rem', sm: '2.2rem' },
+                  fontSize: { xs: '1.7rem', sm: '2.2rem' },
                   color: theme.palette.primary.main
                 }} 
               />
@@ -412,7 +412,7 @@ const ProductCatalogPage = () => {
             </Typography>
             
             {/* Fő tartalom */}
-            <Grid container spacing={3}>
+            <Grid container spacing={{ xs: 2, md: 3 }}>
               {/* Listák kiválasztása és termék hozzáadási gomb */}
               <Grid item xs={12}>
                 <Slide direction="down" in={true} timeout={500} mountOnEnter>
@@ -427,10 +427,10 @@ const ProductCatalogPage = () => {
                       }
                     }}
                   >
-                    <Grid container spacing={3} alignItems="center">
+                    <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center">
                       {/* Statisztikai kártyák */}
                       <Grid item xs={12}>
-                        <Grid container spacing={2} sx={{ mb: 2 }}>
+                        <Grid container spacing={2} sx={{ mb: { xs: 2, md: 0 } }}>
                           <Grid item xs={6} sm={3}>
                             <Card 
                               sx={{ 
@@ -583,7 +583,7 @@ const ProductCatalogPage = () => {
                         </Grid>
                       </Grid>
 
-                      <Grid item xs={12} sm={isMobile ? 12 : 6} md={isMobile ? 12 : 4}>
+                      <Grid item xs={12} sm={6} md={5} lg={4}>
                         <Typography variant="subtitle1" fontWeight="medium" sx={{
                           color: theme.palette.text.primary,
                           mb: 1
@@ -615,14 +615,18 @@ const ProductCatalogPage = () => {
                                     borderWidth: '2px'
                                   },
                                   '& .MuiSelect-select': {
-                                    padding: '12px 14px'
+                                    padding: '12px 14px',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
                                   }
                                 }}
                                 MenuProps={{
                                   PaperProps: {
                                     style: {
                                       maxHeight: 48 * 4.5,
-                                      width: 250,
+                                      width: 'auto',
+                                      minWidth: '200px',
                                       borderRadius: 8,
                                       marginTop: 8
                                     },
@@ -646,19 +650,29 @@ const ProductCatalogPage = () => {
                                       }
                                     }
                                   }}>
-                                    <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Typography sx={{ 
+                                      display: 'flex', 
+                                      alignItems: 'center', 
+                                      width: '100%',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis', 
+                                      whiteSpace: 'nowrap' 
+                                    }}>
                                       <BookmarkIcon 
                                         fontSize="small" 
                                         sx={{ 
                                           mr: 1, 
-                                          color: list.color || theme.palette.primary.main 
+                                          color: list.color || theme.palette.primary.main,
+                                          flexShrink: 0
                                         }} 
                                       />
-                                      {list.title}
+                                      <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', flexGrow: 1 }}>
+                                        {list.title}
+                                      </Box>
                                       <Badge 
                                         badgeContent={list.products.length} 
                                         color="primary"
-                                        sx={{ ml: 1 }}
+                                        sx={{ ml: 1, flexShrink: 0 }}
                                       />
                                     </Typography>
                                   </MenuItem>
@@ -700,7 +714,7 @@ const ProductCatalogPage = () => {
                         )}
                       </Grid>
                       
-                      <Grid item xs={12} sm={isMobile ? 12 : 6} md={isMobile ? 12 : 8} sx={{ 
+                      <Grid item xs={12} sm={6} md={7} lg={8} sx={{
                         display: 'flex', 
                         justifyContent: { xs: 'center', sm: 'flex-end' },
                         alignItems: 'center',
@@ -711,7 +725,7 @@ const ProductCatalogPage = () => {
                         {isMobile && (
                           <Button
                             variant="outlined"
-                            color="primary"
+                            color="secondary"
                             onClick={handleCategoryDrawerToggle}
                             startIcon={<CategoryIcon />}
                             sx={{ 
@@ -722,9 +736,12 @@ const ProductCatalogPage = () => {
                               borderWidth: '1.5px',
                               py: 1.2,
                               backgroundColor: theme.palette.background.paper,
+                              borderColor: theme.palette.secondary.main + '80',
+                              color: theme.palette.secondary.main,
                               '&:hover': {
                                 borderWidth: '1.5px',
-                                backgroundColor: theme.palette.primary.light + '10'
+                                backgroundColor: theme.palette.secondary.light + '10',
+                                borderColor: theme.palette.secondary.main
                               }
                             }}
                           >
@@ -991,7 +1008,11 @@ const ProductCatalogPage = () => {
           sx: {
             borderRadius: isMobile ? '16px 16px 0 0' : 0,
             maxHeight: isMobile ? '90vh' : '100vh',
-            boxShadow: '0 0 20px rgba(0,0,0,0.15)'
+            boxShadow: '0 0 20px rgba(0,0,0,0.15)',
+            transition: (theme) => theme.transitions.create(['transform', 'border-radius'], {
+              duration: theme.transitions.duration.enteringScreen,
+              easing: theme.transitions.easing.easeOut,
+            }),
           }
         }}
         swipeAreaWidth={30}
@@ -1010,7 +1031,11 @@ const ProductCatalogPage = () => {
           sx: {
             borderRadius: isMobile ? '16px 16px 0 0' : 0,
             maxHeight: isMobile ? '80vh' : '100vh',
-            boxShadow: '0 0 20px rgba(0,0,0,0.15)'
+            boxShadow: '0 0 20px rgba(0,0,0,0.15)',
+            transition: (theme) => theme.transitions.create(['transform', 'border-radius'], {
+              duration: theme.transitions.duration.enteringScreen,
+              easing: theme.transitions.easing.easeOut,
+            }),
           }
         }}
         swipeAreaWidth={30}
@@ -1035,7 +1060,10 @@ const ProductCatalogPage = () => {
               snackbar.severity === 'warning' ? theme.palette.warning.main :
               snackbar.severity === 'info' ? theme.palette.info.main :
               theme.palette.success.main
-            )
+            ),
+            transition: (theme) => theme.transitions.create(['background-color', 'color'], {
+              duration: theme.transitions.duration.short,
+            }),
           }
         }}
       >
