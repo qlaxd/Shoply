@@ -347,7 +347,7 @@ const AddProductForm = ({ listId, onAddSuccess }) => {
                       <Box sx={{ display: 'flex', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
                         {option.category && (
                           <Chip
-                            label={option.category}
+                            label={categories.find(cat => cat._id === option.category)?.name || option.category}
                             size="small"
                             color="primary"
                             variant="outlined"
