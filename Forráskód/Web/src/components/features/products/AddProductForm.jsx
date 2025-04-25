@@ -318,7 +318,7 @@ const AddProductForm = ({ listId, onAddSuccess }) => {
                     <span style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                       <span>Válasszon a katalógusból vagy adjon meg saját terméket</span>
                       {suggestionCount > 0 && (
-                        <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
+                        <span style={{ fontSize: '0.75rem', color: 'rgb(61, 210, 44)' }}>
                           {suggestionCount} találat
                         </span>
                       )}
