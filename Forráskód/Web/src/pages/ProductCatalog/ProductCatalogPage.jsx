@@ -158,7 +158,7 @@ const ProductCatalogPage = () => {
     try {
       const productData = {
         name: product.name,
-        unit: product.unit || 'db',
+        unit: product.defaultUnit || 'db',
         quantity: 1
       };
       

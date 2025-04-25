@@ -106,7 +106,7 @@ const AddProductForm = ({ listId, onAddSuccess }) => {
         ...prev,
         catalogItem: newValue._id,
         name: newValue.name,
-        unit: newValue.unit || 'db',
+        unit: newValue.defaultUnit || 'db',
         fromCatalog: true
       }));
     } else {
@@ -358,7 +358,7 @@ const AddProductForm = ({ listId, onAddSuccess }) => {
                             />
                           )}
                           <Typography variant="body2" color="text.secondary">
-                            {option.unit || 'db'}
+                            {option.defaultUnit || 'db'}
                           </Typography>
                         </Box>
                       </Box>
