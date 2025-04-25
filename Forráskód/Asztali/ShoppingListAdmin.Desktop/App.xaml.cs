@@ -44,11 +44,11 @@ namespace ShoppingListAdmin.Desktop
                     
                     services.AddSingleton<ProductService>();
                     services.AddSingleton<AdminService>();
+                    services.AddSingleton<CategoryService>(s => new CategoryService(s.GetRequiredService<ApiService>().GetAuthToken()));
                     
                     services.AddSingleton<CategoryViewModel>();
-                    //services.AddSingleton<CategoryService>(); TODO: bugfix or remove
                     services.AddSingleton<ListsViewModel>();
-                    //services.AddSingleton<ProductCatalogService>(); TODO: bugfix or remove
+                    services.AddSingleton<ProductCatalogService>();
 
                     services.AddSingleton<SettingsViewModel>();
                     services.AddSingleton<SettingsView>(s => new SettingsView()

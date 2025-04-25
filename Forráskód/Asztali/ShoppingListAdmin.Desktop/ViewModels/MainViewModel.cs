@@ -35,17 +35,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
 
         public MainViewModel()
         {
-            var apiService = new ApiService(); // Assuming ApiService has a parameterless constructor
-            var productCatalogService = new ProductCatalogService();
-            _controlPanelViewModel = new ControlPanelViewModel();
-            _usersViewModel = new UsersViewModel(apiService);
-            _listsViewModel = new ListsViewModel();
-            _productViewModel = new ProductViewModel(productCatalogService);
-            _statisticsViewModel = new StatisticsViewModel();
-            _settingsViewModel = new SettingsViewModel();
-            _adminsViewModel = new AdminsViewModel(apiService); // Initialize _adminsViewModel
-            _categoriesViewModel = new CategoryViewModel();
-            _currentChildView = _controlPanelViewModel;
+            throw new InvalidOperationException("MainViewModel must be created through dependency injection. Use the parameterized constructor.");
         }
 
         public MainViewModel(
@@ -56,7 +46,8 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             StatisticsViewModel statisticsViewModel,
             SettingsViewModel settingsViewModel,
             CategoryViewModel categoriesViewModel,
-            AdminsViewModel adminsViewModel)
+            AdminsViewModel adminsViewModel,
+            CategoryService categoryService)
         {
             _controlPanelViewModel = controlPanelViewModel;
             _usersViewModel = usersViewModel;

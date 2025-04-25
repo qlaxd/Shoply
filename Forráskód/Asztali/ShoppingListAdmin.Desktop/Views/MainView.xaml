@@ -14,10 +14,6 @@
         Background="Transparent"
         AllowsTransparency="True">
     
-    <Window.DataContext>
-        <viewModel:MainViewModel/>
-        
-    </Window.DataContext>
     <!-- Full page -->
     <Border CornerRadius="10" BorderThickness="2">
         <Border.BorderBrush>
