@@ -52,6 +52,9 @@
             <Setter Property="Padding" Value="10,5"/>
             <Setter Property="BorderBrush" Value="#2C3E50"/>
             <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
         <Style x:Key="DataGridCellStyle" TargetType="DataGridCell">
@@ -101,7 +104,8 @@
             <DataGrid Grid.Row="1"
                       ItemsSource="{Binding Categories}"
                       SelectedItem="{Binding SelectedCategory}"
-                      Style="{StaticResource DataGridStyle}">
+                      Style="{StaticResource DataGridStyle}"
+                      ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" 
                                       Binding="{Binding Id}"
