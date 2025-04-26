@@ -131,7 +131,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
             {
                 IsLoading = true;
                 ErrorMessage = string.Empty;
-                Debug.WriteLine($"Creating new list: {list.Name}");
+                Debug.WriteLine($"Creating new list: {list.Title}");
 
                 await _listService.CreateListAsync(list);
                 await ExecuteLoadListsCommand();
@@ -162,7 +162,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
             {
                 IsLoading = true;
                 ErrorMessage = string.Empty;
-                Debug.WriteLine($"Updating list: {list.Name} (ID: {list.Id})");
+                Debug.WriteLine($"Updating list: {list.Title} (ID: {list.Id})");
 
                 await _listService.UpdateListAsync(list.Id, list);
                 await ExecuteLoadListsCommand();
@@ -193,7 +193,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
             {
                 IsLoading = true;
                 ErrorMessage = string.Empty;
-                Debug.WriteLine($"Deleting list: {list.Name} (ID: {list.Id})");
+                Debug.WriteLine($"Deleting list: {list.Title} (ID: {list.Id})");
 
                 await _listService.DeleteListAsync(list.Id);
                 await ExecuteLoadListsCommand();

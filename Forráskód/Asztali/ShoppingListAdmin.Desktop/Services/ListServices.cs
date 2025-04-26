@@ -68,7 +68,7 @@ namespace ShoppingListAdmin.Desktop.Services
                 {
                     foreach (var list in lists)
                     {
-                        Debug.WriteLine($"List: Id={list.Id}, Name={list.Name}, Owner={list.Owner}, Products={list.Products?.Count ?? 0}");
+                        Debug.WriteLine($"List: Id={list.Id}, Title={list.Title}, Owner={list.Owner}, Products={list.Products?.Count ?? 0}");
                     }
                 }
                 
@@ -96,7 +96,7 @@ namespace ShoppingListAdmin.Desktop.Services
             try
             {
                 Debug.WriteLine($"Fetching list with ID: {listId}");
-                var response = await _httpClient.GetAsync($"lists/{listId}");
+                var response = await _httpClient.GetAsync($"admin/lists/{listId}");
                 response.EnsureSuccessStatusCode();
                 
                 var content = await response.Content.ReadAsStringAsync();
@@ -127,8 +127,8 @@ namespace ShoppingListAdmin.Desktop.Services
         {
             try
             {
-                Debug.WriteLine($"Creating new list: {list.Name}");
-                var response = await _httpClient.PostAsJsonAsync("lists", list, _jsonOptions);
+                Debug.WriteLine($"Creating new list: {list.Title}");
+                var response = await _httpClient.PostAsJsonAsync("admin/lists", list, _jsonOptions);
                 response.EnsureSuccessStatusCode();
                 Debug.WriteLine("List created successfully");
             }
@@ -154,7 +154,7 @@ namespace ShoppingListAdmin.Desktop.Services
             try
             {
                 Debug.WriteLine($"Updating list with ID: {listId}");
-                var response = await _httpClient.PutAsJsonAsync($"lists/{listId}", list, _jsonOptions);
+                var response = await _httpClient.PutAsJsonAsync($"admin/lists/{listId}", list, _jsonOptions);
                 response.EnsureSuccessStatusCode();
                 Debug.WriteLine($"Successfully updated list with ID: {listId}");
             }
@@ -180,7 +180,7 @@ namespace ShoppingListAdmin.Desktop.Services
             try
             {
                 Debug.WriteLine($"Deleting list with ID: {listId}");
-                var response = await _httpClient.DeleteAsync($"lists/{listId}");
+                var response = await _httpClient.DeleteAsync($"admin/lists/{listId}");
                 response.EnsureSuccessStatusCode();
                 Debug.WriteLine($"Successfully deleted list with ID: {listId}");
             }
@@ -199,28 +199,28 @@ namespace ShoppingListAdmin.Desktop.Services
         // New methods for list sharing
         public async Task ShareListAsync(string listId, string userId)
         {
-            await _httpClient.PostAsJsonAsync($"lists/{listId}/share", new { userId });
+            await _httpClient.PostAsJsonAsync($"admin/lists/{listId}/share", new { userId });
         }
 
         public async Task UnshareListAsync(string listId, string userId)
         {
-            await _httpClient.DeleteAsync($"lists/{listId}/unshare");
+            await _httpClient.DeleteAsync($"admin/lists/{listId}/unshare");
         }
 
         // New methods for product management within lists
         public async Task AddProductToListAsync(string listId, ProductModel product)
         {
-            await _httpClient.PostAsJsonAsync($"lists/{listId}/products", product);
+            await _httpClient.PostAsJsonAsync($"admin/lists/{listId}/products", product);
         }
 
         public async Task RemoveProductFromListAsync(string listId, string productId)
         {
-            await _httpClient.DeleteAsync($"lists/{listId}/products/{productId}");
+            await _httpClient.DeleteAsync($"admin/lists/{listId}/products/{productId}");
         }
 
         public async Task UpdateProductInListAsync(string listId, string productId, ProductModel product)
         {
-            await _httpClient.PutAsJsonAsync($"lists/{listId}/products/{productId}", product);
+            await _httpClient.PutAsJsonAsync($"admin/lists/{listId}/products/{productId}", product);
         }
     }
 }

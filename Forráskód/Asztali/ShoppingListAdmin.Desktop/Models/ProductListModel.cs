@@ -10,10 +10,13 @@ namespace ShoppingListAdmin.Desktop.Models
     {
         private ObservableCollection<ProductModel> _products;
         private string _id;
-        private string _name;
+        private string _title;
         private string _owner;
         private DateTime _createdAt;
         private DateTime _updatedAt;
+        private int _priority;
+        private string _status;
+        private bool _deleted;
 
         [JsonPropertyName("_id")]
         public string Id
@@ -29,16 +32,16 @@ namespace ShoppingListAdmin.Desktop.Models
             }
         }
 
-        [JsonPropertyName("name")]
-        public string Name
+        [JsonPropertyName("title")]
+        public string Title
         {
-            get => _name;
+            get => _title;
             set
             {
-                if (_name != value)
+                if (_title != value)
                 {
-                    _name = value;
-                    OnPropertyChanged(nameof(Name));
+                    _title = value;
+                    OnPropertyChanged(nameof(Title));
                 }
             }
         }
@@ -85,6 +88,48 @@ namespace ShoppingListAdmin.Desktop.Models
             }
         }
 
+        [JsonPropertyName("priority")]
+        public int Priority
+        {
+            get => _priority;
+            set
+            {
+                if (_priority != value)
+                {
+                    _priority = value;
+                    OnPropertyChanged(nameof(Priority));
+                }
+            }
+        }
+
+        [JsonPropertyName("status")]
+        public string Status
+        {
+            get => _status;
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    OnPropertyChanged(nameof(Status));
+                }
+            }
+        }
+
+        [JsonPropertyName("deleted")]
+        public bool Deleted
+        {
+            get => _deleted;
+            set
+            {
+                if (_deleted != value)
+                {
+                    _deleted = value;
+                    OnPropertyChanged(nameof(Deleted));
+                }
+            }
+        }
+
         // Termékek listája
         [JsonPropertyName("products")]
         public ObservableCollection<ProductModel> Products
@@ -114,10 +159,13 @@ namespace ShoppingListAdmin.Desktop.Models
         {
             _products = new ObservableCollection<ProductModel>();
             _id = string.Empty;
-            _name = string.Empty;
+            _title = string.Empty;
             _owner = string.Empty;
             _createdAt = DateTime.Now;
             _updatedAt = DateTime.Now;
+            _priority = 0;
+            _status = "active";
+            _deleted = false;
         }
 
         // Termék hozzáadása a listához
