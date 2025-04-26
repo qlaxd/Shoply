@@ -13,6 +13,59 @@
     
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        
+        <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#3E6057"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="15,5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#083A4D"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DataGridStyle" TargetType="DataGrid">
+            <Setter Property="Background" Value="#2C3E50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#3E6057"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowBackground" Value="#2C3E50"/>
+            <Setter Property="AlternatingRowBackground" Value="#34495E"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#3E6057"/>
+            <Setter Property="VerticalGridLinesBrush" Value="#3E6057"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="False"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+        </Style>
+
+        <Style x:Key="DataGridColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#3E6057"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderBrush" Value="#2C3E50"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="DataGridCellStyle" TargetType="DataGridCell">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        </Style>
     </UserControl.Resources>
     
     <Grid Margin="10">
@@ -20,44 +73,155 @@
             <!-- Users Tab -->
             <TabItem Header="Felhasználók">
                 <Grid Margin="10">
-                    <DataGrid ItemsSource="{Binding UserGrowthByMonth}" AutoGenerateColumns="False" Margin="0,10">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Hónap" Binding="{Binding Month}" Width="*"/>
-                            <DataGridTextColumn Header="Új felhasználók" Binding="{Binding NewUsers}" Width="*"/>
-                            <DataGridTextColumn Header="Aktív felhasználók" Binding="{Binding ActiveUsers}" Width="*"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <Button Content="User statisztika újratöltés" Command="{Binding LoadUserStatsCommand}" HorizontalAlignment="Right" Margin="0,10,0,0"/>
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Background="#2C3E50" Margin="5" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="Összes felhasználó" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Statistics.TotalUsers}" FontSize="24" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#2C3E50" Margin="5" Grid.Column="1" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="Aktív felhasználók" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Statistics.ActiveUsers}" FontSize="24" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#2C3E50" Margin="5" Grid.Column="2" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="Új felhasználók ebben a hónapban" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Statistics.NewUsersThisMonth}" FontSize="24" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                        <DataGrid ItemsSource="{Binding Statistics.MonthlyActiveUsers}" 
+                                 AutoGenerateColumns="False" 
+                                 Margin="0,10"
+                                 Style="{StaticResource DataGridStyle}"
+                                 ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Hónap" Binding="{Binding MonthStart, StringFormat={}{0:yyyy.MM}}" Width="*"/>
+                                <DataGridTextColumn Header="Aktív felhasználók" Binding="{Binding Count}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
                 </Grid>
             </TabItem>
 
             <!-- Lists Tab -->
             <TabItem Header="Listák">
                 <Grid Margin="10">
-                    <DataGrid ItemsSource="{Binding ListsByCategory}" AutoGenerateColumns="False" Margin="0,10">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Kategória" Binding="{Binding CategoryName}" Width="*"/>
-                            <DataGridTextColumn Header="Összes lista" Binding="{Binding TotalLists}" Width="*"/>
-                            <DataGridTextColumn Header="Teljesített listák" Binding="{Binding CompletedLists}" Width="*"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <Button Content="Listastatisztika újratöltés" Command="{Binding LoadListStatsCommand}" HorizontalAlignment="Right" Margin="0,10,0,0"/>
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Background="#2C3E50" Margin="5" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="Összes lista" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Statistics.TotalLists}" FontSize="24" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#2C3E50" Margin="5" Grid.Column="1" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="Aktív listák" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Statistics.ActiveLists}" FontSize="24" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#2C3E50" Margin="5" Grid.Column="2" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="Teljesített listák" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Statistics.CompletedLists}" FontSize="24" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                        <TextBlock Text="{Binding Statistics.AverageListsPerUser, StringFormat='Átlagos lista/felhasználó: {0:F2}'}" 
+                                   HorizontalAlignment="Center" Margin="0,10"/>
+                    </StackPanel>
                 </Grid>
             </TabItem>
 
             <!-- Products Tab -->
             <TabItem Header="Termékek">
                 <Grid Margin="10">
-                    <DataGrid ItemsSource="{Binding ProductsByCategory}" AutoGenerateColumns="False" Margin="0,10">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Kategória" Binding="{Binding CategoryName}" Width="*"/>
-                            <DataGridTextColumn Header="Összes termék" Binding="{Binding TotalProducts}" Width="*"/>
-                            <DataGridTextColumn Header="Átlag ár" Binding="{Binding AveragePrice}" Width="*"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <Button Content="Termékstatisztika újratöltés" Command="{Binding LoadProductStatsCommand}" HorizontalAlignment="Right" Margin="0,10,0,0"/>
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Background="#2C3E50" Margin="5" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="Összes termék" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Statistics.TotalProducts}" FontSize="24" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#2C3E50" Margin="5" Grid.Column="1" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="Átlagos termék/lista" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Statistics.AverageProductsPerList, StringFormat={}{0:F2}}" FontSize="24" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                        <TextBlock Text="Leggyakrabban hozzáadott termékek" FontSize="16" Margin="0,10"/>
+                        <DataGrid ItemsSource="{Binding Statistics.MostAddedProducts}" 
+                                 AutoGenerateColumns="False" 
+                                 Margin="0,5"
+                                 Style="{StaticResource DataGridStyle}"
+                                 ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Termék" Binding="{Binding ProductName}" Width="*"/>
+                                <DataGridTextColumn Header="Darabszám" Binding="{Binding Count}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <TextBlock Text="Leggyakrabban vásárolt termékek" FontSize="16" Margin="0,10"/>
+                        <DataGrid ItemsSource="{Binding Statistics.MostPurchasedProducts}" 
+                                 AutoGenerateColumns="False" 
+                                 Margin="0,5"
+                                 Style="{StaticResource DataGridStyle}"
+                                 ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Termék" Binding="{Binding ProductName}" Width="*"/>
+                                <DataGridTextColumn Header="Darabszám" Binding="{Binding Count}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
                 </Grid>
             </TabItem>
+
+            <!-- Collaboration Tab -->
+            <TabItem Header="Együttműködés">
+                <Grid Margin="10">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Background="#2C3E50" Margin="5" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="Átlagos közreműködő/lista" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Statistics.AverageContributorsPerList, StringFormat={}{0:F2}}" FontSize="24" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#2C3E50" Margin="5" Grid.Column="1" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="Együttműködéses listák aránya" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Statistics.CollaborativeListsPercentage, StringFormat={}{0:P2}}" FontSize="24" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
             <!-- Loading/Error Indicators -->
             <TextBlock Text="{Binding ErrorMessage}" 
                        Foreground="Red" 
@@ -71,5 +235,11 @@
                        VerticalAlignment="Top" 
                        Margin="0,30"/>
         </TabControl>
+        <Button Content="Statisztika újratöltés" 
+                Command="{Binding LoadStatisticsCommand}"
+                Style="{StaticResource ActionButtonStyle}"
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Bottom"
+                Margin="0,0,10,10"/>
     </Grid>
 </UserControl>

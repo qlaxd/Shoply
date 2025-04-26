@@ -22,107 +22,40 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Statistics
         private string _errorMessage;
 
         [ObservableProperty]
-        private ObservableCollection<MonthlyGrowthStat> _userGrowthByMonth;
-
-        [ObservableProperty]
-        private ObservableCollection<CategoryListStat> _listsByCategory;
-
-        [ObservableProperty]
-        private ObservableCollection<CategoryProductStat> _productsByCategory;
+        private StatisticsModel _statistics;
 
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
-        public ICommand LoadUserStatsCommand { get; }
-        public ICommand LoadListStatsCommand { get; }
-        public ICommand LoadProductStatsCommand { get; }
+        public ICommand LoadStatisticsCommand { get; }
 
         public StatisticsViewModel(ApiService apiService)
         {
             _apiService = apiService;
+            _statistics = new StatisticsModel();
 
-            UserGrowthByMonth = new ObservableCollection<MonthlyGrowthStat>();
-            ListsByCategory = new ObservableCollection<CategoryListStat>();
-            ProductsByCategory = new ObservableCollection<CategoryProductStat>();
-
-            LoadUserStatsCommand = new AsyncRelayCommand(ExecuteLoadUserStatsCommand);
-            LoadListStatsCommand = new AsyncRelayCommand(ExecuteLoadListStatsCommand);
-            LoadProductStatsCommand = new AsyncRelayCommand(ExecuteLoadProductStatsCommand);
+            LoadStatisticsCommand = new AsyncRelayCommand(ExecuteLoadStatisticsCommand);
 
             // Load initial data
-            ExecuteLoadUserStatsCommand();
-            ExecuteLoadListStatsCommand();
-            ExecuteLoadProductStatsCommand();
+            ExecuteLoadStatisticsCommand();
         }
 
         public StatisticsViewModel()
         {
         }
 
-        private async Task ExecuteLoadUserStatsCommand()
+        private async Task ExecuteLoadStatisticsCommand()
         {
             try
             {
                 IsLoading = true;
                 ErrorMessage = string.Empty;
 
-                var userStats = await _apiService.GetUserGrowthStatsAsync();
-                UserGrowthByMonth.Clear();
-                foreach (var stat in userStats.UserGrowthByMonth)
-                {
-                    UserGrowthByMonth.Add(stat);
-                }
+                Statistics = await _apiService.GetStatisticsAsync();
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error loading user stats: {ex.Message}";
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        private async Task ExecuteLoadListStatsCommand()
-        {
-            try
-            {
-                IsLoading = true;
-                ErrorMessage = string.Empty;
-
-                var listStats = await _apiService.GetListActivityStatsAsync();
-                ListsByCategory.Clear();
-                foreach (var stat in listStats.ListsByCategory)
-                {
-                    ListsByCategory.Add(stat);
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Error loading list stats: {ex.Message}";
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        private async Task ExecuteLoadProductStatsCommand()
-        {
-            try
-            {
-                IsLoading = true;
-                ErrorMessage = string.Empty;
-
-                var productStats = await _apiService.GetProductStatsAsync();
-                ProductsByCategory.Clear();
-                foreach (var stat in productStats.ProductsByCategory)
-                {
-                    ProductsByCategory.Add(stat);
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Error loading product stats: {ex.Message}";
+                ErrorMessage = $"Hiba a statisztikák betöltése közben: {ex.Message}";
+                Debug.WriteLine($"Error in ExecuteLoadStatisticsCommand: {ex}");
             }
             finally
             {
