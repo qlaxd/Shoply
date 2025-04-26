@@ -37,9 +37,9 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
         public ICommand UpdateListCommand { get; }
         public ICommand DeleteListCommand { get; }
 
-        public ListsViewModel(ListService listService)
+        public ListsViewModel(string authToken)
         {
-            _listService = listService ?? throw new ArgumentNullException(nameof(listService));
+            _listService = new ListService(authToken);
             Lists = new ObservableCollection<ProductListModel>();
 
             // Initialize commands
