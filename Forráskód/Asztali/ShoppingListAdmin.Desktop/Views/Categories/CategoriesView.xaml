@@ -95,7 +95,7 @@
                            Style="{StaticResource HeaderTextStyle}"/>
                 
                 <Button Content="Új kategória"
-                        Command="{Binding CreateCategoryCommand}"
+                        Command="{Binding ShowNewCategoryDialogCommand}"
                         Style="{StaticResource ActionButtonStyle}"
                         Margin="20,0,0,0"/>
             </StackPanel>

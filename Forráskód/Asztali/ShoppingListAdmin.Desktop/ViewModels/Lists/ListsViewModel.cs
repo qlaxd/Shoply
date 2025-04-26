@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using ShoppingListAdmin.Desktop.Services;
+using System.Windows;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Lists
 {
@@ -34,7 +35,6 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
 
         // Commands
         public ICommand LoadListsCommand { get; }
-        public ICommand CreateListCommand { get; }
         public ICommand UpdateListCommand { get; }
         public ICommand DeleteListCommand { get; }
 
@@ -55,7 +55,6 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
 
                 // Initialize commands
                 LoadListsCommand = new AsyncRelayCommand(ExecuteLoadListsCommand);
-                CreateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteCreateListCommand);
                 UpdateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteUpdateListCommand);
                 DeleteListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteDeleteListCommand);
 
@@ -77,9 +76,19 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
             // Design-time constructor
             Lists = new ObservableCollection<ProductListModel>();
             LoadListsCommand = new AsyncRelayCommand(ExecuteLoadListsCommand);
-            CreateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteCreateListCommand);
             UpdateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteUpdateListCommand);
             DeleteListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteDeleteListCommand);
+        }
+
+        [RelayCommand]
+        private void ShowNewListDialog()
+        {
+            MessageBox.Show(
+                "Ez a funkció jelenleg fejlesztés alatt áll. Kérjük, próbálja meg később.",
+                "Fejlesztés alatt",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+            );
         }
 
         public async Task ExecuteLoadListsCommand()
@@ -111,37 +120,6 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
             {
                 ErrorMessage = $"Hiba a listák betöltése közben: {ex.Message}";
                 Debug.WriteLine($"Error in ExecuteLoadListsCommand: {ex}");
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        private async Task ExecuteCreateListCommand(ProductListModel list)
-        {
-            if (list == null)
-            {
-                Debug.WriteLine("Cannot create list: List is null");
-                ErrorMessage = "Hiba: A lista nem lehet üres";
-                return;
-            }
-
-            try
-            {
-                IsLoading = true;
-                ErrorMessage = string.Empty;
-                Debug.WriteLine($"Creating new list: {list.Title}");
-
-                await _listService.CreateListAsync(list);
-                await ExecuteLoadListsCommand();
-
-                Debug.WriteLine("List created successfully");
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Hiba a lista létrehozása közben: {ex.Message}";
-                Debug.WriteLine($"Error in ExecuteCreateListCommand: {ex}");
             }
             finally
             {

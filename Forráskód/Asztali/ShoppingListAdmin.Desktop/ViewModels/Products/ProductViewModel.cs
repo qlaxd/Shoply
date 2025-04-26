@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ShoppingListAdmin.Desktop.ViewModels.Base;
 using System;
 using System.Diagnostics;
+using System.Windows;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Products
 {
@@ -66,25 +67,14 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Products
         }
 
         [RelayCommand]
-        public async Task CreateProductAsync(ProductCatalogModel product)
+        private void ShowNewProductDialog()
         {
-            try
-            {
-                IsLoading = true;
-                ErrorMessage = string.Empty;
-
-                await _productCatalogService.CreateProductCatalogAsync(product);
-                LoadProducts();
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Hiba a termék létrehozása közben: {ex.Message}";
-                Debug.WriteLine($"Error in CreateProductAsync: {ex}");
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+            MessageBox.Show(
+                "Ez a funkció jelenleg fejlesztés alatt áll. Kérjük, próbálja meg később.",
+                "Fejlesztés alatt",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+            );
         }
 
         [RelayCommand]

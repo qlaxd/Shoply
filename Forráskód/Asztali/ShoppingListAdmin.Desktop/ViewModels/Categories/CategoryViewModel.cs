@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System;
 using System.Diagnostics;
+using System.Windows;
 
 namespace ShoppingListAdmin.Desktop.ViewModels.Categories
 {
@@ -63,6 +64,17 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Categories
             {
                 IsLoading = false;
             }
+        }
+
+        [RelayCommand]
+        private void ShowNewCategoryDialog()
+        {
+            MessageBox.Show(
+                "Ez a funkció jelenleg fejlesztés alatt áll. Kérjük, próbálja meg később.",
+                "Fejlesztés alatt",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+            );
         }
 
         [RelayCommand]

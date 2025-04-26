@@ -96,7 +96,7 @@
                            Style="{StaticResource HeaderTextStyle}"/>
                 
                 <Button Content="Új lista"
-                        Command="{Binding CreateListCommand}"
+                        Command="{Binding ShowNewListDialogCommand}"
                         Style="{StaticResource ActionButtonStyle}"
                         Margin="20,0,0,0"/>
             </StackPanel>

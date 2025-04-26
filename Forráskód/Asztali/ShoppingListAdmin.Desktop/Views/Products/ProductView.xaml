@@ -97,7 +97,7 @@
                            Style="{StaticResource HeaderTextStyle}"/>
                 
                 <Button Content="Új termék"
-                        Command="{Binding CreateProductCommand}"
+                        Command="{Binding ShowNewProductDialogCommand}"
                         Style="{StaticResource ActionButtonStyle}"
                         Margin="20,0,0,0"/>
             </StackPanel>
