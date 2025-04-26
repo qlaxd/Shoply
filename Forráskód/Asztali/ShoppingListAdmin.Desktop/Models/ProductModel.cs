@@ -4,12 +4,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace ShoppingListAdmin.Desktop.Models
 {
     public class ProductModel : INotifyPropertyChanged
     {
-        private int _id;
+        private string _id;
         private string _name;
         private string _category;
         private decimal _price;
@@ -17,7 +18,8 @@ namespace ShoppingListAdmin.Desktop.Models
         private bool _isAvailable;
 
         // Termék egyedi azonosítója
-        public int Id
+        [JsonPropertyName("_id")]
+        public string Id
         {
             get => _id;
             set
@@ -31,6 +33,7 @@ namespace ShoppingListAdmin.Desktop.Models
         }
 
         // Termék neve
+        [JsonPropertyName("name")]
         public string Name
         {
             get => _name;
@@ -45,6 +48,7 @@ namespace ShoppingListAdmin.Desktop.Models
         }
 
         // Termék kategóriája
+        [JsonPropertyName("category")]
         public string Category
         {
             get => _category;
@@ -59,6 +63,7 @@ namespace ShoppingListAdmin.Desktop.Models
         }
 
         // Termék ára
+        [JsonPropertyName("price")]
         public decimal Price
         {
             get => _price;
@@ -73,6 +78,7 @@ namespace ShoppingListAdmin.Desktop.Models
         }
 
         // Termék mennyisége
+        [JsonPropertyName("quantity")]
         public int Quantity
         {
             get => _quantity;
@@ -87,6 +93,7 @@ namespace ShoppingListAdmin.Desktop.Models
         }
 
         // Termék elérhetősége
+        [JsonPropertyName("isAvailable")]
         public bool IsAvailable
         {
             get => _isAvailable;
@@ -112,13 +119,15 @@ namespace ShoppingListAdmin.Desktop.Models
         // Alapértelmezett konstruktor
         public ProductModel()
         {
+            _id = string.Empty;
             _name = string.Empty;
             _category = string.Empty;
         }
 
         // Paraméterekkel rendelkező konstruktor
-        public ProductModel(int id, string name, string category, decimal price, int quantity, bool isAvailable)
+        public ProductModel(string id, string name, string category, decimal price, int quantity, bool isAvailable)
         {
+            _id = id ?? throw new ArgumentNullException(nameof(id));
             _name = name ?? throw new ArgumentNullException(nameof(name));
             _category = category ?? throw new ArgumentNullException(nameof(category));
             Id = id;

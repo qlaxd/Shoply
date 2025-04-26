@@ -15,7 +15,7 @@ using ShoppingListAdmin.Desktop.Views.Settings;
 using ShoppingListAdmin.Desktop.ViewModels.Statistics;
 using ShoppingListAdmin.Desktop.Views.Statistics;
 using ShoppingListAdmin.Desktop.ViewModels.Products;
-
+using System.Diagnostics;
 
 namespace ShoppingListAdmin.Desktop
 {
@@ -31,7 +31,6 @@ namespace ShoppingListAdmin.Desktop
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices(services =>
                 {
-                    
                     services.AddSingleton<ApiService>();
                     services.AddSingleton<LoginViewModel>();
                     services.AddSingleton<LoginView>();
@@ -42,7 +41,6 @@ namespace ShoppingListAdmin.Desktop
                     });
                     services.ConfigureViewViewModels();
 
-                    
                     services.AddSingleton<ProductService>();
                     services.AddSingleton<AdminService>();
                     services.AddSingleton<CategoryService>(s => new CategoryService(s.GetRequiredService<ApiService>().GetAuthToken()));
@@ -50,7 +48,7 @@ namespace ShoppingListAdmin.Desktop
                     services.AddSingleton<ListService>(s => new ListService(s.GetRequiredService<ApiService>().GetAuthToken()));
                     
                     services.AddSingleton<CategoryViewModel>();
-                    services.AddSingleton<ListsViewModel>();
+                    services.AddSingleton<ListsViewModel>(s => new ListsViewModel(s.GetRequiredService<ApiService>().GetAuthToken()));
                     services.AddSingleton<ProductViewModel>();
                     services.AddSingleton<StatisticsViewModel>(s => new StatisticsViewModel(s.GetRequiredService<ApiService>()));
 
@@ -65,7 +63,6 @@ namespace ShoppingListAdmin.Desktop
                     {
                         DataContext = s.GetRequiredService<StatisticsViewModel>()
                     });
-
                 })
                 .Build();
         }
@@ -98,7 +95,7 @@ namespace ShoppingListAdmin.Desktop
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            
+            Debug.WriteLine("Application started");
         }
     }
 }

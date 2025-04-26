@@ -86,6 +86,7 @@ namespace ShoppingListAdmin.Desktop.Models
         }
 
         // Termékek listája
+        [JsonPropertyName("products")]
         public ObservableCollection<ProductModel> Products
         {
             get => _products;
@@ -140,7 +141,7 @@ namespace ShoppingListAdmin.Desktop.Models
         }
 
         // Adott termék keresése ID alapján
-        public ProductModel FindProductById(int id)
+        public ProductModel FindProductById(string id)
         {
             return Products.FirstOrDefault(p => p.Id == id) ?? new ProductModel();
         }

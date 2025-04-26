@@ -16,6 +16,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
     {
         private readonly ListService _listService;
         private ProductListModel? _selectedList;
+        private readonly string _authToken;
 
         [ObservableProperty]
         private bool _isLoading;
@@ -23,7 +24,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
         [ObservableProperty]
         private string _errorMessage;
 
-        public ObservableCollection<ProductListModel> Lists { get; set; }
+        public ObservableCollection<ProductListModel> Lists { get; private set; }
 
         public ProductListModel? SelectedList
         {
@@ -39,36 +40,72 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
 
         public ListsViewModel(string authToken)
         {
-            _listService = new ListService(authToken);
-            Lists = new ObservableCollection<ProductListModel>();
+            if (string.IsNullOrEmpty(authToken))
+            {
+                throw new ArgumentException("Auth token cannot be null or empty", nameof(authToken));
+            }
 
-            // Initialize commands
-            LoadListsCommand = new AsyncRelayCommand(ExecuteLoadListsCommand);
-            CreateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteCreateListCommand);
-            UpdateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteUpdateListCommand);
-            DeleteListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteDeleteListCommand);
+            _authToken = authToken;
+            Debug.WriteLine("Initializing ListsViewModel...");
 
-            // Load initial data
-            LoadListsCommand.Execute(null);
+            try
+            {
+                _listService = new ListService(authToken);
+                Lists = new ObservableCollection<ProductListModel>();
+
+                // Initialize commands
+                LoadListsCommand = new AsyncRelayCommand(ExecuteLoadListsCommand);
+                CreateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteCreateListCommand);
+                UpdateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteUpdateListCommand);
+                DeleteListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteDeleteListCommand);
+
+                Debug.WriteLine("ListsViewModel initialized successfully");
+
+                // Load initial data
+                _ = ExecuteLoadListsCommand();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error initializing ListsViewModel: {ex}");
+                ErrorMessage = $"Hiba történt az inicializálás során: {ex.Message}";
+                throw;
+            }
         }
 
         public ListsViewModel()
         {
+            // Design-time constructor
+            Lists = new ObservableCollection<ProductListModel>();
+            LoadListsCommand = new AsyncRelayCommand(ExecuteLoadListsCommand);
+            CreateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteCreateListCommand);
+            UpdateListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteUpdateListCommand);
+            DeleteListCommand = new AsyncRelayCommand<ProductListModel>(ExecuteDeleteListCommand);
         }
 
-        private async Task ExecuteLoadListsCommand()
+        public async Task ExecuteLoadListsCommand()
         {
+            if (string.IsNullOrEmpty(_authToken))
+            {
+                Debug.WriteLine("Cannot load lists: Auth token is missing");
+                ErrorMessage = "Hiba: Hiányzó hitelesítési token";
+                return;
+            }
+
             try
             {
                 IsLoading = true;
                 ErrorMessage = string.Empty;
+                Debug.WriteLine("Loading lists...");
 
                 var lists = await _listService.GetAllListsAsync();
+                
                 Lists.Clear();
                 foreach (var list in lists)
                 {
                     Lists.Add(list);
                 }
+
+                Debug.WriteLine($"Successfully loaded {Lists.Count} lists");
             }
             catch (Exception ex)
             {
@@ -83,13 +120,23 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
 
         private async Task ExecuteCreateListCommand(ProductListModel list)
         {
+            if (list == null)
+            {
+                Debug.WriteLine("Cannot create list: List is null");
+                ErrorMessage = "Hiba: A lista nem lehet üres";
+                return;
+            }
+
             try
             {
                 IsLoading = true;
                 ErrorMessage = string.Empty;
+                Debug.WriteLine($"Creating new list: {list.Name}");
 
                 await _listService.CreateListAsync(list);
                 await ExecuteLoadListsCommand();
+
+                Debug.WriteLine("List created successfully");
             }
             catch (Exception ex)
             {
@@ -104,13 +151,23 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
 
         private async Task ExecuteUpdateListCommand(ProductListModel list)
         {
+            if (list == null)
+            {
+                Debug.WriteLine("Cannot update list: List is null");
+                ErrorMessage = "Hiba: A lista nem lehet üres";
+                return;
+            }
+
             try
             {
                 IsLoading = true;
                 ErrorMessage = string.Empty;
+                Debug.WriteLine($"Updating list: {list.Name} (ID: {list.Id})");
 
                 await _listService.UpdateListAsync(list.Id, list);
                 await ExecuteLoadListsCommand();
+
+                Debug.WriteLine("List updated successfully");
             }
             catch (Exception ex)
             {
@@ -125,13 +182,23 @@ namespace ShoppingListAdmin.Desktop.ViewModels.Lists
 
         private async Task ExecuteDeleteListCommand(ProductListModel list)
         {
+            if (list == null)
+            {
+                Debug.WriteLine("Cannot delete list: List is null");
+                ErrorMessage = "Hiba: A lista nem lehet üres";
+                return;
+            }
+
             try
             {
                 IsLoading = true;
                 ErrorMessage = string.Empty;
+                Debug.WriteLine($"Deleting list: {list.Name} (ID: {list.Id})");
 
                 await _listService.DeleteListAsync(list.Id);
                 await ExecuteLoadListsCommand();
+
+                Debug.WriteLine("List deleted successfully");
             }
             catch (Exception ex)
             {

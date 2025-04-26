@@ -19,6 +19,7 @@ using ShoppingListAdmin.Desktop.Views.Lists;
 using ShoppingListAdmin.Desktop.Views.Categories;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace ShoppingListAdmin.Desktop.ViewModels
 {
@@ -90,11 +91,27 @@ namespace ShoppingListAdmin.Desktop.ViewModels
         }
 
         [RelayCommand]
-        public void ShowLists()
+        public async Task ShowLists()
         {
-            Caption = "Listák";
-            Icon = IconChar.List;
-            CurrentChildView = new Views.Lists.ListsView { DataContext = _listsViewModel };
+            try
+            {
+                Debug.WriteLine("Showing lists view...");
+                Caption = "Listák";
+                Icon = IconChar.List;
+                
+                // Create a new ListsView with the ListsViewModel
+                var listsView = new ListsView();
+                listsView.DataContext = _listsViewModel;
+                CurrentChildView = listsView;
+                
+                // Explicitly load lists
+                await _listsViewModel.ExecuteLoadListsCommand();
+                Debug.WriteLine("Lists view shown and lists loaded");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in ShowLists: {ex}");
+            }
         }
 
         [RelayCommand]
@@ -130,7 +147,7 @@ namespace ShoppingListAdmin.Desktop.ViewModels
         }
 
         [RelayCommand]
-        public async void ShowAdmins()
+        public async Task ShowAdmins()
         {
             Caption = "Adminisztrátorok";
             Icon = IconChar.UserShield;
@@ -140,34 +157,32 @@ namespace ShoppingListAdmin.Desktop.ViewModels
             await _adminsViewModel.LoadAdmins();
         }
 
-        
-            [RelayCommand]
-            public async void Logout()
+        [RelayCommand]
+        public async Task Logout()
+        {
+            try
             {
-                try
-                {
-                    // Close the MainView
-                    var mainWindow = Application.Current.Windows
-                        .OfType<Window>()
-                        .FirstOrDefault(w => w is MainView);
+                // Close the MainView
+                var mainWindow = Application.Current.Windows
+                    .OfType<Window>()
+                    .FirstOrDefault(w => w is MainView);
 
-                    if (mainWindow != null)
-                    {
-                        mainWindow.Close();
-                    }
-
-                    // Relaunch the LoginView
-                    var loginView = new LoginView
-                    {
-                        DataContext = new LoginViewModel() // Ensure LoginViewModel is properly initialized
-                    };
-                    loginView.Show();
-                }
-                catch (Exception ex)
+                if (mainWindow != null)
                 {
-                    Debug.WriteLine($"Error during logout: {ex.Message}");
+                    mainWindow.Close();
                 }
+
+                // Relaunch the LoginView
+                var loginView = new LoginView
+                {
+                    DataContext = new LoginViewModel() // Ensure LoginViewModel is properly initialized
+                };
+                loginView.Show();
             }
-
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error during logout: {ex.Message}");
+            }
+        }
     }
 }
