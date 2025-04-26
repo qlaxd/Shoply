@@ -47,7 +47,7 @@ namespace ShoppingListAdmin.Desktop.Services
             try
             {
                 Debug.WriteLine("Fetching all lists...");
-                var response = await _httpClient.GetAsync("lists");
+                var response = await _httpClient.GetAsync("admin/lists");
                 
                 Debug.WriteLine($"Response status code: {response.StatusCode}");
                 Debug.WriteLine($"Response headers: {string.Join(", ", response.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}"))}");
