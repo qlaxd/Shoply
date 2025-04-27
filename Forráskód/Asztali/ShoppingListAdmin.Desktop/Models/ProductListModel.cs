@@ -11,7 +11,7 @@ namespace ShoppingListAdmin.Desktop.Models
         private ObservableCollection<ProductModel> _products;
         private string _id;
         private string _title;
-        private string _owner;
+        private UserModel _owner;
         private DateTime _createdAt;
         private DateTime _updatedAt;
         private int _priority;
@@ -47,7 +47,7 @@ namespace ShoppingListAdmin.Desktop.Models
         }
 
         [JsonPropertyName("owner")]
-        public string Owner
+        public UserModel Owner
         {
             get => _owner;
             set
@@ -160,7 +160,7 @@ namespace ShoppingListAdmin.Desktop.Models
             _products = new ObservableCollection<ProductModel>();
             _id = string.Empty;
             _title = string.Empty;
-            _owner = string.Empty;
+            _owner = new UserModel();
             _createdAt = DateTime.Now;
             _updatedAt = DateTime.Now;
             _priority = 0;

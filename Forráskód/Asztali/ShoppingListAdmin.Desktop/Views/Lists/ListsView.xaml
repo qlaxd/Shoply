@@ -113,10 +113,10 @@
                                       IsReadOnly="True"
                                       Width="*"/>
                     <DataGridTextColumn Header="Név" 
-                                      Binding="{Binding Name}"
+                                      Binding="{Binding Title}"
                                       Width="*"/>
                     <DataGridTextColumn Header="Tulajdonos" 
-                                      Binding="{Binding Owner}"
+                                      Binding="{Binding Owner.Username}"
                                       Width="*"/>
                     <DataGridTextColumn Header="Létrehozva" 
                                       Binding="{Binding CreatedAt, StringFormat={}{0:yyyy.MM.dd HH:mm}}"

@@ -55,12 +55,39 @@ exports.deleteUser = async (req, res) => {
 // Controller function for admins to get all lists
 exports.adminGetAllLists = async (req, res) => {
   try {
-    // Fetch all lists, potentially populate owner/product details if needed later
-    const lists = await List.find({}).populate('owner', 'username email').populate('products.product', 'name'); // Example population
+    let lists = await List.find({})
+      .populate('owner', 'username email')
+      .populate({
+        path: 'products.catalogItem',
+        select: 'name category price isAvailable',
+        model: 'ProductCatalog'
+      })
+      .lean();
+
+    // Debug: log the raw lists
+    console.log('Raw lists from DB:', JSON.stringify(lists, null, 2));
+
+    // Flatten the products array for each list, with extra checks
+    lists = lists.map(list => ({
+      ...list,
+      products: Array.isArray(list.products)
+        ? list.products.map(p => ({
+            ...(p.catalogItem && typeof p.catalogItem === 'object' ? p.catalogItem : {}),
+            quantity: p.quantity,
+            unit: p.unit,
+            isPurchased: p.isPurchased,
+            _id: p._id // keep the subdocument id if needed
+          }))
+        : []
+    }));
+
+    // Debug: log the processed lists
+    console.log('Processed lists for response:', JSON.stringify(lists, null, 2));
+
     return res.status(200).json(lists);
   } catch (error) {
     console.error('Admin Error: Hiba az összes lista lekérdezésekor:', error);
-    return res.status(500).json({ message: 'Szerverhiba történt a listák lekérdezésekor.' });
+    return res.status(500).json({ message: 'Szerverhiba történt a listák lekérdezésekor.', error: error.message });
   }
 };
 
@@ -69,7 +96,7 @@ exports.adminGetListById = async (req, res) => {
   try {
     const listId = req.params.id;
     // Fetch the specific list by ID, potentially populate details
-    const list = await List.findById(listId).populate('owner', 'username email').populate('products.product', 'name').populate('sharedWith', 'username email'); // Example population
+    const list = await List.findById(listId).populate('owner', 'username email').populate('products.catalogItem', 'name').populate('sharedWith', 'username email'); // Example population
     
     if (!list) {
       return res.status(404).json({ message: 'Lista nem található ezzel az ID-val.' });
@@ -153,7 +180,7 @@ exports.adminAddProductToList = async (req, res) => {
     }
 
     // Check if product already exists in the list (optional: decide whether to update or reject)
-    const existingProductIndex = list.products.findIndex(p => p.product.toString() === product);
+    const existingProductIndex = list.products.findIndex(p => p.catalogItem.toString() === product);
     if (existingProductIndex > -1) {
       // Option 1: Update existing product (example)
       // list.products[existingProductIndex].quantity += quantity;
@@ -163,7 +190,7 @@ exports.adminAddProductToList = async (req, res) => {
 
     // Add the new product
     list.products.push({
-        product,
+        catalogItem: product,
         quantity,
         unit: unit || '', // Default unit if not provided
         isPurchased: isPurchased || false // Default purchase status
@@ -172,7 +199,7 @@ exports.adminAddProductToList = async (req, res) => {
     await list.save();
     
     // Populate added product details before sending response
-    const updatedList = await List.findById(listId).populate('products.product', 'name');
+    const updatedList = await List.findById(listId).populate('products.catalogItem', 'name');
 
     return res.status(201).json(updatedList); // Return the updated list
 
@@ -200,7 +227,7 @@ exports.adminUpdateProductInList = async (req, res) => {
     }
 
     // Find the product within the list's products array
-    // Note: Product ID within the subdocument array is `_id`, not `product` (which is the reference)
+    // Note: Product ID within the subdocument array is `_id`, not `catalogItem` (which is the reference)
     const productSubDoc = list.products.id(productId);
 
     if (!productSubDoc) {
@@ -209,7 +236,7 @@ exports.adminUpdateProductInList = async (req, res) => {
 
     // Update the fields provided in updateData
     Object.keys(updateData).forEach(key => {
-      if (key in productSubDoc && key !== '_id' && key !== 'product') { // Don't allow changing _id or product ref here
+      if (key in productSubDoc && key !== '_id' && key !== 'catalogItem') { // Don't allow changing _id or catalogItem ref here
         productSubDoc[key] = updateData[key];
       }
     });
@@ -217,7 +244,7 @@ exports.adminUpdateProductInList = async (req, res) => {
     await list.save();
     
     // Populate product details before sending response
-    const updatedList = await List.findById(listId).populate('products.product', 'name');
+    const updatedList = await List.findById(listId).populate('products.catalogItem', 'name');
 
     return res.status(200).json(updatedList); // Return the updated list
 
@@ -256,7 +283,7 @@ exports.adminRemoveProductFromList = async (req, res) => {
     await list.save();
     
     // Populate product details before sending response
-    const updatedList = await List.findById(listId).populate('products.product', 'name');
+    const updatedList = await List.findById(listId).populate('products.catalogItem', 'name');
 
     return res.status(200).json({ message: 'Termék sikeresen eltávolítva a listáról.', list: updatedList });
 
