@@ -1,0 +1,85 @@
+Table User {
+  id varchar [pk, unique, note: "MongoDB ObjectId"]
+  username varchar [unique]
+  email varchar [unique]
+  password varchar
+  role varchar [note: "user | admin"]
+  lastLogin datetime
+  status varchar [note: "active | banned"]
+  createdAt datetime
+  updatedAt datetime
+}
+
+Table List {
+  id varchar [pk, unique, note: "MongoDB ObjectId"]
+  title varchar
+  owner varchar [ref: > User.id]
+  priority int
+  version int
+  lastModified datetime
+  status varchar [note: "active | completed | archived"]
+  deleted boolean
+  createdAt datetime
+  updatedAt datetime
+}
+
+Table ListSharedUser {
+  id varchar [pk, unique, note: "MongoDB ObjectId"]
+  listId varchar [ref: > List.id]
+  userId varchar [ref: > User.id]
+  permissionLevel varchar [note: "view | edit"]
+}
+
+Table ListProduct {
+  id varchar [pk, unique, note: "MongoDB ObjectId"]
+  listId varchar [ref: > List.id]
+  catalogItemId varchar [ref: > ProductCatalog.id, note: "Lehet null, ha egyedi termék"]
+  name varchar
+  quantity int
+  unit varchar
+  isPurchased boolean
+  addedBy varchar [ref: > User.id]
+  notes varchar
+}
+
+Table ProductCatalog {
+  id varchar [pk, unique, note: "MongoDB ObjectId"]
+  name varchar [unique]
+  categoryId varchar [ref: > Category.id]
+  defaultUnit varchar
+  barcode varchar [unique]
+  createdBy varchar [ref: > User.id]
+  lastUsed datetime
+  usageCount int
+  createdAt datetime
+  updatedAt datetime
+}
+
+Table Category {
+  id varchar [pk, unique, note: "MongoDB ObjectId"]
+  name varchar [unique]
+  description varchar
+  parentCategoryId varchar [ref: > Category.id]
+  level int
+  isActive boolean
+  createdAt datetime
+  updatedAt datetime
+}
+
+Table Statistics {
+  id varchar [pk, unique, note: "MongoDB ObjectId"]
+  totalUsers int
+  activeUsers int
+  newUsersThisMonth int
+  totalLists int
+  activeLists int
+  completedLists int
+  averageListsPerUser float
+  totalProducts int
+  averageProductsPerList float
+  lastUpdated datetime
+  createdAt datetime
+  updatedAt datetime
+}
+
+// Megjegyzés: A ListSharedUser és ListProduct táblák a beágyazott tömbök relációs megfeleltetése miatt szerepelnek. 
