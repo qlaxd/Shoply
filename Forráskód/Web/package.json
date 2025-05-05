@@ -26,6 +26,17 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/src/setupTests.js"],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+    },
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
+    }
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -45,11 +56,18 @@
     ]
   },
   "devDependencies": {
+<<<<<<< HEAD
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   },
   "jest": {
     "transformIgnorePatterns": [
       "/node_modules/(?!axios)/"
     ]
+=======
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-react": "^7.23.3",
+    "identity-obj-proxy": "^3.0.0"
+>>>>>>> 112e2cf (feat: Add Jest configuration and update Babel presets in package.json)
   }
 }
