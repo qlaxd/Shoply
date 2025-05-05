@@ -1,4 +1,4 @@
-# Bevásárlás Alkalmazás
+# Shoply
 
 ## A Projektről
 
